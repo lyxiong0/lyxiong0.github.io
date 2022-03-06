@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="catconcatenate的缩写，用于访问单个或者多个文件。 cowsay XXX画一头说XXX的牛 man 命令查看命令使用手册，调用了less程序，使内容整页显示。 less程序U——向上一整页，D——向下一整页，&lt;——回到开头，&gt;——跳到结尾输入行数+ENTER——跳转到指定行数，&#x2F;字符串——搜索指定字符串（区分大小写），其中n跳到下一条，N上一条 history&amp;#">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux 命令">
+<meta property="og:url" content="http://example.com/2017/08/06/Linux%E5%91%BD%E4%BB%A4/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="catconcatenate的缩写，用于访问单个或者多个文件。 cowsay XXX画一头说XXX的牛 man 命令查看命令使用手册，调用了less程序，使内容整页显示。 less程序U——向上一整页，D——向下一整页，&lt;——回到开头，&gt;——跳到结尾输入行数+ENTER——跳转到指定行数，&#x2F;字符串——搜索指定字符串（区分大小写），其中n跳到下一条，N上一条 history&amp;#">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2017-08-06T15:07:07.000Z">
+<meta property="article:modified_time" content="2017-08-16T12:20:03.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="Linux">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2017/08/06/Linux%E5%91%BD%E4%BB%A4/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Linux 命令 | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/08/06/Linux%E5%91%BD%E4%BB%A4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux 命令
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-06 23:07:07" itemprop="dateCreated datePublished" datetime="2017-08-06T23:07:07+08:00">2017-08-06</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-08-16 20:20:03" itemprop="dateModified" datetime="2017-08-16T20:20:03+08:00">2017-08-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/Linux/" itemprop="url" rel="index"><span itemprop="name">Linux</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h2><p>concatenate的缩写，用于访问单个或者多个文件。</p>
+<h2 id="cowsay-XXX"><a href="#cowsay-XXX" class="headerlink" title="cowsay XXX"></a>cowsay XXX</h2><p>画一头说XXX的牛</p>
+<h2 id="man-命令"><a href="#man-命令" class="headerlink" title="man 命令"></a>man 命令</h2><p>查看命令使用手册，调用了less程序，使内容整页显示。</p>
+<h3 id="less程序"><a href="#less程序" class="headerlink" title="less程序"></a>less程序</h3><p>U——向上一整页，D——向下一整页，&lt;——回到开头，&gt;——跳到结尾<br>输入行数+ENTER——跳转到指定行数，&#x2F;字符串——搜索指定字符串（区分大小写），其中n跳到下一条，N上一条</p>
+<h2 id="history-x2F-win-R-x2F-上箭头"><a href="#history-x2F-win-R-x2F-上箭头" class="headerlink" title="history&#x2F;win+R&#x2F;上箭头"></a>history&#x2F;win+R&#x2F;上箭头</h2><p>查看所有历史&#x2F;搜索历史&#x2F;调用上一条命令</p>
+<h2 id="unzip"><a href="#unzip" class="headerlink" title="unzip"></a>unzip</h2><p>解压文件</p>
+<h2 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h2><p>查看当前目录下所有文件,默认不输出以.开头的文件。<br>PS：以.开头的文件通常是系统文件<br>-a 不忽略.开头文件<br>-l 文件类型（目录 or 文件）&#x2F;？&#x2F;字节大小&#x2F;创建时间&#x2F;文件名.后缀</p>
+<h2 id="rm"><a href="#rm" class="headerlink" title="rm"></a>rm</h2><p>remove移除文件<br>-rf r——recursive递归，f——force强制。 以递归的方式强制将目录下所有文件删除。</p>
+<h2 id="ctrl-c"><a href="#ctrl-c" class="headerlink" title="ctrl+c"></a>ctrl+c</h2><p>停止当前操作</p>
+<h2 id="ctrl-D"><a href="#ctrl-D" class="headerlink" title="ctrl+D"></a>ctrl+D</h2><p>表示文件结尾，用于结束输入或者退出程序</p>
+<h2 id="nano"><a href="#nano" class="headerlink" title="nano"></a>nano</h2><p>调用Ubuntu自带文本编辑器nano</p>
+<h2 id="pwd"><a href="#pwd" class="headerlink" title="pwd"></a>pwd</h2><p>查看当前所在目录</p>
+<h2 id="cd"><a href="#cd" class="headerlink" title="cd"></a>cd</h2><p>进入某目录或文件夹，cd ..——返回父目录    .表示当前目录。<br>单独的cd表示返回主目录</p>
+<h2 id="echo"><a href="#echo" class="headerlink" title="echo"></a>echo</h2><p>打印信息</p>
+<h2 id="mv-x2F-cp"><a href="#mv-x2F-cp" class="headerlink" title="mv&#x2F;cp"></a>mv&#x2F;cp</h2><p>移动文件&#x2F;复制文件</p>
+<h2 id="mkdir-目录"><a href="#mkdir-目录" class="headerlink" title="mkdir 目录"></a>mkdir 目录</h2><p>创建新目录</p>
+<h2 id="rmdir"><a href="#rmdir" class="headerlink" title="rmdir"></a>rmdir</h2><p>删除目录，但仅用于删除空目录。<br>要删除有内容的目录，需要用到 ** rm -r **命令进行递归删除。</p>
+<h1 id="Linux文件系统"><a href="#Linux文件系统" class="headerlink" title="Linux文件系统"></a>Linux文件系统</h1><h2 id="文件名"><a href="#文件名" class="headerlink" title="文件名"></a>文件名</h2><p>可以使用除了\以外的各种符号，但是如果使用了符号，在调用文件的时候就要用’文件名’来调用。</p>
+<h2 id="根（root）"><a href="#根（root）" class="headerlink" title="根（root）"></a>根（root）</h2><p>Linux系统不像Windows系统每个分盘有独立的根，Linux所有文件属于一个根。要参考文件只能给出完整路径，用&#x2F;分割目录。</p>
+<h2 id="glob（globbing通配符模式）"><a href="#glob（globbing通配符模式）" class="headerlink" title="glob（globbing通配符模式）"></a>glob（globbing通配符模式）</h2><p><em>XX</em> ，其中<em>代表匹配任意字符，可以放在字符串的任意位置，也可使用多个</em>。<br>XXX{A,B} 匹配包含花括号中任一字符串的文件，例如XXXA和XXXB。<br>？匹配一个字符，？？匹配两个字符····<br>[]匹配包含其中字母，注意只能匹配包含其中单个字母的文件，多个字母无需隔开。<br>** 以上匹配均区分大小写，且可跟在各种命令后 **</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Linux/" rel="tag"># Linux</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2017/08/16/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week1/" rel="next" title="机器学习Week1">
+      机器学习Week1 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#cat"><span class="nav-number">1.</span> <span class="nav-text">cat</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cowsay-XXX"><span class="nav-number">2.</span> <span class="nav-text">cowsay XXX</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#man-%E5%91%BD%E4%BB%A4"><span class="nav-number">3.</span> <span class="nav-text">man 命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#less%E7%A8%8B%E5%BA%8F"><span class="nav-number">3.1.</span> <span class="nav-text">less程序</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#history-x2F-win-R-x2F-%E4%B8%8A%E7%AE%AD%E5%A4%B4"><span class="nav-number">4.</span> <span class="nav-text">history&#x2F;win+R&#x2F;上箭头</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#unzip"><span class="nav-number">5.</span> <span class="nav-text">unzip</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ls"><span class="nav-number">6.</span> <span class="nav-text">ls</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rm"><span class="nav-number">7.</span> <span class="nav-text">rm</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ctrl-c"><span class="nav-number">8.</span> <span class="nav-text">ctrl+c</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ctrl-D"><span class="nav-number">9.</span> <span class="nav-text">ctrl+D</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#nano"><span class="nav-number">10.</span> <span class="nav-text">nano</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#pwd"><span class="nav-number">11.</span> <span class="nav-text">pwd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#cd"><span class="nav-number">12.</span> <span class="nav-text">cd</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#echo"><span class="nav-number">13.</span> <span class="nav-text">echo</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mv-x2F-cp"><span class="nav-number">14.</span> <span class="nav-text">mv&#x2F;cp</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mkdir-%E7%9B%AE%E5%BD%95"><span class="nav-number">15.</span> <span class="nav-text">mkdir 目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rmdir"><span class="nav-number">16.</span> <span class="nav-text">rmdir</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Linux%E6%96%87%E4%BB%B6%E7%B3%BB%E7%BB%9F"><span class="nav-number"></span> <span class="nav-text">Linux文件系统</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%96%87%E4%BB%B6%E5%90%8D"><span class="nav-number">1.</span> <span class="nav-text">文件名</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A0%B9%EF%BC%88root%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">根（root）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#glob%EF%BC%88globbing%E9%80%9A%E9%85%8D%E7%AC%A6%E6%A8%A1%E5%BC%8F%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">glob（globbing通配符模式）</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

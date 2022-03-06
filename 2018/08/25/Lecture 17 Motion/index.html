@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Lecture 17 MotionIntroduction本节课我们会将之前的技术与新方法结合，追踪多张图片下像素的移动，应用方面有自动驾驶汽车、机器人、安全系统等 Optical Flow and Key AssumptionsOptical Flow光流即像素随时间的运动。光流的目的是通过观察两张图片$I_0$和$I_1$，对每个在时间$t_0$到$t_1$之间的每个像素产生一个运动矢量。但是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS131 Lecture 17 Motion">
+<meta property="og:url" content="http://example.com/2018/08/25/Lecture%2017%20Motion/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="Lecture 17 MotionIntroduction本节课我们会将之前的技术与新方法结合，追踪多张图片下像素的移动，应用方面有自动驾驶汽车、机器人、安全系统等 Optical Flow and Key AssumptionsOptical Flow光流即像素随时间的运动。光流的目的是通过观察两张图片$I_0$和$I_1$，对每个在时间$t_0$到$t_1$之间的每个像素产生一个运动矢量。但是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.1.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.4.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.5.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.6.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.7.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.8.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.9.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.10.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.11.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.12.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.13.png">
+<meta property="article:published_time" content="2018-08-25T15:36:41.000Z">
+<meta property="article:modified_time" content="2018-09-01T16:52:51.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="计算机视觉">
+<meta property="article:tag" content="CS131">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.1.png">
+
+<link rel="canonical" href="http://example.com/2018/08/25/Lecture%2017%20Motion/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CS131 Lecture 17 Motion | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/25/Lecture%2017%20Motion/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CS131 Lecture 17 Motion
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-25 23:36:41" itemprop="dateCreated datePublished" datetime="2018-08-25T23:36:41+08:00">2018-08-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-02 00:52:51" itemprop="dateModified" datetime="2018-09-02T00:52:51+08:00">2018-09-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Lecture-17-Motion"><a href="#Lecture-17-Motion" class="headerlink" title="Lecture 17 Motion"></a>Lecture 17 Motion</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>本节课我们会将之前的技术与新方法结合，追踪多张图片下像素的移动，应用方面有自动驾驶汽车、机器人、安全系统等</p>
+<h2 id="Optical-Flow-and-Key-Assumptions"><a href="#Optical-Flow-and-Key-Assumptions" class="headerlink" title="Optical Flow and Key Assumptions"></a>Optical Flow and Key Assumptions</h2><h3 id="Optical-Flow"><a href="#Optical-Flow" class="headerlink" title="Optical Flow"></a>Optical Flow</h3><p>光流即像素随时间的运动。光流的目的是通过观察两张图片$I_0$和$I_1$，对每个在时间$t_0$到$t_1$之间的每个像素产生一个运动矢量。但是，光流只能呈现图像模式的<strong>明显</strong>运动，这在下一节Assumptions and Limitations有解释，</p>
+<h3 id="Assumptions-and-Limitations"><a href="#Assumptions-and-Limitations" class="headerlink" title="Assumptions and Limitations"></a>Assumptions and Limitations</h3><h4 id="Apparent-Motion"><a href="#Apparent-Motion" class="headerlink" title="Apparent Motion"></a>Apparent Motion</h4><p>在二维图像中，光流只能呈现亮度模式的明显运动，意味着移动矢量是由各种行动产生的。例如：变化的光照可以使得静止的物体产生强运动矢量，但进入或者移出屏幕的运动无法被2D光流的运动矢量捕捉。光流处理问题的一个例子是孔径问题。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.1.png"></p>
+<p>孔径问题指光流无法代表边缘运动的结果，可能导致移动测量错误。例如图中线条实际上是向左下移动，但是由于孔径，看起来像是向右移动。</p>
+<h4 id="Brightness-Consistency"><a href="#Brightness-Consistency" class="headerlink" title="Brightness Consistency"></a>Brightness Consistency</h4><p>光流只能呈现明显的运动，为了正确的检测图中点的运动，我们必须假设这些点在帧之间的亮度相等。亮度一致性(Brightness Consistency)方程如下：<br>$$<br>I(x,y,t-1)&#x3D;I(x+u(x,y),y+v(x,y),t)<br>$$<br>其中$u(x,y)$表示点的水平运动，$v(x,y)$表示点的垂直运动。</p>
+<h4 id="Small-Motion"><a href="#Small-Motion" class="headerlink" title="Small Motion"></a>Small Motion</h4><p>光流假设点在连续的图像之间不会移动太多。因为帧之间的时间极短，所以假设基本成立。但是在物体距离摄像机过远或过近的时候，这个假设不再成立。接下来我们用亮度一致性方程来证明假设的必要性。首先用泰勒展开式线性化等式右侧：<br>$$<br>I(x+u(x,y),y+v(x,y),t)\approx I(x,y,t-1) +I_x·u(x,y)+I_y·v(x,y)+I_t<br>$$<br>线性化允许我们解得运动向量$u$和$v$，但在这种情况下我们只包含泰勒展开式的第一项。当帧之间的运动幅度较大时，式子无法步骤整个运动情况，导致不精确的$u$和$v$，因此假设有必要。</p>
+<h4 id="Spatial-Coherence"><a href="#Spatial-Coherence" class="headerlink" title="Spatial Coherence"></a>Spatial Coherence</h4><p>空间相干性是一个关于相同物体内邻近的像素会移动到一起的假设。其必要性证明如下：<br>$$<br>\begin{align}<br>I(x+u(x,y),y+v(x,y),t)\approx I(x,y,t-1) +I_x·u(x,y)+I_y·v(x,y)+I_t \<br>I(x+u(x,y),y+v(x,y),t)- I(x,y,t-1) &#x3D;I_x·u(x,y)+I_y·v(x,y)+I_t<br>\end{align}<br>$$<br>可得到<br>$$<br>\begin{align}<br>I_x·u+I_y·v+I_t\approx 0\<br>\nabla I·[u\space v]^T +I_t &#x3D;0<br>\end{align}<br>$$<br>现在我们有足够的方程解每个单像素中的$u$和$v$。假设像素可以移动到一起允许我们用有相同的$[u\space v]$的多个公式，使得我们能够解出邻居像素的移动。</p>
+<h2 id="Lucas-Kanade"><a href="#Lucas-Kanade" class="headerlink" title="Lucas-Kanade"></a>Lucas-Kanade</h2><p>从上式中得到图像的移动，至少每个像素需要两个方程。Lucas-Kanade技术依赖于一个附加约束–空间相干性来完成图像追踪。</p>
+<p>通过一个大小为$k\times k$的窗来对像素应用空间相干性约束。假设窗内的邻居像素有相同的$(u,v)$。例如，在$5\times5$窗内应用以下式子：</p>
+<p>![17.2](D:\Machine Learning\cs131\Lecture16_17\17.2.png)</p>
+<p>这产生了一个$Ad&#x3D;b$形式的线性方程的过约束系统。用最小二乘法解过拟合系统，我们减少了解$(A^TA)d&#x3D;A^Tb$中的$d$的复杂度。更准确的说，需要求解的系统系统被简化至</p>
+<p>![17.3](D:\Machine Learning\cs131\Lecture16_17\17.3.png)</p>
+<h3 id="Condition-for-an-Existing-Solution"><a href="#Condition-for-an-Existing-Solution" class="headerlink" title="Condition for an Existing Solution"></a>Condition for an Existing Solution</h3><p>为了能解这个系统，需要满足以下条件：</p>
+<ul>
+<li><p>$A^TA$要求可逆</p>
+</li>
+<li><p>$A^TA$不能太小以至于引起噪音。</p>
+<p>$A^TA$的特征向量$\lambda_1$和$\lambda_2$不能过小</p>
+</li>
+<li><p>$A^TA$应该适中</p>
+<p>例如：$A^TA$的特征向量$\lambda_1$和$\lambda_2$不能过大</p>
+</li>
+</ul>
+<h3 id="Geometric-Interpretation"><a href="#Geometric-Interpretation" class="headerlink" title="Geometric Interpretation"></a>Geometric Interpretation</h3><p>很明显，之前的最小二乘方程组产生了一个二阶矩阵$M&#x3D;A^TA$。事实上，这是角探测的哈里斯矩阵。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.4.png"></p>
+<p>我们可以把上面的条件联系起来，以解出运动场$[u\space v]$来追踪哈里斯矩阵$M$检测到的角。$M&#x3D;A^TA$的特征向量和一个区域可能的边缘特征值合方向、大小联系。</p>
+<p>综上，很明显Lucas-Kanade的光流估计的最理想区域是一个角。若两个$\lambda$均过小，则这个区域过于平坦。若一个$\lambda$远大于另一个，则会产生孔径问题，无法得到正确的光流。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.5.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.6.png"></p>
+<p>以上树的三张图从左到右分别代表：$\lambda_1$大而$\lambda_2$小、两个$\lambda$都小（低语义区）、两个$\lambda$都大（高语义区）</p>
+<h3 id="Error-in-Lucas-Kanade"><a href="#Error-in-Lucas-Kanade" class="headerlink" title="Error in Lucas-Kanade"></a>Error in Lucas-Kanade</h3><p>Lucas-Kanade受限于光流假设。假设$A^TA$可逆且图中没有太多噪音，错误仍然在以下情况产生：</p>
+<ul>
+<li>亮度一致性不满足，意味着随着时间改变像素的强度可能改变</li>
+<li>移动量过大或者随着时间不会逐渐改变</li>
+<li>未满足空间相干性，意味着相邻像素没有随之改变。这个可能是由不合适大小的窗造成的（即选择了不好的$k$）。</li>
+</ul>
+<h3 id="Improving-Accuracy"><a href="#Improving-Accuracy" class="headerlink" title="Improving Accuracy"></a>Improving Accuracy</h3><p>从上面所做的许多假设中，Lucas-Kanade可以通过包含之前在亮度一致方程的泰勒展开近似中得到的更高阶项来提高其准确性。这个放松了之前的假设。现在，待解决的问题是：<br>$$<br>I(x+u,y+v)&#x3D;I(x,y)+I_xu+I_yv+higher\space order\space terms-I_{t-1}<br>$$<br>这是一个找多项式根的问题，可以用牛顿迭代方法解决。</p>
+<p>总的来说，精确的迭代Lucas-Kanade算法可以被应用：</p>
+<ol>
+<li>解Lucas-Kanade方程，估计每个像素的速度</li>
+<li>用被估计的光流区域和图像变形技术，将$I(t-1)$变化到$I(t)$</li>
+<li>重复至收敛</li>
+</ol>
+<h2 id="Horn-Schunk"><a href="#Horn-Schunk" class="headerlink" title="Horn-Schunk"></a>Horn-Schunk</h2><h3 id="Horn-Schunk-Method-for-Optical-Flow"><a href="#Horn-Schunk-Method-for-Optical-Flow" class="headerlink" title="Horn-Schunk Method for Optical Flow"></a>Horn-Schunk Method for Optical Flow</h3><p>Horn-Schunk方法将光流公式化为以下全局能量函数，并尽量最小化$u(x,y)$和$v(x,y)$。<br>$$<br>E&#x3D;\iint[(I_xu+I_yv+I_t)^2+\alpha^2(||\nabla u||^2+||\nabla v||^2)]dxdy<br>$$<br>上式第一项反应了光照恒定假设，根据假设$I_xu+I_yv+I_t$应该等于0。这项存在于式子中是为了保证这个值尽可能接近于0。</p>
+<p>第二项反应了小移动假设。这项存在于式子中为了鼓励在位置改变较小的情况下，更加光滑的流。$\alpha$是正规化常数，用于控制光滑度，值越大流越光滑。</p>
+<p>为了最小化能量函数，我们对$u$和$v$求导并等于0。得到以下两个等式<br>$$<br>\begin{align}<br>I_x(I_xu+I_yv+I_t)+\alpha^2\Delta u&#x3D;0\<br>I_y(I_xu+I_yv+I_t)+\alpha^2\Delta v&#x3D;0<br>\end{align}\<br>\Delta&#x3D;\frac{\partial}{\partial x^2}+\frac{\partial}{\partial y^2}<br>$$<br>其中$\Delta$为拉格朗日算子，在实际计算中为<br>$$<br>\Delta u(x,y)&#x3D;\overline u(x,y)-u(x,y)<br>$$<br>其中$\overline u(x,y)$是$u$在$(x,y)$附近的加权平均。用(11)式带入得到：<br>$$<br>\begin{align}<br>(I_x^2+\alpha^2)u+I_xI_yv&#x3D;\alpha^2\overline u-I_xI_t\<br>(I_y^2+\alpha^2)u+I_xI_yu&#x3D;\alpha^2\overline v-I_yI_t<br>\end{align}\<br>$$<br>是一个关于$u$和$v$的线性方程。</p>
+<h3 id="Iterative-Horn-Schunk"><a href="#Iterative-Horn-Schunk" class="headerlink" title="Iterative Horn-Schunk"></a>Iterative Horn-Schunk</h3><p>因为$u$和$v$的值取决于$(x,y)$邻近的光流值，所以我们需要在每次邻居更新后，重新计算$u$和$v$：<br>$$<br>\begin{align}<br>u^{k+1}&#x3D;\overline u^k-\frac{I_x(I_x\overline u^k+I_y\overline v^k+I_t)}{\alpha^2+I_x^2+I_y^2}\<br>v^{k+1}&#x3D;\overline v^k-\frac{I_y(I_x\overline u^k+I_y\overline v^k+I_t)}{\alpha^2+I_x^2+I_y^2}<br>\end{align}\<br>$$<br>其中上标$k$代表迭代次数</p>
+<h3 id="Smoothness-Regularization"><a href="#Smoothness-Regularization" class="headerlink" title="Smoothness Regularization"></a>Smoothness Regularization</h3><p>光滑度正规化项$||\nabla u||^2+||\nabla v||^2$推进最小化邻近点之间的光流变化。这样在边缘区域，点会流向最临近的点，解决孔径问题。</p>
+<h3 id="Dense-Optical-Flow-with-Michael-Black’s-Method"><a href="#Dense-Optical-Flow-with-Michael-Black’s-Method" class="headerlink" title="Dense Optical Flow with Michael Black’s Method"></a>Dense Optical Flow with Michael Black’s Method</h3><p>Michael Black拓展了Horn-Schunk方法。原来的正规化项$||\nabla u||^2+||\nabla v||^2$如下图，是一个二次函数。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.7.png"></p>
+<p>现在用以下函数替代</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.8.png"></p>
+<h2 id="Pyramids-for-Large-Motion"><a href="#Pyramids-for-Large-Motion" class="headerlink" title="Pyramids for Large Motion"></a>Pyramids for Large Motion</h2><p>返回之前的假设，我们要求在帧之间像素只能有小位移。所以当位移较大时，算法可能会崩溃。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.9.png"></p>
+<p>注意上图，Lucas-Kanade无法找到树干流的一致向量。为了解决这个问题，我们可以和之前的滑动窗特征检测器一样，建立一个图像尺度逐渐下降的金字塔。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.10.png"></p>
+<p>现在，当我们想找到流向量，可以采用帧之间位移更小的低分辨率采样版本。以下是使用了金字塔后的树干流向量：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.11.png"></p>
+<p>注意现在流向量大多数都指向同一方向，即树干整体移动方向一致。</p>
+<h2 id="Common-Fate"><a href="#Common-Fate" class="headerlink" title="Common Fate"></a>Common Fate</h2><p>我们可以通过图像中部分的共同性来获得更多信息，共同性即在图像给定的切割中，这部分像素移动方式都相似。我们的目标就是找出有共同性的分割或层。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.12.png"></p>
+<h3 id="Identify-Layers"><a href="#Identify-Layers" class="headerlink" title="Identify Layers"></a>Identify Layers</h3><p>我们通过将图像分割至块，并基于块之间放射运动因子的相似性，将块组合来计算图像的层。对于每个块，找到一个$\alpha$，对于所有在块中的像素$(x,y)$，能够最小化下式：<br>$$<br>Err(\alpha)&#x3D;\sum[I_x(\alpha_1+\alpha_2x+\alpha_3y)+I_x(\alpha_4+\alpha_5x+\alpha_6y)+I_t]^2<br>$$<br>上面的方程由两部分推导而出：</p>
+<ol>
+<li><p>亮度一致方程<br>$$<br>I(x,y,t-1)&#x3D;I(x+u(x,y),y+v(x,y),t)<br>$$</p>
+</li>
+<li><p>仿射运动成分<br>$$<br>I_xu(x,y)+I_xv(x,y)+I_t\approx0<br>$$<br>$I_x,I_y,I_t$是图像关于两个方向和实践的梯度。$u(x,y),v(x,y)$是仿射运动在两个方向上的成分<br>$$<br>\begin{align}<br>u(x,y)&#x3D;\alpha_1+\alpha_2x+\alpha_3y\<br>v(x,y)&#x3D;\alpha_4+\alpha_5x+\alpha_6y<br>\end{align}<br>$$</p>
+</li>
+</ol>
+<p>从此，我们将因子向量$\alpha_i$映射到运动因子空间，并对仿射运动因子向量采用k-means聚类。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.13.png"></p>
+<p>最后k-means聚类的中心是因子$\alpha_1,…,\alpha_6​$，它们最小化了上述错误方程（$Err(\alpha)​$），且代表了元图像块应该聚类为一个层。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+              <a href="/tags/CS131/" rel="tag"># CS131</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/22/Lecture%2016%20Recognizing%20Objects%20by%20Parts/" rel="prev" title="CS131 Lecture 16 Recognizing Objects by Parts">
+      <i class="fa fa-chevron-left"></i> CS131 Lecture 16 Recognizing Objects by Parts
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/30/Lecture%2018%20Tracking/" rel="next" title="CS131 Lecture 18 Tracking">
+      CS131 Lecture 18 Tracking <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lecture-17-Motion"><span class="nav-number">1.</span> <span class="nav-text">Lecture 17 Motion</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Optical-Flow-and-Key-Assumptions"><span class="nav-number">1.2.</span> <span class="nav-text">Optical Flow and Key Assumptions</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Optical-Flow"><span class="nav-number">1.2.1.</span> <span class="nav-text">Optical Flow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Assumptions-and-Limitations"><span class="nav-number">1.2.2.</span> <span class="nav-text">Assumptions and Limitations</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Apparent-Motion"><span class="nav-number">1.2.2.1.</span> <span class="nav-text">Apparent Motion</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Brightness-Consistency"><span class="nav-number">1.2.2.2.</span> <span class="nav-text">Brightness Consistency</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Small-Motion"><span class="nav-number">1.2.2.3.</span> <span class="nav-text">Small Motion</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Spatial-Coherence"><span class="nav-number">1.2.2.4.</span> <span class="nav-text">Spatial Coherence</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Lucas-Kanade"><span class="nav-number">1.3.</span> <span class="nav-text">Lucas-Kanade</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Condition-for-an-Existing-Solution"><span class="nav-number">1.3.1.</span> <span class="nav-text">Condition for an Existing Solution</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Geometric-Interpretation"><span class="nav-number">1.3.2.</span> <span class="nav-text">Geometric Interpretation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Error-in-Lucas-Kanade"><span class="nav-number">1.3.3.</span> <span class="nav-text">Error in Lucas-Kanade</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Improving-Accuracy"><span class="nav-number">1.3.4.</span> <span class="nav-text">Improving Accuracy</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Horn-Schunk"><span class="nav-number">1.4.</span> <span class="nav-text">Horn-Schunk</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Horn-Schunk-Method-for-Optical-Flow"><span class="nav-number">1.4.1.</span> <span class="nav-text">Horn-Schunk Method for Optical Flow</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Iterative-Horn-Schunk"><span class="nav-number">1.4.2.</span> <span class="nav-text">Iterative Horn-Schunk</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Smoothness-Regularization"><span class="nav-number">1.4.3.</span> <span class="nav-text">Smoothness Regularization</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Dense-Optical-Flow-with-Michael-Black%E2%80%99s-Method"><span class="nav-number">1.4.4.</span> <span class="nav-text">Dense Optical Flow with Michael Black’s Method</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pyramids-for-Large-Motion"><span class="nav-number">1.5.</span> <span class="nav-text">Pyramids for Large Motion</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Common-Fate"><span class="nav-number">1.6.</span> <span class="nav-text">Common Fate</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Identify-Layers"><span class="nav-number">1.6.1.</span> <span class="nav-text">Identify Layers</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

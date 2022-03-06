@@ -17,7 +17,7 @@
 
 <script id="hexo-configurations">
     var NexT = window.NexT || {};
-    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Muse","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
   <meta name="description" content="普普通通">
@@ -74,7 +74,11 @@
   </style>
 </noscript>
 
-</head>
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
 
 <body itemscope itemtype="http://schema.org/WebPage">
   <div class="container use-motion">
@@ -114,6 +118,21 @@
         <li class="menu-item menu-item-home">
 
     <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
 
   </li>
         <li class="menu-item menu-item-archives">
@@ -178,7 +197,7 @@
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/05/test/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Liyao Xiong">
       <meta itemprop="description" content="普普通通">
     </span>
@@ -235,7 +254,7 @@
     <link itemprop="mainEntityOfPage" href="http://example.com/2022/03/05/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.png">
       <meta itemprop="name" content="Liyao Xiong">
       <meta itemprop="description" content="普普通通">
     </span>
@@ -298,8 +317,1145 @@
   
   
 
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/09/03/Lecture%2019%20Introduction%20to%20Deep%20Learning/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/09/03/Lecture%2019%20Introduction%20to%20Deep%20Learning/" class="post-title-link" itemprop="url">CS131 Lecture 19 Introduction to Deep Learning</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2018-09-03 19:36:34 / 修改时间：19:37:15" itemprop="dateCreated datePublished" datetime="2018-09-03T19:36:34+08:00">2018-09-03</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Lecture-19-Introduction-to-Deep-Learning"><a href="#Lecture-19-Introduction-to-Deep-Learning" class="headerlink" title="Lecture 19 Introduction to Deep Learning"></a>Lecture 19 Introduction to Deep Learning</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>目前为止，本课程已经包含了一系列经典的计算机视觉技术，包括边缘检测(edge detection)、聚类(clustering)方法、分类器(classifiers)、特征检测器&#x2F;描述子(feature detectors&#x2F;descriptors)。然而这些方法都有一个主要缺点：它们依赖于人类手动设计特征并选择表现良好的分类器。结果是，用于解决一个问题的计算机视觉方法往往无法很好的解决另一个问题，构建一个合理且精确的视觉流程需要大量人力和实验。甚至最佳的流程也受限于它能取得的最高精度，因为他们是由人类设计的，所以只能选取人类首先选取的模式。</p>
+<p>深度学习(deep learning)已经成为现代计算机视觉研究的一个基本模块，因为它能够避免上述缺点。深度学习不再依赖于人工选择的特征和分类器，而是自身学习如何最好的消化和解释数据，来解决它们被训练的任何问题。关键点在于它们执行端到端学习(end-to-end learning)，即学习如何将原始数据（图像）直接映射到想要的输出（例如，标签、分割图像、预测）。深度学习常常包含将一系列简单的工具组合来构建一个网络，接着在数据上对想要解决的特定问题训练网络。它们常常能只靠替换训练数据来解决不同的问题。深度学习方法受到人类大脑的启发，它们尝试去模仿人类大脑新皮层中神经元的活动。</p>
+<h2 id="Applications"><a href="#Applications" class="headerlink" title="Applications"></a>Applications</h2><h3 id="Image-Classification"><a href="#Image-Classification" class="headerlink" title="Image Classification"></a>Image Classification</h3><p>图像分类的任务是辨别所有输入图像中物体的类别。一个常见的基准是ImageNet，之前的lecture中有简单的介绍过。</p>
+<p>最初应用于ImageNet的流行算法，是手动调整且用了仔细挑选、硬编码(hardcode)的特征标记测试图像，再讲标记过的图像输入分类器，像用SVM来完成最后的分类。例如，2010年的时候，ImageNet优胜算法是先用HOG和LBP描述子，两者结合后再提供给SVM。但是这种叫做“shallow”的方法很快就被“deep”方法打败了。接下来的几年内，分别出现了AlexNet、VGG、GooLeNet，直到2015年的ResNet，错误率已经低于人眼识别。</p>
+<p>通常来说，这意味着深度学习算法在计算机视觉领域的前景极佳。深度学习算法的表现远超过传统的计算机视觉算法，甚至在某些精细的、较难的视觉任务上甚至超过了人类的表现，特别是当网络中层数较多时。</p>
+<h3 id="Object-Detection"><a href="#Object-Detection" class="headerlink" title="Object Detection"></a>Object Detection</h3><p>物体检测实际上是图像分类的一种拓展，在问“什么”（例如，识别图中物体）之上又提出了“哪里”（例如，定位被识别的物体）。在深度卷积神经网络(deep convolutional neural networks, CNN)出现之前，“shallow”计算机视觉方法在PASCAL VOC数据集上的mAP(mean average precision)在40%左右。之后出现的一系列深度学习方法，将mAP提升到了85.6%。</p>
+<h3 id="Object-Segmentation"><a href="#Object-Segmentation" class="headerlink" title="Object Segmentation"></a>Object Segmentation</h3><p>物体分割包括首先将一个物体划分为多个不同的语义区，这些语义区通常代表不同物体，接着检测每个区域包含的物体类型。这在传统分割算法（像我们在本门课中学的）是极具挑战性的——我们需要对我们想检测的物体有特定的知识，且必须手工设计符合物体的特征（例如，甜甜圈是中间带有孔的圆形物体，所以我么需要一个能够优先考虑这些形状的特征）。但是，最近的深度学习方法在解决物体分割方面展示了令人影响深刻的结果，例如：用三个独立的深度网络可得到下图的结果。</p>
+<p>![1535934150492](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.1.png)</p>
+<h3 id="Pose-Estimation"><a href="#Pose-Estimation" class="headerlink" title="Pose Estimation"></a>Pose Estimation</h3><p>姿态估计包含通过一系列图片，追踪人体结构骨架来理解人类正在做什么。利用CNN共同学习定位身体部位，然后将部位与图中独立的人相关联。下图是一个姿态估计的例子。</p>
+<p>![1535934565445](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.2.png)</p>
+<h3 id="Image-Captioning"><a href="#Image-Captioning" class="headerlink" title="Image Captioning"></a>Image Captioning</h3><p>图像说明是通过算法理解图中物体、动作、关系，并附上与图像描述相关的说明。同样，深度学习能很好的解决这方面的问题：用一个卷积和递归结合的神经网络来给图像标记一个单独的说明，并用一个相似的结构加上一个额外的神经网络层用于定位图中独立的物体&#x2F;行为和密集的给每一个物体&#x2F;行为标记一个说明。</p>
+<p>![1535935585337](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.3.png)</p>
+<h3 id="Other-Computer-Vision-Tasks"><a href="#Other-Computer-Vision-Tasks" class="headerlink" title="Other Computer Vision Tasks"></a>Other Computer Vision Tasks</h3><p>视觉问题回答(Visual question answering)是利用算法回答图中描述的相关物体&#x2F;行为的问题，例如，给定一张披萨的图像，算法可能需要回答“披萨有几块？”或者“这是一块素披萨吗？”。用一个基于递归神经网络，利用LSTM(长短记忆网络，long short-term memory)模块来回答关于图像主题和行为的多选题。</p>
+<p>图像超分辨率(Image super-resolution)包括通过缩小的输入图像，推导出高分率版本——这是一个较难的任务，因为它包含产生未知的细节，并保证这些产生的细节与整张图片是相关的。用一个生成对抗网络(generative adversarial network)来从缩小的图像中恢复真实的细节，并产生接近原始高分辨率验证图像接近的插值结果。</p>
+<h3 id="Outside-Computer-Vision"><a href="#Outside-Computer-Vision" class="headerlink" title="Outside Computer Vision"></a>Outside Computer Vision</h3><p>深度学习同样也对在计算机视觉之外的方面有着特别好的效果，包括机器翻译(machine translation)，文本生成(text generation)，语音识别(speech recognition)和语音合成(speech synthesis)。</p>
+<p>另外，深度强化学习(deep reinforcement learning)方法也在一系列任务取得了成功。深度强化学习包括反复使用试凑法学习一种端到端的最优控制策略（也就是在特定情况下采取一系列行动达到最终目标），最终目标是直接映射状态信息（例如，一个视频游戏的截图）。深度强化学习在许多基于游戏的任务上有着显著的结果，例如：Alpha Go。</p>
+<h2 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h2><p>大多数深度学习问题被制定为监督学习任务：给定数据$X$和标签$y$，目标是学习精确的预测标签$\hat y$。图像分类是一个监督学习问题，通常用深度学习方法解决。我们提及的其他解决图像分类问题的方法是首先提取手工设定的特征，再用机器学习方法（例如：PCA、KNN）去学习在指定特征集下的模型。在测试的时候，我们用分类器输出$\hat y$作为我们的预测分类。问题在于手工设定的特征提取器在训练时不能被优化。下图是传统计算机视觉对图像分类的流程</p>
+<p>![1535937955378](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.4.png)</p>
+<p>本门课所包含的大多数策略专注于将图像减少至手工设定的特征集。这些特征集将图像原始信息的一部分编码，可以用于大多数机器学习方法训练分类器。</p>
+<p>深度学习允许我们学习特征与分类器的联合，以取得更好的模型。深度学习由从类似第一准则获得可提供信息的特征，并以此作为动力，即同时最优化特征提取和分类器模块。下图是深度学习作用于图像分类的例子。</p>
+<p>![1535949650711](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.5.png)</p>
+<p>层次特征如下：</p>
+<p>![1535949732993](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.6.png)</p>
+<p>深度学习模型包含许多层，可以学习到层次特征。低层学习简单特征，而高层学习简单特征的结合。</p>
+<h2 id="Supervised-Learning"><a href="#Supervised-Learning" class="headerlink" title="Supervised Learning"></a>Supervised Learning</h2><h3 id="Problem-Formulation"><a href="#Problem-Formulation" class="headerlink" title="Problem Formulation"></a>Problem Formulation</h3><p>监督学习是从被标记的训练数据中学习一个方程的过程。给定一个训练样本集，模型通过调整权重(weights)来最小化代价函数(cost function)的值。代价函数是用于衡量预测值和实际值之间不同的程度，例如：均方误差(mean squared error)。通常，损失函数会包含一个正规化项$R(w)$，用于惩罚较大的权重值并限制模型的复杂度。接下来模型就可以用这些权重来对测试数据进行预测。随后可以用测试误差来对模型进行表现分析。<br>$$<br>W^*&#x3D;\arg\min_W \frac1N \sum_{i&#x3D;1}^N l(f(x_x,w),y_i)+R(w)<br>$$</p>
+<h3 id="Linear-Regression"><a href="#Linear-Regression" class="headerlink" title="Linear Regression"></a>Linear Regression</h3><p>线性回归是一种监督学习方法，我们尝试将输入向量$x_i\in R^{D_{in}}$通过模型关联至输出向量$y_i\in R^{D_{out}}$。线性回归通过一个简单的线性转换或者矩阵乘法来建模：<br>$$<br>f(x,W)&#x3D;Wx<br>$$<br>我们可以将其视作一个监督学习问题，我们需要学习权重$W$。我们通过最优化一个将欧几里德距离$l(\hat y,y)&#x3D;\frac12||\hat y-y||^2_2$和正规化项$R(W)$结合的损失函数。利用frobenius正规化项，可以用以下方程描述：<br>$$<br>W^*&#x3D;\arg\max_W \frac1{2N}\sum_{i&#x3D;1}^N||Wx_i-y||^2_2+\lambda||W||^2_{fro}<br>$$<br>下图是一个简单的线性回归模型用于对图像分类。$W$的每行代表用于计算输入到每个输出类总和的权重。</p>
+<h3 id="Neural-Networks"><a href="#Neural-Networks" class="headerlink" title="Neural Networks"></a>Neural Networks</h3><p>在一些情况下，简单的线性转换已经不能满足我们的需求，所以我们需要引入一个更复杂的模型。首先，我们可能想只添加矩阵乘法，如下：<br>$$<br>f(x,W_1,W_2)&#x3D;W_2W_1x<br>$$<br>但是，这种方法实际上与之前的线性转换没有差别。因为$W_1W_2$可以写作矩阵乘法$W&#x3D;W_1W_2$，这样又变成了之前的线性转换$f(x,W)&#x3D;Wx$。作为替代，我们需要在矩阵乘法之间引入非线性部分。进而产生以下的新模型：<br>$$<br>f(x,W_1,W_2)&#x3D;W_2(\sigma(W_1,x))<br>$$<br>式中，$W_1\in R^{H\times D_{in}},W_2\in R^{D_{out}\times H}$。 在这个模型中，一个矩阵$W_1$和一个非线性方程$\sigma:R^H\rightarrow R^H$点乘。这就是一个一层神经网络的例子。$\sigma$函数让这个模型比简单的线性模型更加有效。</p>
+<p>现在较为流行的激活函数$\sigma (x)$有两种：</p>
+<ul>
+<li>sigmoid函数，定义$\sigma (x)&#x3D;\frac{1}{1+e^{-x}}$，因为它是连续的且可微。同时也限制了输入。</li>
+<li>修正线性单元(rectified linear unit, ReLu)，定义$\sigma (x)&#x3D;max(0,x)$，在文学和效率方面都有出色的表现</li>
+</ul>
+<p>![1535968957626](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.7.png)</p>
+<p>由激活函数产生的向量被称作一个隐藏层。可以通过包含更多的矩阵乘法，即更多的隐藏层来拓展这种模型。如下式，是一个二层神经网络：<br>$$<br>f(x,W_1,W_2,W_3)&#x3D;W_3\sigma(W_2\sigma(W_1,x))<br>$$<br>给定一个可微的损失函数（正如我们在线性回归所用的一样），这种新的神经网络结构可以用一系列最优化技术进行最优化。当神经网络训练时，隐藏层开始表现关于输入的“学习特征”。重要的是，这是这种类型的模型和之前手工产生特征的最大进步。</p>
+<p>![1535969285904](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.8.png)</p>
+<h2 id="Gradient-Descent"><a href="#Gradient-Descent" class="headerlink" title="Gradient Descent"></a>Gradient Descent</h2><p>如上所述，我们最终想要最小化以下的方程以检测最佳的权重：<br>$$<br>g(w)&#x3D;\frac1N \sum_{i&#x3D;1}^{\infty} l(f(x_x,w),y_i)+R(w)<br>$$<br>一个优化上式的方法是直接解方程，但花费极大。类似的，对最佳权重的随机搜索效率也较低，特别是维度较大时。</p>
+<p>这里我们采用梯度下降的方法。梯度下降通过计算权重向量$w$发生较小变化时，给定的函数$g(w)$会发生多少变化。一个经典的检测变化量的方法是计算导数$g’(w)$，这里假设$w$是一个标量。但如果$w$是一个向量，我们旧必须计算$g(w)$在$w$每个部分的偏导数。</p>
+<p>基于以上梯度下降的想法，我们可以写出一个最直接的算法</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Initialize w randomly</span><br><span class="line">while true do:</span><br><span class="line">	read current</span><br><span class="line">	g = compute gradient of g(w)</span><br><span class="line">	w = w - a * g</span><br></pre></td></tr></table></figure>
+
+<p>用以上算法，我们可以迭代的更新权重。学习率$\alpha$是一个超参数，代表在搜索最小值时梯度每一步下降的速度。</p>
+<h2 id="Convolutional-Neural-Networks"><a href="#Convolutional-Neural-Networks" class="headerlink" title="Convolutional Neural Networks"></a>Convolutional Neural Networks</h2><p>卷积神经网络是一个常用且成功的深度学习模型子集，它包含了之前提过的卷积滤波器。从一张原始图像(大小为32x32，3个颜色通道)开始，图像和多个滤波器卷积。在课上的例子中，使用了一个5x5的滤波器，只对图中的“有效区域”卷积——所以不包含图外区域，输出的长度为32-5+1&#x3D;28，如下图。至关重要的是，这些滤波器通过反向传播(backpropagation)集体被优化——我们不再受限于手动选择的特征。</p>
+<p>![1535973112300](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.9.png)</p>
+<p>卷积的方法给了我们平移不变性——一个特征不管在图像的哪里出现，表达的意思都相同。许多独立的卷积滤波器可以应用于原图，然后其堆叠的输出相当于得到一个有更多通道的图像。像其他深度学习模型一样，非线性在卷积神经网络中也有应用，且卷积层可以再之前输出的基础上再训练，得到高层次的特征（即地层次特征的结合）。这个特性允许我们从简单的成分中提取有效的模型，这正是深度学习的特征。</p>
+<p>![1535973824823](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.10.png)</p>
+<p>关于GoogLeNet的研究通过”开始模块”(Inception modules)——一个接下来会被连接的层的特殊模式，推动了这个方法的发展。为了训练这个深度网络，Szegedy et al.使用“成长分类器”(auxillary classifiers)仅基于一些GoogLeNet的层，有效的尝试预测图像的类别。在训练中，损失函数是所有输出权重之和。</p>
+<p>![1535974121293](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.11.png)</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>深度学习是一个在计算机视觉和机器学习领域较新的方法，它同时训练特征提取器和分类器，而不是依赖于人类去检测有效的特征。深度学习方法在大多数计算机视觉问题中都有极佳的表现。但是，在训练样本庞大或者过小的时候，本课程介绍的其他方法可能会更有效，因为人类的直觉在一些领域可以选出良好的特征集。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/30/Lecture%2018%20Tracking/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/08/30/Lecture%2018%20Tracking/" class="post-title-link" itemprop="url">CS131 Lecture 18 Tracking</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-30 16:07:43" itemprop="dateCreated datePublished" datetime="2018-08-30T16:07:43+08:00">2018-08-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-03 19:36:02" itemprop="dateModified" datetime="2018-09-03T19:36:02+08:00">2018-09-03</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Lecture-18-Tracking"><a href="#Lecture-18-Tracking" class="headerlink" title="Lecture 18 Tracking"></a>Lecture 18 Tracking</h1><h2 id="Introduction-What-is-tracking"><a href="#Introduction-What-is-tracking" class="headerlink" title="Introduction: What is tracking?"></a>Introduction: What is tracking?</h2><h3 id="Definition"><a href="#Definition" class="headerlink" title="Definition"></a>Definition</h3><p>定位在连续时间下移动的物体的过程</p>
+<h3 id="Objective"><a href="#Objective" class="headerlink" title="Objective"></a>Objective</h3><p>在连续视频帧下关联目标物体并评估目标状态</p>
+<h3 id="Applications"><a href="#Applications" class="headerlink" title="Applications"></a>Applications</h3><ul>
+<li>人机互动</li>
+<li>安全</li>
+<li>AR</li>
+<li>交通</li>
+<li>医疗图像</li>
+</ul>
+<h3 id="Challenges"><a href="#Challenges" class="headerlink" title="Challenges"></a>Challenges</h3><p>因为视频的大量数据，耗时较长。并依赖于物体识别算法，在以下情况可能会失败：</p>
+<ul>
+<li>几何改变，例如物体的尺度改变</li>
+<li>光方面的改变</li>
+<li>图像帧中遮挡</li>
+<li>非线性移动</li>
+<li>分辨率低的模糊视频</li>
+<li>同框的相似物体</li>
+</ul>
+<h2 id="Feature-Tracking"><a href="#Feature-Tracking" class="headerlink" title="Feature Tracking"></a>Feature Tracking</h2><h3 id="Definition-1"><a href="#Definition-1" class="headerlink" title="Definition"></a>Definition</h3><p>特征追踪是检测并追踪在连续时间下视觉特征点</p>
+<h3 id="Challenges-of-feature-tracking"><a href="#Challenges-of-feature-tracking" class="headerlink" title="Challenges of feature tracking"></a>Challenges of feature tracking</h3><ul>
+<li>找出哪些特征可被追踪</li>
+<li>随着帧追踪——一些点可能产生明显变化（例如，因为旋转，光照改变）</li>
+<li>平移：随着模型升级，小错误可能积累成大错误</li>
+<li>点可能会消失，需要能够删除、添加点</li>
+</ul>
+<h3 id="What-are-good-features-to-track"><a href="#What-are-good-features-to-track" class="headerlink" title="What are good features to track?"></a>What are good features to track?</h3><p>通常我们会避开选择光滑区域和边缘作为特征。为了选出“高质量”的特征，一种方法是检测Harris Corners作为关键点，这样能够保证较小的错误敏感性。</p>
+<p>一旦选好了特征，接下来就可以使用光流算法来解决移动测量问题。</p>
+<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/18.1.png"></p>
+<h3 id="Tracking-methods"><a href="#Tracking-methods" class="headerlink" title="Tracking methods"></a>Tracking methods</h3><h4 id="Simple-Kanade–Lucas–Tomasi-feature-tracker"><a href="#Simple-Kanade–Lucas–Tomasi-feature-tracker" class="headerlink" title="Simple Kanade–Lucas–Tomasi feature tracker"></a>Simple Kanade–Lucas–Tomasi feature tracker</h4><p>The Kanade–Lucas–Tomasi (KLT)特征追踪器是一种特征提取方法。KLT使用空间强度信息来引导位置的搜索，从而找到最佳匹配位置。算法如下：</p>
+<ol>
+<li><p>找到一个好的点来追踪(Harris corner)</p>
+<p>Harris corner点有较大特征值，所以光流方程可解</p>
+</li>
+<li><p>对每个Harris corner计算帧之间的运动（平移或仿射）</p>
+</li>
+<li><p>在连续帧内连接运动向量来得到每个Harris corner的轨迹。</p>
+<p>如果新点周围和旧点差距太大，则抛弃这些点</p>
+</li>
+<li><p>对每10或15帧应用Harris检测器，引入新的Harris点。</p>
+</li>
+</ol>
+<p>下图的箭头表示Harris corners的运动追踪。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/18.2.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/18.3.png"></p>
+<h2 id="2D-Transformations"><a href="#2D-Transformations" class="headerlink" title="2D Transformations"></a>2D Transformations</h2><h3 id="Types-of-2D-Transformations"><a href="#Types-of-2D-Transformations" class="headerlink" title="Types of 2D Transformations"></a>Types of 2D Transformations</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/18.4.png"></p>
+<p>有多种类型的2D转换。可以通过摄像机（放置位置、移动、视角…）和物体来选择正确的2D转换。上图是几种2D转换的例子：</p>
+<ul>
+<li>平移(translation)变换（例如，固定吊顶相机）</li>
+<li>相似变换（例如，篮球赛固定相机）</li>
+<li>仿射变换（例如，行人检测中的人）</li>
+<li>射影变换（例如，移动相机）</li>
+</ul>
+<h3 id="Translation"><a href="#Translation" class="headerlink" title="Translation"></a>Translation</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/18.5.png"></p>
+<p>平移运动是一个点平移到另一个点。假设我们有一个在左边$(x,y)$的点$m$。应用平移运动将$m$从点$(x,y)$移动到$(x’,y’)$<br>$$<br>x’&#x3D;x+b_1\<br>y’&#x3D;y+b_2<br>$$<br>可以写成用其次坐标的矩阵变换：<br>$$<br>\left(\begin{matrix}<br>x’\<br>y’<br>\end{matrix}\right)<br>&#x3D;\left(\begin{matrix}<br>1&amp;0&amp;b_1\<br>0&amp;1&amp;b_2<br>\end{matrix}\right)<br>\left(\begin{matrix}<br>x\<br>y\<br>1<br>\end{matrix}\right)<br>$$<br>定义$W$<br>$$<br>W(x;p)&#x3D;\left(\begin{matrix}<br>1&amp;0&amp;b_1\<br>0&amp;1&amp;b_2<br>\end{matrix}\right)<br>$$<br>其中因子向量$p&#x3D;\left(\begin{matrix}<br>b_1\<br>b_2<br>\end{matrix}\right)$</p>
+<p>则$W$对$p$的偏导数为<br>$$<br>\frac{\partial W}{\partial p}(x;p)&#x3D;\left(\begin{matrix}<br>1&amp;0\<br>0&amp;1<br>\end{matrix}\right)<br>$$<br>上式被称作雅克比行列式(Jacobian)</p>
+<h3 id="Similarity-Motion"><a href="#Similarity-Motion" class="headerlink" title="Similarity Motion"></a>Similarity Motion</h3><p>相似运动是一种刚体运动，包括缩放和平移。</p>
+<p>我们可以定义相似性为<br>$$<br>x’&#x3D;ax+b_1\<br>y’&#x3D;ay+b_2<br>$$<br>定义$W,p$<br>$$<br>W&#x3D;\left(\begin{matrix}<br>a&amp;0&amp;b_1\<br>0&amp;a&amp;b_2<br>\end{matrix}\right)\<br>p&#x3D;\left(\begin{matrix}<br>a&amp;b_1&amp;b_2<br>\end{matrix}\right)^T<br>$$<br>则$W$对$p$的偏导数，即雅克比行列式(Jacobian)为<br>$$<br>\frac{\partial W}{\partial p}(x;p)&#x3D;\left(\begin{matrix}<br>x&amp;1&amp;0\<br>y&amp;0&amp;1<br>\end{matrix}\right)<br>$$</p>
+<h3 id="Affine-motion"><a href="#Affine-motion" class="headerlink" title="Affine motion"></a>Affine motion</h3><p>仿射运动包括放缩，旋转，平移。我们可以表达为<br>$$<br>x’&#x3D;a_1x+a_2y+b_1\<br>y’&#x3D;a_3x+a_4y+b_1<br>$$<br>定义$W,p$<br>$$<br>W&#x3D;\left(\begin{matrix}<br>a_1&amp;a_2&amp;b_1\<br>a_3&amp;a_4&amp;b_2<br>\end{matrix}\right)\<br>p&#x3D;\left(\begin{matrix}<br>a_1&amp;a_2&amp;b_1&amp;a_3&amp;a_4&amp;b_2<br>\end{matrix}\right)^T<br>$$<br>则$W$对$p$的偏导数，即雅克比行列式(Jacobian)为<br>$$<br>\frac{\partial W}{\partial p}(x;p)&#x3D;\left(\begin{matrix}<br>x&amp;y&amp;1&amp;0&amp;0&amp;0\<br>0&amp;0&amp;0&amp;x&amp;y&amp;1<br>\end{matrix}\right)<br>$$</p>
+<h2 id="Iterative-KLT-tracker"><a href="#Iterative-KLT-tracker" class="headerlink" title="Iterative KLT tracker"></a>Iterative KLT tracker</h2><h3 id="Problem-formulation"><a href="#Problem-formulation" class="headerlink" title="Problem formulation"></a>Problem formulation</h3><p>给定视频顺序，找到对应每帧相连的变化顺序。要求能够处理任意类型的运动。</p>
+<h3 id="Approach"><a href="#Approach" class="headerlink" title="Approach"></a>Approach</h3><p>与KLT追踪器不同之处在于连接帧的方式：用特征数据和线性相似直接解决相关的变换，而不是用光流连接运动向量并追踪运动。这种方式允许我们处理更加复杂（例如，仿射和投射）转换，并更加稳健的连接物体。</p>
+<p>步骤：</p>
+<ol>
+<li><p>用Harris corner检测找到特征</p>
+</li>
+<li><p>对于每个在位置$x&#x3D;[x,y]^T$的特征：选择一个特征描述子，并用这个描述子创建一个特征的初始模板（常用附近的像素）：$T(x)$</p>
+</li>
+<li><p>求出一个$p$，能够最小化下一帧中在$x_2&#x3D;W(x;p)$周围（假设是在特征的新位置）的特征描述的错误。用公式描述则是<br>$$<br>\sum_x[T(W(x;p))-T(x)]^2<br>$$</p>
+</li>
+<li><p>迭代的重复以上步骤，将帧之间相连接，随着转换的不断应用，储存特征的坐标。这样能够得到关于物体如何在帧之间移动的测量。</p>
+</li>
+<li><p>像之前一样，每10-15帧引入一个新Harris corner来加入新特征，去除之前不好的特征。</p>
+</li>
+</ol>
+<h3 id="Math"><a href="#Math" class="headerlink" title="Math"></a>Math</h3><p>在上面第三步中，我们实际上可以近似计算$p$。假设有一个关于$p,p_0$的初始猜测，其中$p&#x3D;p_0+\Delta p$</p>
+<p>现在<br>$$<br>E&#x3D;\sum_x[T(W(x;p))-T(x)]^2&#x3D;\sum_x[T(W(x;p_0+\Delta p))-T(x)]^2<br>$$<br>使用泰勒逼近，我们可以看出错误项约等于<br>$$<br>E\approx \sum_x[T(W(x;p_0))+\nabla T\frac{\partial W}{\partial p}\Delta p-T(x)]^2<br>$$<br>为了最小化此项，我们对$p_0$求偏导，并设为0，求出$p_0$<br>$$<br>\frac{\partial E}{\partial p}\approx\sum_x[\nabla T(\frac{\partial W}{\partial p})^T][T(W(x;p_0))+\nabla T\frac{\partial W}{\partial p}\Delta p-T(x)]&#x3D;0\<br>\Delta p&#x3D;H^{-1}\sum_x[\nabla T(\frac{\partial W}{\partial p})^T][T(x)-T(W(x;p_0))]\<br>H&#x3D;\sum_x[\nabla T\frac{\partial W}{\partial p}]^T[\nabla T\frac{\partial W}{\partial p}]<br>$$<br>迭代地设置$p_0&#x3D;p_0+\Delta p$，我们可以最终收敛于一个精确的、最小化错误值的$p$，告诉我们转换的类型。</p>
+<h3 id="Link-to-Harris-Corner-Detection"><a href="#Link-to-Harris-Corner-Detection" class="headerlink" title="Link to Harris Corner Detection"></a>Link to Harris Corner Detection</h3><p>对平移运动，<br>$$<br>\frac{\partial W}{\partial p}(x;p)&#x3D;\left(\begin{matrix}<br>1&amp;0\<br>0&amp;1<br>\end{matrix}\right)<br>$$<br>容易得到，<br>$$<br>H&#x3D;\left(\begin{matrix}<br>I_x^2&amp;I_xI_y\<br>I_xI_y&amp;I_y^2<br>\end{matrix}\right)<br>$$<br>但是，Harris corner检测器假设只要$H​$有大特征值（即稳定可逆），那么该点就是一个角。因此，角可能是一个用于计算平移的好特征，恰恰因为角计算出的矩阵是稳定可逆的。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/25/Lecture%2017%20Motion/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/08/25/Lecture%2017%20Motion/" class="post-title-link" itemprop="url">CS131 Lecture 17 Motion</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-25 23:36:41" itemprop="dateCreated datePublished" datetime="2018-08-25T23:36:41+08:00">2018-08-25</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-02 00:52:51" itemprop="dateModified" datetime="2018-09-02T00:52:51+08:00">2018-09-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Lecture-17-Motion"><a href="#Lecture-17-Motion" class="headerlink" title="Lecture 17 Motion"></a>Lecture 17 Motion</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>本节课我们会将之前的技术与新方法结合，追踪多张图片下像素的移动，应用方面有自动驾驶汽车、机器人、安全系统等</p>
+<h2 id="Optical-Flow-and-Key-Assumptions"><a href="#Optical-Flow-and-Key-Assumptions" class="headerlink" title="Optical Flow and Key Assumptions"></a>Optical Flow and Key Assumptions</h2><h3 id="Optical-Flow"><a href="#Optical-Flow" class="headerlink" title="Optical Flow"></a>Optical Flow</h3><p>光流即像素随时间的运动。光流的目的是通过观察两张图片$I_0$和$I_1$，对每个在时间$t_0$到$t_1$之间的每个像素产生一个运动矢量。但是，光流只能呈现图像模式的<strong>明显</strong>运动，这在下一节Assumptions and Limitations有解释，</p>
+<h3 id="Assumptions-and-Limitations"><a href="#Assumptions-and-Limitations" class="headerlink" title="Assumptions and Limitations"></a>Assumptions and Limitations</h3><h4 id="Apparent-Motion"><a href="#Apparent-Motion" class="headerlink" title="Apparent Motion"></a>Apparent Motion</h4><p>在二维图像中，光流只能呈现亮度模式的明显运动，意味着移动矢量是由各种行动产生的。例如：变化的光照可以使得静止的物体产生强运动矢量，但进入或者移出屏幕的运动无法被2D光流的运动矢量捕捉。光流处理问题的一个例子是孔径问题。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.1.png"></p>
+<p>孔径问题指光流无法代表边缘运动的结果，可能导致移动测量错误。例如图中线条实际上是向左下移动，但是由于孔径，看起来像是向右移动。</p>
+<h4 id="Brightness-Consistency"><a href="#Brightness-Consistency" class="headerlink" title="Brightness Consistency"></a>Brightness Consistency</h4><p>光流只能呈现明显的运动，为了正确的检测图中点的运动，我们必须假设这些点在帧之间的亮度相等。亮度一致性(Brightness Consistency)方程如下：<br>$$<br>I(x,y,t-1)&#x3D;I(x+u(x,y),y+v(x,y),t)<br>$$<br>其中$u(x,y)$表示点的水平运动，$v(x,y)$表示点的垂直运动。</p>
+<h4 id="Small-Motion"><a href="#Small-Motion" class="headerlink" title="Small Motion"></a>Small Motion</h4><p>光流假设点在连续的图像之间不会移动太多。因为帧之间的时间极短，所以假设基本成立。但是在物体距离摄像机过远或过近的时候，这个假设不再成立。接下来我们用亮度一致性方程来证明假设的必要性。首先用泰勒展开式线性化等式右侧：<br>$$<br>I(x+u(x,y),y+v(x,y),t)\approx I(x,y,t-1) +I_x·u(x,y)+I_y·v(x,y)+I_t<br>$$<br>线性化允许我们解得运动向量$u$和$v$，但在这种情况下我们只包含泰勒展开式的第一项。当帧之间的运动幅度较大时，式子无法步骤整个运动情况，导致不精确的$u$和$v$，因此假设有必要。</p>
+<h4 id="Spatial-Coherence"><a href="#Spatial-Coherence" class="headerlink" title="Spatial Coherence"></a>Spatial Coherence</h4><p>空间相干性是一个关于相同物体内邻近的像素会移动到一起的假设。其必要性证明如下：<br>$$<br>\begin{align}<br>I(x+u(x,y),y+v(x,y),t)\approx I(x,y,t-1) +I_x·u(x,y)+I_y·v(x,y)+I_t \<br>I(x+u(x,y),y+v(x,y),t)- I(x,y,t-1) &#x3D;I_x·u(x,y)+I_y·v(x,y)+I_t<br>\end{align}<br>$$<br>可得到<br>$$<br>\begin{align}<br>I_x·u+I_y·v+I_t\approx 0\<br>\nabla I·[u\space v]^T +I_t &#x3D;0<br>\end{align}<br>$$<br>现在我们有足够的方程解每个单像素中的$u$和$v$。假设像素可以移动到一起允许我们用有相同的$[u\space v]$的多个公式，使得我们能够解出邻居像素的移动。</p>
+<h2 id="Lucas-Kanade"><a href="#Lucas-Kanade" class="headerlink" title="Lucas-Kanade"></a>Lucas-Kanade</h2><p>从上式中得到图像的移动，至少每个像素需要两个方程。Lucas-Kanade技术依赖于一个附加约束–空间相干性来完成图像追踪。</p>
+<p>通过一个大小为$k\times k$的窗来对像素应用空间相干性约束。假设窗内的邻居像素有相同的$(u,v)$。例如，在$5\times5$窗内应用以下式子：</p>
+<p>![17.2](D:\Machine Learning\cs131\Lecture16_17\17.2.png)</p>
+<p>这产生了一个$Ad&#x3D;b$形式的线性方程的过约束系统。用最小二乘法解过拟合系统，我们减少了解$(A^TA)d&#x3D;A^Tb$中的$d$的复杂度。更准确的说，需要求解的系统系统被简化至</p>
+<p>![17.3](D:\Machine Learning\cs131\Lecture16_17\17.3.png)</p>
+<h3 id="Condition-for-an-Existing-Solution"><a href="#Condition-for-an-Existing-Solution" class="headerlink" title="Condition for an Existing Solution"></a>Condition for an Existing Solution</h3><p>为了能解这个系统，需要满足以下条件：</p>
+<ul>
+<li><p>$A^TA$要求可逆</p>
+</li>
+<li><p>$A^TA$不能太小以至于引起噪音。</p>
+<p>$A^TA$的特征向量$\lambda_1$和$\lambda_2$不能过小</p>
+</li>
+<li><p>$A^TA$应该适中</p>
+<p>例如：$A^TA$的特征向量$\lambda_1$和$\lambda_2$不能过大</p>
+</li>
+</ul>
+<h3 id="Geometric-Interpretation"><a href="#Geometric-Interpretation" class="headerlink" title="Geometric Interpretation"></a>Geometric Interpretation</h3><p>很明显，之前的最小二乘方程组产生了一个二阶矩阵$M&#x3D;A^TA$。事实上，这是角探测的哈里斯矩阵。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.4.png"></p>
+<p>我们可以把上面的条件联系起来，以解出运动场$[u\space v]$来追踪哈里斯矩阵$M$检测到的角。$M&#x3D;A^TA$的特征向量和一个区域可能的边缘特征值合方向、大小联系。</p>
+<p>综上，很明显Lucas-Kanade的光流估计的最理想区域是一个角。若两个$\lambda$均过小，则这个区域过于平坦。若一个$\lambda$远大于另一个，则会产生孔径问题，无法得到正确的光流。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.5.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.6.png"></p>
+<p>以上树的三张图从左到右分别代表：$\lambda_1$大而$\lambda_2$小、两个$\lambda$都小（低语义区）、两个$\lambda$都大（高语义区）</p>
+<h3 id="Error-in-Lucas-Kanade"><a href="#Error-in-Lucas-Kanade" class="headerlink" title="Error in Lucas-Kanade"></a>Error in Lucas-Kanade</h3><p>Lucas-Kanade受限于光流假设。假设$A^TA$可逆且图中没有太多噪音，错误仍然在以下情况产生：</p>
+<ul>
+<li>亮度一致性不满足，意味着随着时间改变像素的强度可能改变</li>
+<li>移动量过大或者随着时间不会逐渐改变</li>
+<li>未满足空间相干性，意味着相邻像素没有随之改变。这个可能是由不合适大小的窗造成的（即选择了不好的$k$）。</li>
+</ul>
+<h3 id="Improving-Accuracy"><a href="#Improving-Accuracy" class="headerlink" title="Improving Accuracy"></a>Improving Accuracy</h3><p>从上面所做的许多假设中，Lucas-Kanade可以通过包含之前在亮度一致方程的泰勒展开近似中得到的更高阶项来提高其准确性。这个放松了之前的假设。现在，待解决的问题是：<br>$$<br>I(x+u,y+v)&#x3D;I(x,y)+I_xu+I_yv+higher\space order\space terms-I_{t-1}<br>$$<br>这是一个找多项式根的问题，可以用牛顿迭代方法解决。</p>
+<p>总的来说，精确的迭代Lucas-Kanade算法可以被应用：</p>
+<ol>
+<li>解Lucas-Kanade方程，估计每个像素的速度</li>
+<li>用被估计的光流区域和图像变形技术，将$I(t-1)$变化到$I(t)$</li>
+<li>重复至收敛</li>
+</ol>
+<h2 id="Horn-Schunk"><a href="#Horn-Schunk" class="headerlink" title="Horn-Schunk"></a>Horn-Schunk</h2><h3 id="Horn-Schunk-Method-for-Optical-Flow"><a href="#Horn-Schunk-Method-for-Optical-Flow" class="headerlink" title="Horn-Schunk Method for Optical Flow"></a>Horn-Schunk Method for Optical Flow</h3><p>Horn-Schunk方法将光流公式化为以下全局能量函数，并尽量最小化$u(x,y)$和$v(x,y)$。<br>$$<br>E&#x3D;\iint[(I_xu+I_yv+I_t)^2+\alpha^2(||\nabla u||^2+||\nabla v||^2)]dxdy<br>$$<br>上式第一项反应了光照恒定假设，根据假设$I_xu+I_yv+I_t$应该等于0。这项存在于式子中是为了保证这个值尽可能接近于0。</p>
+<p>第二项反应了小移动假设。这项存在于式子中为了鼓励在位置改变较小的情况下，更加光滑的流。$\alpha$是正规化常数，用于控制光滑度，值越大流越光滑。</p>
+<p>为了最小化能量函数，我们对$u$和$v$求导并等于0。得到以下两个等式<br>$$<br>\begin{align}<br>I_x(I_xu+I_yv+I_t)+\alpha^2\Delta u&#x3D;0\<br>I_y(I_xu+I_yv+I_t)+\alpha^2\Delta v&#x3D;0<br>\end{align}\<br>\Delta&#x3D;\frac{\partial}{\partial x^2}+\frac{\partial}{\partial y^2}<br>$$<br>其中$\Delta$为拉格朗日算子，在实际计算中为<br>$$<br>\Delta u(x,y)&#x3D;\overline u(x,y)-u(x,y)<br>$$<br>其中$\overline u(x,y)$是$u$在$(x,y)$附近的加权平均。用(11)式带入得到：<br>$$<br>\begin{align}<br>(I_x^2+\alpha^2)u+I_xI_yv&#x3D;\alpha^2\overline u-I_xI_t\<br>(I_y^2+\alpha^2)u+I_xI_yu&#x3D;\alpha^2\overline v-I_yI_t<br>\end{align}\<br>$$<br>是一个关于$u$和$v$的线性方程。</p>
+<h3 id="Iterative-Horn-Schunk"><a href="#Iterative-Horn-Schunk" class="headerlink" title="Iterative Horn-Schunk"></a>Iterative Horn-Schunk</h3><p>因为$u$和$v$的值取决于$(x,y)$邻近的光流值，所以我们需要在每次邻居更新后，重新计算$u$和$v$：<br>$$<br>\begin{align}<br>u^{k+1}&#x3D;\overline u^k-\frac{I_x(I_x\overline u^k+I_y\overline v^k+I_t)}{\alpha^2+I_x^2+I_y^2}\<br>v^{k+1}&#x3D;\overline v^k-\frac{I_y(I_x\overline u^k+I_y\overline v^k+I_t)}{\alpha^2+I_x^2+I_y^2}<br>\end{align}\<br>$$<br>其中上标$k$代表迭代次数</p>
+<h3 id="Smoothness-Regularization"><a href="#Smoothness-Regularization" class="headerlink" title="Smoothness Regularization"></a>Smoothness Regularization</h3><p>光滑度正规化项$||\nabla u||^2+||\nabla v||^2$推进最小化邻近点之间的光流变化。这样在边缘区域，点会流向最临近的点，解决孔径问题。</p>
+<h3 id="Dense-Optical-Flow-with-Michael-Black’s-Method"><a href="#Dense-Optical-Flow-with-Michael-Black’s-Method" class="headerlink" title="Dense Optical Flow with Michael Black’s Method"></a>Dense Optical Flow with Michael Black’s Method</h3><p>Michael Black拓展了Horn-Schunk方法。原来的正规化项$||\nabla u||^2+||\nabla v||^2$如下图，是一个二次函数。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.7.png"></p>
+<p>现在用以下函数替代</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.8.png"></p>
+<h2 id="Pyramids-for-Large-Motion"><a href="#Pyramids-for-Large-Motion" class="headerlink" title="Pyramids for Large Motion"></a>Pyramids for Large Motion</h2><p>返回之前的假设，我们要求在帧之间像素只能有小位移。所以当位移较大时，算法可能会崩溃。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.9.png"></p>
+<p>注意上图，Lucas-Kanade无法找到树干流的一致向量。为了解决这个问题，我们可以和之前的滑动窗特征检测器一样，建立一个图像尺度逐渐下降的金字塔。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.10.png"></p>
+<p>现在，当我们想找到流向量，可以采用帧之间位移更小的低分辨率采样版本。以下是使用了金字塔后的树干流向量：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.11.png"></p>
+<p>注意现在流向量大多数都指向同一方向，即树干整体移动方向一致。</p>
+<h2 id="Common-Fate"><a href="#Common-Fate" class="headerlink" title="Common Fate"></a>Common Fate</h2><p>我们可以通过图像中部分的共同性来获得更多信息，共同性即在图像给定的切割中，这部分像素移动方式都相似。我们的目标就是找出有共同性的分割或层。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.12.png"></p>
+<h3 id="Identify-Layers"><a href="#Identify-Layers" class="headerlink" title="Identify Layers"></a>Identify Layers</h3><p>我们通过将图像分割至块，并基于块之间放射运动因子的相似性，将块组合来计算图像的层。对于每个块，找到一个$\alpha$，对于所有在块中的像素$(x,y)$，能够最小化下式：<br>$$<br>Err(\alpha)&#x3D;\sum[I_x(\alpha_1+\alpha_2x+\alpha_3y)+I_x(\alpha_4+\alpha_5x+\alpha_6y)+I_t]^2<br>$$<br>上面的方程由两部分推导而出：</p>
+<ol>
+<li><p>亮度一致方程<br>$$<br>I(x,y,t-1)&#x3D;I(x+u(x,y),y+v(x,y),t)<br>$$</p>
+</li>
+<li><p>仿射运动成分<br>$$<br>I_xu(x,y)+I_xv(x,y)+I_t\approx0<br>$$<br>$I_x,I_y,I_t$是图像关于两个方向和实践的梯度。$u(x,y),v(x,y)$是仿射运动在两个方向上的成分<br>$$<br>\begin{align}<br>u(x,y)&#x3D;\alpha_1+\alpha_2x+\alpha_3y\<br>v(x,y)&#x3D;\alpha_4+\alpha_5x+\alpha_6y<br>\end{align}<br>$$</p>
+</li>
+</ol>
+<p>从此，我们将因子向量$\alpha_i$映射到运动因子空间，并对仿射运动因子向量采用k-means聚类。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.13.png"></p>
+<p>最后k-means聚类的中心是因子$\alpha_1,…,\alpha_6​$，它们最小化了上述错误方程（$Err(\alpha)​$），且代表了元图像块应该聚类为一个层。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/22/Lecture%2016%20Recognizing%20Objects%20by%20Parts/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/08/22/Lecture%2016%20Recognizing%20Objects%20by%20Parts/" class="post-title-link" itemprop="url">CS131 Lecture 16 Recognizing Objects by Parts</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-22 19:49:39" itemprop="dateCreated datePublished" datetime="2018-08-22T19:49:39+08:00">2018-08-22</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-02 00:52:58" itemprop="dateModified" datetime="2018-09-02T00:52:58+08:00">2018-09-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Lecture-16-Recognizing-Objects-by-Parts"><a href="#Lecture-16-Recognizing-Objects-by-Parts" class="headerlink" title="Lecture 16 Recognizing Objects by Parts"></a>Lecture 16 Recognizing Objects by Parts</h1><h2 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h2><p>计算机视觉不止检测物体的分类，还要检测物体的相关信息。例如：</p>
+<ul>
+<li>淘宝以图搜购买链接</li>
+<li>某种蘑菇能不能吃</li>
+<li>…</li>
+</ul>
+<p>通常，计算机视觉需要能够提供物体基本特征之外的信息。</p>
+<h2 id="What-can-computer-recognize-today"><a href="#What-can-computer-recognize-today" class="headerlink" title="What can computer recognize today?"></a>What can computer recognize today?</h2><p>找到特定类别的物体（品牌、地标、书本…），不过只能精确匹配。对于当今的系统来说，找到一个通用的对象要困难得多。</p>
+<h2 id="What’s-next-to-work-on"><a href="#What’s-next-to-work-on" class="headerlink" title="What’s next to work on?"></a>What’s next to work on?</h2><p>计算机视觉尚未达到的主要目标是通用类别识别。即能识别图中所有物体类别。例如：对于一个橘色杯子，我们想要找到咖啡杯，但图像搜索只能找到有橘色物体在同一位置的图片。</p>
+<p>现在的系统无法识别训练集之外的任意物体，而现在有太多的物体类别，很难决定专注于哪个物体。</p>
+<h2 id="Big-Data-from-the-Internet"><a href="#Big-Data-from-the-Internet" class="headerlink" title="Big Data from the Internet"></a>Big Data from the Internet</h2><p>现在互联网上86%的数据都是可视数据，而可视数据不能被自动分析。很多识别问题对机器来说较难，但对于人类来说很简单。当人类找不到答案时也可以简单的求助于他人寻找答案，而机器无法做到，所以当今互联网提供了一个将人类帮助和机器识别结合的环境。</p>
+<h2 id="ImageNet-and-Confusion-Matrices"><a href="#ImageNet-and-Confusion-Matrices" class="headerlink" title="ImageNet and Confusion Matrices"></a>ImageNet and Confusion Matrices</h2><p>既然模型受限于训练集中类的数目，一个可行的方法是拓展训练集中的类的数目。比较有名的数据集有：ImageNet(13M images, 22000 categories), Caltech101(9K images, 101 categories), LabelMe (30k images), SUN (131K images)。</p>
+<p>Deng从PASCAL VOC到ImageNet应用了四种分类模型，发现随着类别数目的提升，精度也随之大幅下降。他将结果画成以下的混淆矩阵(confusion matrix)：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.1.png"></p>
+<p>混淆矩阵在xy轴上画出类别，并衡量类中物体正确分类与否的程度。主要看对角线上格子颜色，颜色越浅，分类器效果越好。</p>
+<p>从图中我们可以看出，分类器需要区分的类越“细”（或越相似），分类错误就越多。例如：区分狗与鸟的错误率比区分鸟的种类要低。</p>
+<h2 id="Challenges-and-Solutions"><a href="#Challenges-and-Solutions" class="headerlink" title="Challenges and Solutions"></a>Challenges and Solutions</h2><h2 id="Semantic-Hierarchy"><a href="#Semantic-Hierarchy" class="headerlink" title="Semantic Hierarchy"></a>Semantic Hierarchy</h2><p>一个解决正确区分相似类的方法是语义层次(semantic hierarchy)。下图即为一个例子。我们创建了一个树结构，它的每个孩子都是父亲的子类。系统将尝试尽量识别到树的深处，即更精确的类。当类更精确时，不确定度也会增加。这个概念称作”hedging”——系统试图识别不确定树中的位置，根据位置做出猜测以得到足够信息，减少错误。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.2.png"></p>
+<p>为了正式定义这个问题，我们假设训练和测试集有同样的数据分布。另外，我们假设我们可以得到一个给出层次结构的后验概率的基本类$g$。接下来，定义一个奖励函数$R(f)$，它给在树更深处的类（更精确的类）更高的分数。再定义一个预计精度函数$A(f)$，它随着我们沿书向下移动（不确定性增加）而降低。我们的问题定义为<br>$$<br>\max_{A(f)\geq 1-\epsilon} R(f)<br>$$<br>其中$\epsilon$是预先设置的常数，表示对所有例子而言，分类器所允许误差。</p>
+<p>为了保证最后方案是最优方案，我们定义一个全局的，固定的，标量参数$\lambda\geq 0$。对每个节点，我们将$\lambda$加入奖励值，然后正规化后验分布。流程如下：</p>
+<ol>
+<li>选择一个$\lambda$</li>
+<li>找到与$\lambda$相关的决策规则$f$</li>
+<li>在验证集上衡量表现</li>
+<li>检查是否$A\approx 1-\epsilon$。不是则重复</li>
+</ol>
+<p>我们可以用二分搜索快速找到$\lambda $</p>
+<h3 id="Fine-grained-Classes"><a href="#Fine-grained-Classes" class="headerlink" title="Fine-grained Classes"></a>Fine-grained Classes</h3><p>现有的方法从图中所有可能的位置选择特征，但是它可能找不到正确的特征。例如：两种相似的鸟区别在于尾巴，但是计算机可能无法找到这是个辨别特征。解决方案是众包(crowd-sourcing)。</p>
+<p>那么，什么是最好的方法来询问一个人群：哪些特征可以区分图像的类别？</p>
+<p><strong>Crowd-sourced bubble games</strong>： 用泡沫来代表特征，利用游戏特性来吸引大量人群为图像标记出主要特征，因为有奖惩系统，所以标记质量也较高。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.3.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/21/Lecture%2015%20Detecting%20Objects%20by%20Parts/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/08/21/Lecture%2015%20Detecting%20Objects%20by%20Parts/" class="post-title-link" itemprop="url">CS131 Lecture 15 Detecting Objects by Parts</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-21 19:53:44" itemprop="dateCreated datePublished" datetime="2018-08-21T19:53:44+08:00">2018-08-21</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-02 00:50:25" itemprop="dateModified" datetime="2018-09-02T00:50:25+08:00">2018-09-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Lecture-15-Detecting-Objects-by-Parts"><a href="#Lecture-15-Detecting-Objects-by-Parts" class="headerlink" title="Lecture 15 Detecting Objects by Parts"></a>Lecture 15 Detecting Objects by Parts</h1><h2 id="Introduction-to-Object-Detection"><a href="#Introduction-to-Object-Detection" class="headerlink" title="Introduction to Object Detection"></a>Introduction to Object Detection</h2><p>之前我们介绍了物体检测，本章将介绍物体检测和定位物体。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.1.png"></p>
+<h3 id="Challenges"><a href="#Challenges" class="headerlink" title="Challenges"></a>Challenges</h3><p>环境改变（光照、视角、物体变形）使得同一类的物体变得不同，以至于难以正确检测并分类。另外，此处介绍的算法只适用于2D空间，例如：无法检测一个物体是否在另一个物体的旁边。还有，以下的算法不能检测物体的具体边缘，只是像上图一样的边界框。</p>
+<h2 id="Current-Object-Detection-Benchmarks-基准点"><a href="#Current-Object-Detection-Benchmarks-基准点" class="headerlink" title="Current Object Detection Benchmarks(基准点)"></a>Current Object Detection Benchmarks(基准点)</h2><p>为了评估一个物体检测器的表现，研究者用标准化的物体检测器基准点。基准点用于保证我们比之前的表现好。</p>
+<h3 id="PASCAL-VOC"><a href="#PASCAL-VOC" class="headerlink" title="PASCAL VOC"></a>PASCAL VOC</h3><p>第一个广泛使用的基准点是PASCAL VOC Challenge, 模式分析、统计建模和计算学习 (the Pattern Analysis, Statistical Modeling, and Computational Learning, PASCAL) Visual Object Classes(VOC) Challenge。PASCAL VOC Challenge测试了20个类，因其测试集的每个类内多变性，所以PASCAL被认为是高质量的基准点。每个测试集对所有物体都有边界框。</p>
+<h3 id="ImageNet-Large-Scale-Visual-Recognition-Challenge"><a href="#ImageNet-Large-Scale-Visual-Recognition-Challenge" class="headerlink" title="ImageNet Large Scale Visual Recognition Challenge"></a>ImageNet Large Scale Visual Recognition Challenge</h3><p>代替PASCAL的基准点是ImageNet大规模视觉识别 (ImageNet Large Scale Visual Recognition Challenge, ILSVR)。ILSVR测试了200种物体，且物体种类更加多样化，一张图中常常有多个物体。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.2.png"></p>
+<h3 id="2-3-Common-Objects-in-Context"><a href="#2-3-Common-Objects-in-Context" class="headerlink" title="2.3 Common Objects in Context"></a>2.3 Common Objects in Context</h3><p>另一个基准点直到今天人仍在使用，在上下文中常见的物体(Common Objects in Context, COCO)。COCO测试了80种物体，但另外测试了物体位置的边界区域。它也进行了物体分割，即物体更加细节的边界。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.3.png"></p>
+<h2 id="Evaluating-Object-Detection"><a href="#Evaluating-Object-Detection" class="headerlink" title="Evaluating Object Detection"></a>Evaluating Object Detection</h2><p>我们通过对比预测和真实情况来评估物体检测算法，其中真实情况是人工标记的。下图中黄框表示真实情况，绿框表示预测。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.4.png"></p>
+<p>比较时，有四种情况：</p>
+<ol>
+<li><p>True Positive (TP)</p>
+<p>预测值与真实值均成功定位，见下图(a)。TP在图中被认为是预测值和真实值的重叠部分大于0.5。重叠部分被定义为预测值和真实值集合的交集。也被称作击中(hits)。</p>
+</li>
+<li><p>False Positive (FP)</p>
+<p>真实值未定位，预测值定位。即预测值和真实值重叠部分小于0.5，见下图(b)。也被称作假警报(false alarms)。</p>
+</li>
+<li><p>True Negative (TN)</p>
+<p>模型找不到真实物体，见下图(c)。也被称作漏掉(misses)。</p>
+</li>
+<li><p>False Negative (FN)</p>
+<p>真实值未定位，预测值也未定位。也被称作正确拒绝(misses)。</p>
+</li>
+</ol>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.5.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.6.png"></p>
+<p>如上图，通常我们想要最小化FP和FN，同时最大化TP和TN。</p>
+<p>我们定义两种衡量尺度：精度(precision)和召回率(recall)。<br>$$<br>Precision&#x3D;\frac{TP}{TP+FP}<br>$$<br>精度可以被视作模型检测到的所有对象中，正确预测的概率。<br>$$<br>Recall&#x3D;\frac{TP}{TP+FN}<br>$$<br>召回率可以被视作所有真实值中被正确检测到的概率。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.7.png"></p>
+<p>上图中所有黄框真实值都被正确检测到了，所以召回率很高。但是，因为有太多FP，所以精度很低。</p>
+<p>对每个用于定义TP的阈值(之前的例子中是0.5)，我们可以衡量精度和召回率，并画出精度-召回率曲线(Precision-Recall, PR curve)。通常，我们想要将PR都最大化。在比较不同模型时可以用到PR曲线，模型越好在曲线在的区域就越大。如下图，Faster-RCNN的效果最好。</p>
+<p>实际应用中，我们常指定一个精度&#x2F;召回率值，然后在这个值下使另外一个值（召回率&#x2F;精度）最大化。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.8.png"></p>
+<h2 id="A-Simple-Sliding-Window-Detector"><a href="#A-Simple-Sliding-Window-Detector" class="headerlink" title="A Simple Sliding Window Detector"></a>A Simple Sliding Window Detector</h2><p>检测问题可以被当作分类问题。我们将窗滑过整张图片，找出窗在的每个位置是否包含物体。如下图，窗滑过的四个位置，只有(d)中包含人。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.9.png"></p>
+<h3 id="Feature-Extraction-and-Object-Representation"><a href="#Feature-Extraction-and-Object-Representation" class="headerlink" title="Feature Extraction and Object Representation"></a>Feature Extraction and Object Representation</h3><p>在Lecture 8中，我们提到过HOG描述子。本章继续用HOG描述子检测物体。首先，我们需要训练一个模板HOG描述子来检测新图像中的物体。一个方法是基于多张已标记的图像的HOG描述子，训练一个分类器，例如：线性支持向量机(Support Vector Machine, SVM)。然后将分类器对新图像的窗进行识别。</p>
+<p>另一个简单的方法是，取得一张平均图像，基于平均图像提取HOG描述子，来创建一个模板。如下图。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.10.png"></p>
+<h3 id="Classifying-Windows"><a href="#Classifying-Windows" class="headerlink" title="Classifying Windows"></a>Classifying Windows</h3><p>在创造一个模板后，接下来我们需要将物体模板和窗的每个位置对比。这里我们直接将模板作为过滤器，在图上滑动。在每个位置，提取该位置的HOG描述子，和模板的描述子进行计算，得到一个相似度分数。若分数超过预先设置的阈值，则含有该物体。</p>
+<p>相似度分数可以简单的用窗HOG描述子和模板描述子的点乘计算。</p>
+<p>现在唯一的问题在于滑动的模板窗的大小。如下图，窗太小只能检测到左图，而漏掉了右图。</p>
+<p><img src="/15.11.png" alt="15.11"><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.11.png">Multi Scale Sliding Window</p>
+<p>为了解决上述窗大小问题，我们建立不同尺寸图片的特征金字塔（如下图）。这样我们无需调整模板的大小，在某个尺寸上产生最大相似度值的窗即为物体所在位置。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.12.png"></p>
+<h2 id="The-Deformable-Parts-Model-DPM"><a href="#The-Deformable-Parts-Model-DPM" class="headerlink" title="The Deformable Parts Model (DPM)"></a>The Deformable Parts Model (DPM)</h2><p>简单的滑窗检测器仍然对物体形状的小变化不够强健，例如：人脸五官的改变，汽车轮子间距等等。我们需要一个新模型解决这个问题。类似于词袋模型，我们可以检测物体的部分而不是整体。最后将部分组合，可以得到一个有些许方差的正确位置。</p>
+<h3 id="Early-Deformation-Model-for-Face-Detection"><a href="#Early-Deformation-Model-for-Face-Detection" class="headerlink" title="Early Deformation Model for Face Detection"></a>Early Deformation Model for Face Detection</h3><p>1973年，研究者创建了下图可变形的装置来检测人脸，中间用弹簧连接。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.13.png"></p>
+<p>这些弹簧标志着两个部分（人脸器官）间有一个相对位置。就像弹簧拉的越长越紧一样，相对于理想位置偏移越大，我们给予的惩罚越大。</p>
+<h3 id="More-General-Deformable-Parts-Models"><a href="#More-General-Deformable-Parts-Models" class="headerlink" title="More General Deformable Parts Models"></a>More General Deformable Parts Models</h3><p>上图可变形装置只适用于人脸检测，对更加通用的可变形部分模型，一个流行的方法是星形模型。如下图，将一些检测器作为根(如$x_1$)，然后将其他部分和根用“弹簧”连接。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.14.png"></p>
+<p>上图右为一个人形检测的例子。蓝框是整个人检测的边界框，也是我们作为根的框。剩下的黄框是人的各个部分检测的边界框，作为和根连接的框。</p>
+<p>在这个例子中，我们已经知道每个部分的大致位置，例如：头应该在人整体位置的上中部。但是在机器学习中，我们可能需要学习应该用到哪些部分（例如检测人时的头手脚），以便于最佳的物体检测。</p>
+<h3 id="Examples-of-Deformable-Parts-Models"><a href="#Examples-of-Deformable-Parts-Models" class="headerlink" title="Examples of Deformable Parts Models"></a>Examples of Deformable Parts Models</h3><p>通常用物体的整体作为根，更小更细节的过滤器来检测每个部分，如下图。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.15.png"></p>
+<p>通常我们会对一个物体的多方向采用一个多成分模型，即有一个整体过滤器和每个方向的多个部分过滤器。但这样只能抵抗轻微的角度改变，对于大幅度的角度改变，我们需要不同的检测器。如下图的汽车检测，每行代表一个方向，左列代表车的整体过滤器，中列代表车的多个部分过滤器。右列代表对每个部分的相对惩罚，其中颜色越浅代表惩罚越大。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.16.png"></p>
+<h3 id="Calculating-Score-for-Deformable-Parts-Models"><a href="#Calculating-Score-for-Deformable-Parts-Models" class="headerlink" title="Calculating Score for Deformable Parts Models"></a>Calculating Score for Deformable Parts Models</h3><p>为了建立一个可变形部分模型，我们需要一个计算分数的方法。首先，我们给整体物体检测器计算一个分数，然后每个部分的分数取决于其变形惩罚。最终分数为整体分数减去所有变形惩罚，这样一个物体整体检测较强但部分变形过大会被大幅度惩罚，具体步骤如下。</p>
+<p>一个有$n$个部分的整体模型被一个$(n+2)$的元组表达：<br>$$<br>\begin{align*}<br>(F_0,P_1,P_2,…,P_n,b)<br>\end{align*}<br>$$<br>其中$F_0$是根过滤器，$P_n$是模型的第$n$个部分，$b$是基元。每个模型部分$P_i$定义为一个元组：<br>$$<br>\begin{align*}<br>(F_i,v_i,d_i)<br>\end{align*}<br>$$<br>其中$F_i$是第$i$个部分的过滤器，$v_i$是部分$i$联系根位置的“锚”的位置，$d_i$定义了每个“锚”的可能位置的变形花费。</p>
+<p>我们在HOG金字塔上计算整体和每个部分过滤器的位置，如下图。我们对每个尺度都运用HOG过滤器以抵抗尺度变化。每个过滤器的位置是响应最大的位置，为了保持尺度不变，我们需要将每个部分的最大响应映射到原始尺度的图像位置上。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.17.png"></p>
+<p>检测分数计算式如下：<br>$$<br>\prod_{i&#x3D;0}^n F_i·\phi(p_i,H)-\sum_{i&#x3D;1}^n d_i(dx_i,dy_i,dx_i^2,dy_i^2)<br>$$</p>
+<p>上式左侧部分是根和其它部分检测分数的累乘。其中$\theta(p_i,H)$定义为过滤器在$p_i$位置的窗的HOG特征向量。$F_i$是第$i(i&gt;0)$个部分过滤器，$i&#x3D;0$代表整体过滤器。</p>
+<p>上式右侧部分是所有部分变形惩罚之和。其中$d_i$表示第$i$部分的惩罚权重，对应大小$dx_i$（相对于“锚”在$x$方向的偏移量），$dy_i$（相对于“锚”在$y$方向的偏移量）。例如：若$d_i&#x3D;(0,0,1,0)$，那么惩罚为$dx_i^2$，相对于“锚”在$x$方向的偏移量的平方。</p>
+<h2 id="The-DPM-Detection-Pipeline"><a href="#The-DPM-Detection-Pipeline" class="headerlink" title="The DPM Detection Pipeline"></a>The DPM Detection Pipeline</h2><p>可变形部分模型流程有许多步骤，如下图。我们必须先用整体过滤器来检测一个物体，接着用部分过滤器来计算检测的整体分数。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.18.png"></p>
+<ol>
+<li><p>产生多个不同尺度的原始图像的拷贝。对这些拷贝储存HOG，以便于后续过滤器应用。</p>
+</li>
+<li><p>对这些图像应用整体过滤器。在整体过滤器检测之上，运用部分过滤器。这部分在整体流程中的位置如下图。<br>$$<br>\prod_{i&#x3D;0}^n F_i·\phi(p_i,H)<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.19.png"></p>
+</li>
+<li><p>计算空间花费（例如：部分相对于整体的变形惩罚），这部分在整体流程中的位置如下图。：<br>$$<br>\sum_{i&#x3D;1}^n d_i(dx_i,dy_i,dx_i^2,dy_i^2)<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.20.png"></p>
+</li>
+<li><p>计算检测分数：<br>$$<br>F_0+\prod_{i&#x3D;1}^n F_i·\phi(p_i,H)-\sum_{i&#x3D;1}^n d_i(dx_i,dy_i,dx_i^2,dy_i^2)<br>$$</p>
+</li>
+<li><p>这些分数代表了在图上每个坐标检测到物体的强度。所以根据分数，画出整张图上的响应分数：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.21.png"></p>
+</li>
+</ol>
+<h2 id="DPM-Detection-Results"><a href="#DPM-Detection-Results" class="headerlink" title="DPM Detection Results"></a>DPM Detection Results</h2><p>DPM模型有几个重要假设：</p>
+<ul>
+<li>一个物体由整体和与之相连的部分之间的关系定义</li>
+<li>检测分数随着根和部分之间的变形减少而提高</li>
+<li>不管物体是否可能是另一个类的，只要检测分数高，就认为检测到物体</li>
+</ul>
+<p>因此，DPM在这些假设不满足时会产生错误。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.22.png"></p>
+<p>在右上图，DPM成功检测到汽车的多个部分和整体（背后的车）。但由于两辆汽车的部分距离过近，所以DPM将两辆汽车认为是一个整体过滤器，产生错误。</p>
+<p>在右下图，DPM成功检测到汽车的整体和部分。但由于DPM没有考虑到不属于汽车的特征（校车顶部），也没有考虑到物体可能属于另一相似类（校车），产生错误。</p>
+<h2 id="DPM-Summary"><a href="#DPM-Summary" class="headerlink" title="DPM Summary"></a>DPM Summary</h2><p><strong>Approach</strong></p>
+<ul>
+<li>手动选择部分集：对每个部分训练一个特殊的检测器</li>
+<li>在部分上训练空间模型</li>
+<li>用连接可能性评估这些部分</li>
+</ul>
+<p><strong>Advantages</strong></p>
+<ul>
+<li>部分有意义</li>
+<li>标准的检测方法可以应用于每个部分</li>
+<li>在许多类中有效运行</li>
+</ul>
+<p><strong>Disadvantages</strong></p>
+<ul>
+<li>需要手动选择部分</li>
+<li>语义驱动部分有时不容易发现</li>
+<li>不能保证没有遗漏重要部分</li>
+<li>切换到别的类时，需要重建模型</li>
+</ul>
+<p>现在DPM已经过时，它的全连接版本被更广泛的使用：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/15.23.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/19/Lecture%2014%20Visual%20Bag%20of%20Words/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/08/19/Lecture%2014%20Visual%20Bag%20of%20Words/" class="post-title-link" itemprop="url">CS131 Lecture 14 Visual Bag of Words</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-19 20:07:32" itemprop="dateCreated datePublished" datetime="2018-08-19T20:07:32+08:00">2018-08-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-02 00:47:42" itemprop="dateModified" datetime="2018-09-02T00:47:42+08:00">2018-09-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Lecture-14-Visual-Bag-of-Words"><a href="#Lecture-14-Visual-Bag-of-Words" class="headerlink" title="Lecture 14 Visual Bag of Words"></a>Lecture 14 Visual Bag of Words</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>首先我们要将图像表现为特征向量形式。接下来创建图像图像的空间形式，观察在低维的图像值。然后将每个图像转换成一组系数，并投影到PCA空间。转换后的数据用分类器分类，例如：K-means、HAC。</p>
+<h3 id="Idea-of-Bag-of-Words"><a href="#Idea-of-Bag-of-Words" class="headerlink" title="Idea of Bag of Words"></a>Idea of Bag of Words</h3><p>词袋模型是一个简化目标表示的方式，将其作为它们子部分的集合，以便于分类之类的操作。例如：一个段落里的单词列表和单词的频率就可以构成一个词袋，我们用词袋来表现段落以便于后续分析。</p>
+<p>在计算机视觉领域，我们将图像考虑为图像特征的集合。同样，结合特征的频率，我们也可以运用词袋模型来进行预测任务，例如：分类、脸部检测。</p>
+<p>词袋模型主要分为两步：</p>
+<ol>
+<li><p>从多张图片上构造特征“字典”或者“单词表”——图像中存在什么通用特征？例如：房间的色系、脸的部分。</p>
+<ul>
+<li><p>提取特征</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.8.png"></p>
+</li>
+<li><p>学习视觉词典</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.9.png"></p>
+</li>
+<li><p>用视觉词典量化特征</p>
+</li>
+</ul>
+</li>
+<li><p>给定一张新图像，将它们转换为我们收集过的特征直方图——我们在1中构建的特征频率。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.10.png"></p>
+</li>
+</ol>
+<h3 id="Origins"><a href="#Origins" class="headerlink" title="Origins"></a>Origins</h3><p>词袋可以看作一个体现在一系列图像或者文档上建立的字典的频率——新数据可以建立这个模型并用于后续预测任务。</p>
+<h2 id="Algorithm-Summary"><a href="#Algorithm-Summary" class="headerlink" title="Algorithm Summary"></a>Algorithm Summary</h2><h3 id="Extracting-Interesting-Features"><a href="#Extracting-Interesting-Features" class="headerlink" title="Extracting Interesting Features"></a>Extracting Interesting Features</h3><p>我们可以选择我们想要的任何特征。例如：简单的将图片分割，用子图片作为特征（如下图）。后者我们可以用SIFT特征的角检测。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.1.png"></p>
+<h3 id="Learning-Visual-Vocabulary"><a href="#Learning-Visual-Vocabulary" class="headerlink" title="Learning Visual Vocabulary"></a>Learning Visual Vocabulary</h3><p>一旦我们找到特征，我们必须将大特征集转换为一套小“主题”。“主题”等于在自然语言分析中的“单词”，也等于计算机视觉中的纹理基元(texton)。</p>
+<p>我们可以用任何聚类技术（通常为K-means，Mean Shift或者HAC也可用）来聚类特征。接下来用每个集群的中心作为纹理基元。纹理集被称作视觉词典，如下图。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.2.png"></p>
+<h3 id="Quantize-Features"><a href="#Quantize-Features" class="headerlink" title="Quantize Features"></a>Quantize Features</h3><p>码矢量(codevector)是纹理基元在这种情况下的同义词，码矢量集构成码本(codebook)。我们用码本量化特征：用相同的方法从新图像中提取特征，接下来用码本将特征向量映射到相近的码矢量标签。</p>
+<p>码本的大小（等于集群的个数）是很重要的超参数。太小会导致码矢量没有代表性；太大会导致码本过拟合。</p>
+<h3 id="Represent-Images-by-Frequencies"><a href="#Represent-Images-by-Frequencies" class="headerlink" title="Represent Images by Frequencies"></a>Represent Images by Frequencies</h3><p>首先，我们可以将数据集中的每张图表现为码矢量频率的直方图（如下图），我们通过特征量化完成。接着，我们有两个选择，取决于问题类型。如果是监督学习，可以基于直方图训练一个分类器。因为这个分类器是在纹理基元上训练的，所以对类之间的区分是很稳定的。如果是非监督学习，我们可以对直方图进一步聚类来找到数据集中的视觉集合。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.3.png"></p>
+<h3 id="Large-Scale-Image-Search"><a href="#Large-Scale-Image-Search" class="headerlink" title="Large-Scale Image Search"></a>Large-Scale Image Search</h3><p>词袋模型在大规模图像检索上十分有效。词袋模型可以帮助构造一个有效检索的数据集。首先，从数据中提取特征。接着用k-means（通常k&#x3D;100000）构造一个词典。接下来我们为每个词计算一个权重。赋予权重可以帮助我们降低特定词的重要性。例如：把”is”, “are”之类的词降低权重。在图像中就是把无用特征赋予低权重。</p>
+<p>词频逆文档频率(Term Frequency Inverse Document Frequency, TF-IDF)通过单词在文件中的频率赋予权重。</p>
+<p>一个单词$j$的逆文档频率(IDF)为：<br>$$<br>IDF&#x3D;log(\frac{Num\space Docs}{Num\space Docs_{j\space appears}})<br>$$<br>图像中bin $j$的值表示为：<br>$$<br>Bin_j&#x3D;frequency_{j\space in\space I}*IDF<br>$$<br>我们可以对文档构造一个词映射的逆文档，以便于快速寻找新图像和数据集中所有图像的相似性。我们只考虑bins和新图像重叠的图像。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.11.png"></p>
+<p>大规模数据检索的缺点在于算法的表现随着数据集的增大而削弱。因为量化误差和不完美的特征检测，词袋模型有时会产生噪声图像相似度。</p>
+<h2 id="Spatial-Pyramid-Matching"><a href="#Spatial-Pyramid-Matching" class="headerlink" title="Spatial Pyramid Matching"></a>Spatial Pyramid Matching</h2><h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><p>空间金字塔匹配(Spatial Pyramid Matching)可以将空间信息结合到模型中。</p>
+<h3 id="Pyramids"><a href="#Pyramids" class="headerlink" title="Pyramids"></a>Pyramids</h3><p>一个金字塔通过多张源图像的拷贝构建。每层金字塔大小是上一层的$1&#x2F;4$。层数越低，分辨率越高。从几何角度看，整个多尺度表现看起来像一个金字塔， 原始图像位于最底部，每个周期导致更小的图像叠加在另外一个图像上。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.4.png"></p>
+<h3 id="Bags-of-Words-BoW-Pyramids"><a href="#Bags-of-Words-BoW-Pyramids" class="headerlink" title="Bags of Words(BoW) + Pyramids"></a>Bags of Words(BoW) + Pyramids</h3><p>空间金字塔匹配将图像分割为越来越细的子区域(sub-region)，并允许我们计算每个子区域的局部特征直方图(BoW)。</p>
+<p>如下图，如果金字塔上方的BoW包含天空特征，中部包含植被和山特征，底层包含山特征，那么整张图很可能被分类为山。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.5.png"></p>
+<h3 id="Some-results"><a href="#Some-results" class="headerlink" title="Some results"></a>Some results</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.6.png"></p>
+<h2 id="Naive-Bayes"><a href="#Naive-Bayes" class="headerlink" title="Naïve Bayes"></a>Naïve Bayes</h2><h3 id="Basic-Idea"><a href="#Basic-Idea" class="headerlink" title="Basic Idea"></a>Basic Idea</h3><p>一旦我们产生了一个视觉词直方图，我们可以用朴素贝叶斯(Naïve Bayes)来对直方图进行分类。我们简单的衡量一个给定的视觉词是否存在，然后假定一个视觉词的存在&#x2F;缺失和给定类的每个视觉词条件独立。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.7.png"></p>
+<p>如上图，考虑一些视觉词直方图$X$，$x_i$是视觉词$i$在直方图中的总和。我们只在意视觉词$i$是否存在，即$x_i\in {0,1}$</p>
+<h3 id="Prior"><a href="#Prior" class="headerlink" title="Prior"></a>Prior</h3><p>$P(c)$是在所有类中出现类$c$的概率。所以对总共$m$个物体类，我们有<br>$$<br>\sum_{i&#x3D;1}^m P(c)&#x3D;1<br>$$<br>对于一个用直方图$x$表现的图像和一些物体类$c$，我们可以计算<br>$$<br>P(x|c)&#x3D;\prod_{i&#x3D;1}^m P(x_i|c)<br>$$</p>
+<h3 id="Posterior"><a href="#Posterior" class="headerlink" title="Posterior"></a>Posterior</h3><p>现在我们可以用贝叶斯理论(Bayes Theorem)来计算图像$x$属于类$c_j$的概率：<br>$$<br>P(c|x)&#x3D;\frac{P(c)P(x|c)}{\sum_{c’} P(c’)P(x|c’)}<br>$$<br>$c’$表示所有类。拓展分子和分母，我们可以重写方程：<br>$$<br>P(c|x)&#x3D;\frac{P(c)\prod_{i&#x3D;1}^m P(x_i|c)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$</p>
+<h3 id="Classification"><a href="#Classification" class="headerlink" title="Classification"></a>Classification</h3><p>为了将用直方图$x$表现的图像分类，我们简单的找到能够最大化方程(6)的类$c^*$：<br>$$<br>c^*&#x3D;\arg\max_c P(c|x)<br>$$<br>因为公式中含有大量的小概率累乘，所以可能会产生一个接近于0的不稳定值。因此，我们改用logs计算概率：<br>$$<br>c^*&#x3D;\arg\max_clogP(c|x)<br>$$<br>现在我们考虑两个类$c_1$和$c_2$：<br>$$<br>P(c_1|x)&#x3D;\frac{P(c_1)\prod_{i&#x3D;1}^m P(x_i|c_1)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$<br>和<br>$$<br>P(c_2|x)&#x3D;\frac{P(c_2)\prod_{i&#x3D;1}^m P(x_i|c_2)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$<br>因为分母是固定的，所以我们计算最大值时可以忽视分母。即($\propto$是正比于的意思)<br>$$<br>P(c_1|x)\propto P(c_1)\prod_{i&#x3D;1}^m P(x_i|c_1)<br>$$<br>和<br>$$<br>P(c_2|x)\propto P(c_2)\prod_{i&#x3D;1}^m P(x_i|c_2)<br>$$<br>对于类$c$<br>$$<br>P(c|x)\propto P(c)\prod_{i&#x3D;1}^m P(x_i|c)<br>$$<br>用上logs：<br>$$<br>logP(c|x)\propto logP(c)+\sum_{i&#x3D;1}^m logP(x_i|c)<br>$$<br>现在，分类任务变成<br>$$<br>\begin{align*}<br>c^*&amp;&#x3D;\arg\max_c P(c|x) \<br>&amp;&#x3D;\arg\max_c logP(c|x)\<br>&amp;&#x3D;\arg\max_c logP(c) +\sum_{i&#x3D;1}^m logP(x_i|c)<br>\end{align*}<br>$$</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/16/Lecture%2013%20Face%20Recognition%20and%20LDA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/08/16/Lecture%2013%20Face%20Recognition%20and%20LDA/" class="post-title-link" itemprop="url">CS131 Lecture 13 Face Recognition and LDA</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-16 14:25:45" itemprop="dateCreated datePublished" datetime="2018-08-16T14:25:45+08:00">2018-08-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-02 00:46:16" itemprop="dateModified" datetime="2018-09-02T00:46:16+08:00">2018-09-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>#Lecture 13 Face Recognition and LDA </p>
+<h2 id="Introduction-to-Facial-Recognition"><a href="#Introduction-to-Facial-Recognition" class="headerlink" title="Introduction to Facial Recognition"></a>Introduction to Facial Recognition</h2><h3 id="Applications"><a href="#Applications" class="headerlink" title="Applications"></a>Applications</h3><ul>
+<li>数字摄影：聚焦人脸</li>
+<li>监视器</li>
+<li>组织相册：将相同的人放在同一相册</li>
+<li>人物追踪</li>
+<li>动作和表情：构建基于心情互动的智能设备</li>
+<li>安全和战争：检测特殊人物、敌军</li>
+<li>电话会议：提供正在视频的人的信息</li>
+</ul>
+<h3 id="A-Key-Distinction-Detection-vs-Recognition"><a href="#A-Key-Distinction-Detection-vs-Recognition" class="headerlink" title="A Key Distinction: Detection vs. Recognition"></a>A Key Distinction: Detection vs. Recognition</h3><p><strong>Face Detection</strong>: 检测照片是否包含人脸和照片上人脸的位置</p>
+<p><strong>Face Recognition</strong>: 检测照片包含<em>谁</em>的脸</p>
+<h3 id="Space-of-Faces"><a href="#Space-of-Faces" class="headerlink" title="Space of Faces"></a>Space of Faces</h3><p>如果我们考虑一张大小为$m\times n$灰度图，这张图可以用一个在高维空间$R^{mn}$上的点表示。一张图不止包含脸，所以脸只占了相对小的子空间。我们的任务就是对脸的子空间建模。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.1.png"></p>
+<p>我们计算出K维子空间，这样数据点在子空间的投影在所有子空间中都有最大的方差。这个低维子空间捕捉了脸部关键样貌特点。    </p>
+<h2 id="The-Eigenfaces-Algorithm"><a href="#The-Eigenfaces-Algorithm" class="headerlink" title="The Eigenfaces Algorithm"></a>The Eigenfaces Algorithm</h2><h3 id="Key-Ideas-and-Assumptions"><a href="#Key-Ideas-and-Assumptions" class="headerlink" title="Key Ideas and Assumptions"></a>Key Ideas and Assumptions</h3><ul>
+<li>假设大多数脸部图像都位于低维子空间，由最大方差的前$k$个方向决定</li>
+<li>用PCA检测旋转子空间的向量或特征面</li>
+<li>将所有数据集中的脸部图像表现为特征面的线性组合，特征面被定义为SVD分解的主成份</li>
+</ul>
+<h4 id="What-are-eigenfaces"><a href="#What-are-eigenfaces" class="headerlink" title="What are eigenfaces?"></a>What are eigenfaces?</h4><p>特征面是最大方差方向的特征向量的视觉呈现。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.6.png"></p>
+<h3 id="Training-Algorithm"><a href="#Training-Algorithm" class="headerlink" title="Training Algorithm"></a>Training Algorithm</h3><ol>
+<li><p>排列训练图像：$x_1,…,x_n$</p>
+</li>
+<li><p>计算平均脸：<br>$$<br>\mu&#x3D;\frac1N \sum x_i<br>$$</p>
+</li>
+<li><p>计算协方差矩阵：<br>$$<br>\Sigma&#x3D;\frac1N X_cX_c^T<br>$$</p>
+</li>
+<li><p>用PCA计算协方差矩阵$\Sigma$的特征向量</p>
+</li>
+<li><p>计算每个训练图像$x_i$的投影<br>$$<br>x_i\rightarrow (x_i^c·\phi_1,x_i^c·\phi_2,…,x_i^c·\phi_k)\equiv(a_1,a_2,…,a_k)<br>$$<br>其中$\phi_i$是第$i$个特征向量。</p>
+</li>
+<li><p>重构的脸$x_i\approx \mu+a_1·\phi_1+…+a_k·\phi_k$</p>
+</li>
+</ol>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.7.png"></p>
+<h4 id="Why-can-we-do-this"><a href="#Why-can-we-do-this" class="headerlink" title="Why can we do this?"></a>Why can we do this?</h4><p>因为特征值（特征向量的方差）随着主成份数目的增加迅速下降</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.8.png"></p>
+<h4 id="Reconstruction-and-Error"><a href="#Reconstruction-and-Error" class="headerlink" title="Reconstruction and Error"></a>Reconstruction and Error</h4><p>我们只需要前$k$个特征面用于减少维度。特征面越少损失越多，脸部越不明显。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.9.png"></p>
+<h3 id="Testing-Algorithm"><a href="#Testing-Algorithm" class="headerlink" title="Testing Algorithm"></a>Testing Algorithm</h3><ol>
+<li><p>取查询图像$t$</p>
+</li>
+<li><p>映射至特征向量：<br>$$<br>t\rightarrow((t-\mu)·\phi_1,(t-\mu)·\phi_2,…,(t-\mu)·\phi_k)\equiv(w_1,w_2,..,w_k)<br>$$</p>
+</li>
+<li><p>比较投影$w$和所有$N$个训练投影。用欧几里德距离和KNN算法输出标签。</p>
+</li>
+</ol>
+<h3 id="Advantages-and-Disadvantages"><a href="#Advantages-and-Disadvantages" class="headerlink" title="Advantages and Disadvantages"></a>Advantages and Disadvantages</h3><p><strong>Advantages</strong></p>
+<ul>
+<li>这个方法不需要预先知道脸部、表情信息</li>
+<li>快速、全局最优</li>
+</ul>
+<p><strong>Disadvantages</strong></p>
+<ul>
+<li>要求小心控制的数据<ol>
+<li>所有脸部必须集中在框架。否则结果噪音大</li>
+<li>图像必须大小相同</li>
+<li>对脸的角度敏感</li>
+</ol>
+</li>
+<li>方法不需要预先知识<ol>
+<li>脸的类别之间没有差别</li>
+<li>PCA不考虑与脸相关的标签。因此它可能将不同的脸对应到相同的子空间，使得分类器难以区别这些脸。</li>
+</ol>
+</li>
+<li>PCA投影在从低维重构上可能是最优的，但在在辨别方面不是最优的。</li>
+</ul>
+<h3 id="Beyond-Facial-Recognition-Expressions-and-Emotions"><a href="#Beyond-Facial-Recognition-Expressions-and-Emotions" class="headerlink" title="Beyond Facial Recognition: Expressions and Emotions"></a>Beyond Facial Recognition: Expressions and Emotions</h3><p>这项技术也可以用于检测表达和情绪，且算法不改变。</p>
+<p>高兴↓</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.10.png"></p>
+<p>厌恶↓</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.11.png"></p>
+<h2 id="Linear-Discriminant-Analysis-LDA"><a href="#Linear-Discriminant-Analysis-LDA" class="headerlink" title="Linear Discriminant Analysis (LDA)"></a>Linear Discriminant Analysis (LDA)</h2><h3 id="PCA-vs-LDA"><a href="#PCA-vs-LDA" class="headerlink" title="PCA vs. LDA"></a>PCA vs. LDA</h3><p>PCA与LDA都能减少样本的维度。但是，PCA偏重于重建物体，LDA偏重于分类。LDA会将不同的类相互远离。</p>
+<ul>
+<li>PCA保持最大方差</li>
+<li>LDA找到能够在类之间最大化散射和在类中最小化散射的投影。</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.2.png"></p>
+<p>如图，PCA保持了最大方差，并将所有类的点都映射在正斜率方向上，因此难以判别类别。但是，LDA将点映射到负斜率，导致点被映射到接近同类点，与非同类点相反的位置。</p>
+<h3 id="General-Idea"><a href="#General-Idea" class="headerlink" title="General Idea"></a>General Idea</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.6.png"></p>
+<p>LDA用两个值运行：类间散度、类内散度。类间散度指不同类之间的距离，类内散度指类内点之间的距离。LDA最大化类间散度，最小化类内散度。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.3.png"></p>
+<h3 id="Mathematical-Formulation-of-LDA-with-2-Variables"><a href="#Mathematical-Formulation-of-LDA-with-2-Variables" class="headerlink" title="Mathematical Formulation of LDA with 2 Variables"></a>Mathematical Formulation of LDA with 2 Variables</h3><p>我们想要找到一个投影$w$在$x\in R^n$空间中映射出0和1的点到一个新的空间$z\in R^m$，例如$z&#x3D;w^Tx$。其中，$m&lt;n$，且投影必须最大化以下公式：<br>$$<br>J(w)&#x3D;\frac{S_B\space when\space projected\space onto\space w}{S_W\space when\space projected\space onto\space w}<br>$$<br>公式中，$S_B$代表类间散度，$S_W$代表类内散度。接下来定义一个代表类内点的平均的变量$\mu_i$：<br>$$<br>\mu_i&#x3D;E_{X|Y}[X|Y&#x3D;i]<br>$$<br>定义变量$\Sigma_i$代表类的协方差矩阵：<br>$$<br>\Sigma_i&#x3D;E_{X|Y}[(X-\mu_i)(X-\mu_i)^T|Y&#x3D;i]<br>$$<br>用以上变量，可以定义$S_B$和$S_W$：<br>$$<br>S_B&#x3D;(\mu_1-\mu_0)^2&#x3D;(\mu_1-\mu_0)(\mu_1-\mu_0)^T\<br>S_W&#x3D;(\Sigma_1+\Sigma_0)<br>$$<br>将变量放回原式$J(w)$可得：<br>$$<br>J(w)&#x3D;\frac{w^T(\mu_1-\mu_0)(\mu_1-\mu_0)^Tw}{w^T(\Sigma_1+\Sigma_0)w}<br>$$<br>我们要最大化$J(w)$，即最大化分子，保持分母为常数：<br>$$<br>\max_{w^T(\Sigma_1+\Sigma_0)w&#x3D;K}w^T(\mu_1-\mu_0)(\mu_1-\mu_0)^Tw<br>$$<br>用拉格朗日乘数法，我们定义拉格朗日算子为：<br>$$<br>L&#x3D;w^TS_Bw-\lambda(w^TS_Ww-K)&#x3D;w^T(S_B-\lambda S_W)w+K<br>$$<br>我们必须最大化$L$对$\lambda$和$w$的值。我们可以通过用其关于$w$的梯度和找到关键点的位置：<br>$$<br>\nabla_wL&#x3D;2(S_B-\lambda S_W)w&#x3D;0<br>$$<br>用这个公式，我们可以得到关键点位置：<br>$$<br>S_Bw&#x3D;\lambda S_Ww<br>$$<br>这是一个广义的特征向量问题。在$S_W^{-1}&#x3D;(\Sigma_1+\Sigma_0)^{-1}$存在的情况下，我们得到：<br>$$<br>S_W^{-1}S_Bw&#x3D;\lambda w<br>$$<br>代入$S_B$得：<br>$$<br>S_W^{-1}(\mu_1-\mu_0)&#x3D;\frac\lambda\alpha w<br>$$<br>$w$的大小并不重要，所以我们可以得到映射$w$：<br>$$<br>w*&#x3D;S_W^{-1}(\mu_1-\mu_0)&#x3D;(\Sigma_1-\Sigma_0)^{-1}(\mu_1-\mu_0)<br>$$</p>
+<h3 id="LDA-with-N-Variables-and-C-Classes"><a href="#LDA-with-N-Variables-and-C-Classes" class="headerlink" title="LDA with N Variables and C Classes"></a>LDA with N Variables and C Classes</h3><h4 id="Preliminaries"><a href="#Preliminaries" class="headerlink" title="Preliminaries"></a>Preliminaries</h4><p><strong>Variables:</strong></p>
+<ul>
+<li><p>N个样本：${x_1,…,x_N}$</p>
+</li>
+<li><p>C个类:${Y_1,Y_2,…,Y_C}$。每一类都有N个样本。</p>
+</li>
+<li><p>每个类的平均：类$i$的平均为<br>$$<br>\mu_i&#x3D;\frac 1{N_i}\sum_{x_k\in Y_i}x_k<br>$$</p>
+</li>
+<li><p>所有数据的平均：<br>$$<br>\mu&#x3D;\frac 1N\sum_{k&#x3D;1}^N x_k<br>$$</p>
+</li>
+</ul>
+<p><strong>Scatter Matrices:</strong></p>
+<ul>
+<li>类$i$散度：$S_i&#x3D;\sum_{x_k\in Y_i}(x_k-\mu_i)(x_k-\mu_i)^T$</li>
+<li>类内散度：$S_w&#x3D;\sum^{c}_{i&#x3D;1}S_i$</li>
+<li>类间散度：$S_b&#x3D;\sum_{i&#x3D;1}^cN_i(\mu_i-\mu)(\mu_i-\mu)^T$</li>
+</ul>
+<h4 id="Mathematical-Formulation"><a href="#Mathematical-Formulation" class="headerlink" title="Mathematical Formulation"></a>Mathematical Formulation</h4><p>我们需要一个将所有点从$x\in R^m$映射到$z\in R^n$的投影：<br>$$<br>z&#x3D;w^Tx,x\in R^m,z\in R^n<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.5.png"></p>
+<h3 id="Results-Eigenface-PCA-vs-Fisherface-LDA"><a href="#Results-Eigenface-PCA-vs-Fisherface-LDA" class="headerlink" title="Results: Eigenface(PCA) vs. Fisherface(LDA)"></a>Results: Eigenface(PCA) vs. Fisherface(LDA)</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.4.png"></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/15/Lecture%2012%20Face%20Recognition%20&%20Dimensionality%20Reduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/08/15/Lecture%2012%20Face%20Recognition%20&%20Dimensionality%20Reduction/" class="post-title-link" itemprop="url">CS131 Lecture 12 Face Recognition & Dimensionality Reduction</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-15 19:50:53" itemprop="dateCreated datePublished" datetime="2018-08-15T19:50:53+08:00">2018-08-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-02 00:43:33" itemprop="dateModified" datetime="2018-09-02T00:43:33+08:00">2018-09-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>#Lecture 12 Face Recognition &amp; Dimensionality Reduction </p>
+<h2 id="Overview-and-Motivation"><a href="#Overview-and-Motivation" class="headerlink" title="Overview and Motivation"></a>Overview and Motivation</h2><h3 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h3><p>维度减少是用于减少特征数的一个过程，可以提高效率。主要有两种方法：奇异值分解(Singular Value Decomposition, SVD)和主成分分析(Principal Component Analysis, PCA)。</p>
+<h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><ol>
+<li>减少计算成本。减少不重要的特征，保留关键成分。</li>
+<li>减少“维度灾难”的影响。lecture 11中提及，维度增加，需要更多数据点，分析耗费的时间更多。因此，减少维度能够缓解维度灾难。</li>
+<li>压缩数据。极大的降低数据储存要求。</li>
+</ol>
+<h2 id="Singular-Value-Decomposition-SVD"><a href="#Singular-Value-Decomposition-SVD" class="headerlink" title="Singular Value Decomposition (SVD)"></a>Singular Value Decomposition (SVD)</h2><h3 id="Overview-1"><a href="#Overview-1" class="headerlink" title="Overview"></a>Overview</h3><p>直观地，SVD是允许将数据呈现在一个新子特征空间的程序，使得数据的大多数变化能被捕捉。这是通过原特征空间的旋转轴，形成与原轴&#x2F;原特征（例如：客户的年龄、收入···）线性组合的新轴。新轴可以基于每个方向对方差的贡献，系统地分解数据点的方差（数据的分散程度）。</p>
+<p>SVD的结果是一个关于特征空间的“方向”表，根据方差由高到低排序。有最高方差的方向称为“（数据方差的）主成份”。关注这些维度的数据分布，就可以捕捉到大多数信息。</p>
+<p>特征选择和维度减少有所不同，见下。</p>
+<h3 id="Technical-Details-of-Singular-Value-Decomposition"><a href="#Technical-Details-of-Singular-Value-Decomposition" class="headerlink" title="Technical Details of Singular Value Decomposition"></a>Technical Details of Singular Value Decomposition</h3><ul>
+<li><p>SVD代表矩阵$A&#x3D;U\Sigma V^T$，其中$U:m\times m$和$V:n\times n$是旋转矩阵，$\Sigma:m\times n$是对角尺度矩阵。例如：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.1.png"></p>
+</li>
+<li><p>python代码：<code>[U, S, V] = numpy.linalg.svd(A)</code>。计算机计算SVD步骤如下：</p>
+<ol>
+<li>计算$AA^T$的特征向量。这些向量构成$U$的列。特征向量的平方根为奇异值(构成$\Sigma$)</li>
+<li>计算$A^TA$的特征向量。这些向量构成$V$的列。</li>
+</ol>
+</li>
+<li><p>因为SVD依赖于特征向量的计算，所以即使矩阵很大，计算也很快。</p>
+</li>
+<li><p>更详细的实现细节：<a target="_blank" rel="noopener" href="http://www.ams.org/samplings/feature-column/fcarc-svd">http://www.ams.org/samplings/feature-column/fcarc-svd</a>.</p>
+</li>
+</ul>
+<h4 id="Eigenvector-definition"><a href="#Eigenvector-definition" class="headerlink" title="Eigenvector definition"></a>Eigenvector definition</h4><ul>
+<li>$Ax&#x3D;\lambda x$，$x$为特征向量，$\lambda$为放缩因子。</li>
+<li>换句话说，用$x$来转换$A$只会放缩但不会改变方向。</li>
+</ul>
+<h3 id="Applications-of-Singular-Value-Decomposition"><a href="#Applications-of-Singular-Value-Decomposition" class="headerlink" title="Applications of Singular Value Decomposition"></a>Applications of Singular Value Decomposition</h3><ul>
+<li>计算逆转矩阵。如果任意矩阵$A$可以被分解为$A&#x3D;U\Sigma V^T$，那么$A$的逆可以定义为$A^+&#x3D;V^T\Sigma ^{-1}U$。即使这只是一个近似值，但它允许计算许多非平方矩阵的逆。</li>
+<li>SVD也可以用于计算矩阵的主成份。主成份大量用于数据分析和机器学习中，因此SVD是很多程序的核心。</li>
+</ul>
+<h2 id="Principal-Component-Analysis-PCA"><a href="#Principal-Component-Analysis-PCA" class="headerlink" title="Principal Component Analysis (PCA)"></a>Principal Component Analysis (PCA)</h2><h3 id="What-are-Principal-Component"><a href="#What-are-Principal-Component" class="headerlink" title="What are Principal Component"></a>What are Principal Component</h3><p>继续SVD的例子，注意$U$的第一列被$\Sigma$的第一个值缩放了。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.2.png"></p>
+<p>接着，$U\Sigma$被$V^T$的第一行缩放，对$A$的列产生了一个贡献$A_{partial}$。每个($U$的列$i$)*($\Sigma$的值$i$)*($V^T$的行$i$)都是$A$的一个成分。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.3.png"></p>
+<p>在这个过程中，我们把矩阵$A$作为$U$的行的线性组合，如上图。但是，现实中我们可以只有$U$的几列来构造出一个$A$的好的近似。这是由于$\Sigma$的性质。$\Sigma$是一个最大值位于左上角，其余值由左上往右下递减的对角矩阵。因此，$U$的前列对$A$的贡献最大。这前几列就称为主成分。</p>
+<p>我们通过分析协方差矩阵，移除贡献小的维度。协方差矩阵的值并没有那么重要，但是值的符号很重要，正号代表正相关，负号代表负相关，0代表相互独立。</p>
+<h4 id="Covariance"><a href="#Covariance" class="headerlink" title="Covariance"></a>Covariance</h4><p>方差和协方差是一组点在质量中心（均值）的“扩散”的度量。方差：衡量一个维度上的点的偏差的度量，例如高度。协方差：衡量每个维度之间的差异的一种度量。在两个维度之间测量协方差，看看两个维度之间是否有关系，例如研究的小时数和获得的分数。一个维度和自身之间的协方差是方差。<br>$$<br>COV(x,y)&#x3D;\frac{\sum^n_{i&#x3D;1}(\overline x_i-x)(\overline y_i-y)}{n-1}<br>$$</p>
+<h3 id="Performing-PCA"><a href="#Performing-PCA" class="headerlink" title="Performing PCA"></a>Performing PCA</h3><p>PCA可以用sklearn package实现：<code>sklearn.decomposition.PCA</code>。非正式方法实现步骤如下：</p>
+<ol>
+<li><p>将数据转化为$m\times n$格式，$m$代表样本数，$n$表示特征数</p>
+</li>
+<li><p>使$X$置中<br>$$<br>\frac{X-平均值}{每行标准差}<br>$$</p>
+</li>
+<li><p>通过SVD对角化$X$：$X&#x3D;U\Sigma V^T$</p>
+</li>
+<li><p>特征向量是主要方向，这些轴上的阴影是组成成分。这意味着最终我们要计算$XV$</p>
+</li>
+<li><p>因为$V$包含特征向量，所以是标准正交的，$XV&#x3D;U\Sigma V^TV&#x3D;US$</p>
+</li>
+<li><p>步骤5说明我们只需要$US$的列，均由SVD产生。</p>
+</li>
+</ol>
+<h3 id="Applications-of-Principal-Component"><a href="#Applications-of-Principal-Component" class="headerlink" title="Applications of Principal Component"></a>Applications of Principal Component</h3><ul>
+<li><p>图像压缩。图像矩阵中的大多数信息都可以被低阶矩阵提取。所以在质量没有明显损失下，可以使用PCA压缩图像。如图：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.4.png"></p>
+<p>只用16个主成份，原图像就能被很好的重现。相对误差如下：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.5.png"></p>
+</li>
+<li><p>用于搜索引擎。搜索空间中有许多都与搜索关键词无关，所以搜索引擎常用PCA缩小搜索空间。这对即使搜索十分重要，也体现了SVD的能力。</p>
+</li>
+</ul>
+<p>实际上，PCA代表了样本作为不同成分的权重 – 允许用一个成分代表样本间的差异。这大大减少了数据冗余，使得算法更加高效有用。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
 
 
 
@@ -356,6 +1512,8 @@
 
       <div class="site-overview-wrap sidebar-panel">
         <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
   <p class="site-author-name" itemprop="name">Liyao Xiong</p>
   <div class="site-description" itemprop="description">普普通通</div>
 </div>
@@ -364,12 +1522,29 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">2</span>
+          <span class="site-state-item-count">35</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
   </nav>
 </div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
 
 
 
@@ -391,14 +1566,14 @@
 
 <div class="copyright">
   
-  &copy; 
+  &copy; 2017 – 
   <span itemprop="copyrightYear">2022</span>
   <span class="with-love">
     <i class="fa fa-heart"></i>
   </span>
   <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://muse.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
   </div>
 
         
@@ -444,7 +1619,7 @@
 <script src="/js/motion.js"></script>
 
 
-<script src="/js/schemes/muse.js"></script>
+<script src="/js/schemes/pisces.js"></script>
 
 
 <script src="/js/next-boot.js"></script>
@@ -473,6 +1648,61 @@
 
 
   
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
 
   
 

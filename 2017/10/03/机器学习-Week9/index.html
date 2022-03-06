@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="异常检测(Anomaly detection)简介：通过一系列特征变量X建造一个模型p(x)，若p(x)&lt;ε，则可以认为该数据异常，进行进一步检测。 应用：制造业、用户行为检测、数据中心 高斯分布(正态分布)x~N(μ,σ²) ~表示服从····分布，N表示Normal(正态)，μ表示均值，σ²表示方差（σ为标准差） μ决定中心位置，σ越小曲线越窄高，但曲线所围面积总为1 算法Π：累乘标志">
+<meta property="og:type" content="article">
+<meta property="og:title" content="机器学习 Week9">
+<meta property="og:url" content="http://example.com/2017/10/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week9/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="异常检测(Anomaly detection)简介：通过一系列特征变量X建造一个模型p(x)，若p(x)&lt;ε，则可以认为该数据异常，进行进一步检测。 应用：制造业、用户行为检测、数据中心 高斯分布(正态分布)x~N(μ,σ²) ~表示服从····分布，N表示Normal(正态)，μ表示均值，σ²表示方差（σ为标准差） μ决定中心位置，σ越小曲线越窄高，但曲线所围面积总为1 算法Π：累乘标志">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.imgur.com/8q7PaN4.png">
+<meta property="og:image" content="https://i.imgur.com/gTHyOrL.png">
+<meta property="og:image" content="https://i.imgur.com/7IBt0jX.png">
+<meta property="og:image" content="https://i.imgur.com/c480rkA.png">
+<meta property="og:image" content="https://i.imgur.com/CmX3n0P.png">
+<meta property="article:published_time" content="2017-10-02T16:00:00.000Z">
+<meta property="article:modified_time" content="2017-10-14T16:29:21.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="机器学习">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.imgur.com/8q7PaN4.png">
+
+<link rel="canonical" href="http://example.com/2017/10/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week9/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>机器学习 Week9 | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/10/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          机器学习 Week9
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-10-03 00:00:00" itemprop="dateCreated datePublished" datetime="2017-10-03T00:00:00+08:00">2017-10-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-10-15 00:29:21" itemprop="dateModified" datetime="2017-10-15T00:29:21+08:00">2017-10-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="异常检测-Anomaly-detection"><a href="#异常检测-Anomaly-detection" class="headerlink" title="异常检测(Anomaly detection)"></a>异常检测(Anomaly detection)</h2><p>简介：通过一系列特征变量X建造一个模型p(x)，若p(x)&lt;ε，则可以认为该数据异常，进行进一步检测。</p>
+<p>应用：制造业、用户行为检测、数据中心</p>
+<h3 id="高斯分布-正态分布"><a href="#高斯分布-正态分布" class="headerlink" title="高斯分布(正态分布)"></a>高斯分布(正态分布)</h3><p>x~N(μ,σ²)</p>
+<p>~表示服从····分布，N表示Normal(正态)，μ表示均值，σ²表示方差（σ为标准差）</p>
+<p>μ决定中心位置，σ越小曲线越窄高，但曲线所围面积总为1</p>
+<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><p>Π：累乘标志</p>
+<p>步骤：</p>
+<ol>
+<li>找出可以用于检测错误的特征x，或者可以描述相关属性的特征x</li>
+<li>找出m个无标签数据构成的训练集，拟合出期望与方差值</li>
+<li>计算p(x)，如果p(X)&lt;ε，则异常</li>
+</ol>
+<p>公式如下：</p>
+<p><img src="https://i.imgur.com/8q7PaN4.png"></p>
+<h2 id="如何开发异常检测系统"><a href="#如何开发异常检测系统" class="headerlink" title="如何开发异常检测系统"></a>如何开发异常检测系统</h2><h3 id="如何评价一个异常检测算法"><a href="#如何评价一个异常检测算法" class="headerlink" title="如何评价一个异常检测算法"></a>如何评价一个异常检测算法</h3><p>以6:2:2的比例将好的样本分配给训练集&#x2F;CV&#x2F;测试集，将坏的样本以1:1的比例分配给CV&#x2F;测试集（有时候训练集会参杂一些坏样本，不影响结果）</p>
+<p>方法：</p>
+<ol>
+<li>用训练集拟合p(x)</li>
+<li>用CV&#x2F;测试集的x来预测y，p(x)&gt;&#x3D;ε，y&#x3D;0，正常</li>
+</ol>
+<p>评估(在CV中)：因为y大量偏向于0，所以分类准确度不是一个好的评估方法。</p>
+<p>应该使用召回率&#x2F;查准率、F1-score之类的方法评估</p>
+<h3 id="与监督学习对比"><a href="#与监督学习对比" class="headerlink" title="与监督学习对比"></a>与监督学习对比</h3><p>异常检测：</p>
+<ul>
+<li>大量的负样本（正常）与极少数的正样本（异常）</li>
+<li>有很多不同类型的正样本（异常）</li>
+<li>可能会出现新的异常种类，所以需要对负样本建模，而不是正样本</li>
+</ul>
+<p>监督学习：</p>
+<ul>
+<li>大量的正、负样本</li>
+<li>正样本特征均类似，不会出现新的类型</li>
+</ul>
+<h3 id="特征变量的选择"><a href="#特征变量的选择" class="headerlink" title="特征变量的选择"></a>特征变量的选择</h3><p>如果数据不遵循高斯分布，则要通过取指数、对数的方法转换为高斯分布（通过hist指令画出直方图观察）</p>
+<p>常见问题：异常样本的p(x)也很大。</p>
+<p>解决：观察被错误判断异常样本，找出新的特征变量。同时可以通过整合两个特征变量形成新的特征变量，例如x3&#x3D;(x1)²&#x2F;x2</p>
+<h2 id="推荐系统"><a href="#推荐系统" class="headerlink" title="推荐系统"></a>推荐系统</h2><h3 id="基于内容的推荐"><a href="#基于内容的推荐" class="headerlink" title="基于内容的推荐"></a>基于内容的推荐</h3><p>nu&#x3D;用户数量，nm&#x3D;电影数量。</p>
+<p>给予内容的不同特征以不同比重值，加上x0&#x3D;1构成特征矩阵x(x∈n+1阶)。对每个用户j构造参数θ(j)(θ∈n+1阶)，其中Θ(0)&#x3D;0，θ中其他值表示用户对该类型的喜爱程度。则可以预测用户j对电影i有θ(j)‘.*x(i)星。</p>
+<p><img src="https://i.imgur.com/gTHyOrL.png"></p>
+<p><img src="https://i.imgur.com/7IBt0jX.png"></p>
+<h3 id="协同过滤-Collaborative-Filtering"><a href="#协同过滤-Collaborative-Filtering" class="headerlink" title="协同过滤(Collaborative Filtering)"></a>协同过滤(Collaborative Filtering)</h3><p>特点：自动学习需要的特征，即一直θ值，用于学习x的值</p>
+<p><img src="https://i.imgur.com/c480rkA.png"></p>
+<p>结合内容推荐：先计算θ，再计算x-&gt;θ-&gt;x·······，反复迭代</p>
+<h3 id="协同过滤算法"><a href="#协同过滤算法" class="headerlink" title="协同过滤算法"></a>协同过滤算法</h3><p>将x与θ的迭代式结合，一步完成，同时<em>不需要x0和θ0</em>：</p>
+<p><img src="https://i.imgur.com/CmX3n0P.png"></p>
+<h2 id="协同过滤向量法实现"><a href="#协同过滤向量法实现" class="headerlink" title="协同过滤向量法实现"></a>协同过滤向量法实现</h2><p>Y–用户对每部电影的评分矩阵；X–用户向量；Θ–每行是每个用户的θ；预测矩阵：Θ‘*X</p>
+<p><em>协同过滤向量法也被称为 低zhi矩阵分解</em></p>
+<h3 id="如何衡量两个电影间相似性？"><a href="#如何衡量两个电影间相似性？" class="headerlink" title="如何衡量两个电影间相似性？"></a>如何衡量两个电影间相似性？</h3><p>计算两部电影间的距离||x(i)-x(j)||</p>
+<h3 id="细节：均值归一化"><a href="#细节：均值归一化" class="headerlink" title="细节：均值归一化"></a>细节：均值归一化</h3><p>如果出现未评分的新用户，则先根据先前评分计算出平均评分μ，再将每个用户评分都减去平均评分，最后形成新的评分矩阵Y替代先前的Y。而新用户的评分则在新Y中设置为0。</p>
+<p>所以预测矩阵也随之更改为Θ‘*X+μ(平均值)</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" rel="tag"># 机器学习</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2017/09/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week8/" rel="prev" title="机器学习 Week8">
+      <i class="fa fa-chevron-left"></i> 机器学习 Week8
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2017/10/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week10/" rel="next" title="机器学习 Week10">
+      机器学习 Week10 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B-Anomaly-detection"><span class="nav-number">1.</span> <span class="nav-text">异常检测(Anomaly detection)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%AB%98%E6%96%AF%E5%88%86%E5%B8%83-%E6%AD%A3%E6%80%81%E5%88%86%E5%B8%83"><span class="nav-number">1.1.</span> <span class="nav-text">高斯分布(正态分布)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">算法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E5%BC%80%E5%8F%91%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%B3%BB%E7%BB%9F"><span class="nav-number">3.</span> <span class="nav-text">如何开发异常检测系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%AF%84%E4%BB%B7%E4%B8%80%E4%B8%AA%E5%BC%82%E5%B8%B8%E6%A3%80%E6%B5%8B%E7%AE%97%E6%B3%95"><span class="nav-number">3.1.</span> <span class="nav-text">如何评价一个异常检测算法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%8E%E7%9B%91%E7%9D%A3%E5%AD%A6%E4%B9%A0%E5%AF%B9%E6%AF%94"><span class="nav-number">3.2.</span> <span class="nav-text">与监督学习对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%89%B9%E5%BE%81%E5%8F%98%E9%87%8F%E7%9A%84%E9%80%89%E6%8B%A9"><span class="nav-number">3.3.</span> <span class="nav-text">特征变量的选择</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F"><span class="nav-number">4.</span> <span class="nav-text">推荐系统</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9F%BA%E4%BA%8E%E5%86%85%E5%AE%B9%E7%9A%84%E6%8E%A8%E8%8D%90"><span class="nav-number">4.1.</span> <span class="nav-text">基于内容的推荐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4-Collaborative-Filtering"><span class="nav-number">4.2.</span> <span class="nav-text">协同过滤(Collaborative Filtering)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E7%AE%97%E6%B3%95"><span class="nav-number">4.3.</span> <span class="nav-text">协同过滤算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4%E5%90%91%E9%87%8F%E6%B3%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">5.</span> <span class="nav-text">协同过滤向量法实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A6%82%E4%BD%95%E8%A1%A1%E9%87%8F%E4%B8%A4%E4%B8%AA%E7%94%B5%E5%BD%B1%E9%97%B4%E7%9B%B8%E4%BC%BC%E6%80%A7%EF%BC%9F"><span class="nav-number">5.1.</span> <span class="nav-text">如何衡量两个电影间相似性？</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%86%E8%8A%82%EF%BC%9A%E5%9D%87%E5%80%BC%E5%BD%92%E4%B8%80%E5%8C%96"><span class="nav-number">5.2.</span> <span class="nav-text">细节：均值归一化</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

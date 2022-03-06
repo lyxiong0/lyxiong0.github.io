@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Lecture 5 Edge DetectionEdge Detection in MammalsHubel &amp; Wiesel两个人的实验表明，猫的视觉神经在碰到特定方向的边缘时，会产生反应。 BiedermanBiederman的实验表明，人们在只看到物品一半的轮廓时，仍能识别物体且速度不受影响。这给计算机视觉提供了一个想法：即使只展现图像的一部分，一个系统理论上应该能够识别整个物品。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS131 Lecture 5 Edge Detection">
+<meta property="og:url" content="http://example.com/2018/07/10/Lecture%205%20Edge%20detection/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="Lecture 5 Edge DetectionEdge Detection in MammalsHubel &amp; Wiesel两个人的实验表明，猫的视觉神经在碰到特定方向的边缘时，会产生反应。 BiedermanBiederman的实验表明，人们在只看到物品一半的轮廓时，仍能识别物体且速度不受影响。这给计算机视觉提供了一个想法：即使只展现图像的一部分，一个系统理论上应该能够识别整个物品。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.1.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.2.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.3.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.4.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.5.png">
+<meta property="article:published_time" content="2018-07-10T08:49:14.000Z">
+<meta property="article:modified_time" content="2018-09-01T15:43:59.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="计算机视觉">
+<meta property="article:tag" content="CS131">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.1.png">
+
+<link rel="canonical" href="http://example.com/2018/07/10/Lecture%205%20Edge%20detection/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CS131 Lecture 5 Edge Detection | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/10/Lecture%205%20Edge%20detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CS131 Lecture 5 Edge Detection
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-10 16:49:14" itemprop="dateCreated datePublished" datetime="2018-07-10T16:49:14+08:00">2018-07-10</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-01 23:43:59" itemprop="dateModified" datetime="2018-09-01T23:43:59+08:00">2018-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Lecture-5-Edge-Detection"><a href="#Lecture-5-Edge-Detection" class="headerlink" title="Lecture 5 Edge Detection"></a>Lecture 5 Edge Detection</h1><h2 id="Edge-Detection-in-Mammals"><a href="#Edge-Detection-in-Mammals" class="headerlink" title="Edge Detection in Mammals"></a>Edge Detection in Mammals</h2><h3 id="Hubel-amp-Wiesel"><a href="#Hubel-amp-Wiesel" class="headerlink" title="Hubel &amp; Wiesel"></a>Hubel &amp; Wiesel</h3><p>两个人的实验表明，猫的视觉神经在碰到特定方向的边缘时，会产生反应。</p>
+<h3 id="Biederman"><a href="#Biederman" class="headerlink" title="Biederman"></a>Biederman</h3><p>Biederman的实验表明，人们在只看到物品一半的轮廓时，仍能识别物体且速度不受影响。这给计算机视觉提供了一个想法：即使只展现图像的一部分，一个系统理论上应该能够识别整个物品。</p>
+<h3 id="Walther-Chai-Caddigan-Beck-amp-Fei-Fei"><a href="#Walther-Chai-Caddigan-Beck-amp-Fei-Fei" class="headerlink" title="Walther, Chai, Caddigan, Beck &amp; Fei-Fei"></a>Walther, Chai, Caddigan, Beck &amp; Fei-Fei</h3><p>一群研究者发现大脑的低层次在识别轮廓方面更强，而高层次对颜色识别能力更强。</p>
+<h2 id="Edge-Detection-for-Computer-Vision"><a href="#Edge-Detection-for-Computer-Vision" class="headerlink" title="Edge Detection for Computer Vision"></a>Edge Detection for Computer Vision</h2><p>边缘检测的目的是检测图像中的不连续部分。直观来讲，图像的大部分语义学和形状信息可以在图像边缘被编码。边缘可以帮助我们提取信息、识别物体、恢复几何和视角。</p>
+<h3 id="Types-of-Discrete-Derivative-离散导数-in-1D"><a href="#Types-of-Discrete-Derivative-离散导数-in-1D" class="headerlink" title="Types of Discrete Derivative(离散导数) in 1D"></a>Types of Discrete Derivative(离散导数) in 1D</h3><p>主要有三类，它们的公式和对应的滤波器为：</p>
+<ul>
+<li><p>Backward<br>$$<br>\dfrac{df}{dx}&#x3D;f(x)-f(x-1)&#x3D;f’(x) \<br>[0,1,-1]<br>$$</p>
+</li>
+<li><p>Forward<br>$$<br>\dfrac{df}{dx}&#x3D;f(x)-f(x+1)&#x3D;f’(x)\<br>[-1,1,0]<br>$$</p>
+</li>
+<li><p>Central<br>$$<br>\dfrac{df}{dx}&#x3D;f(x+1)-f(x-1)&#x3D;f’(x)\<br>[1,0,-1]<br>$$</p>
+</li>
+</ul>
+<h3 id="Discrete-Derivative-in-2D"><a href="#Discrete-Derivative-in-2D" class="headerlink" title="Discrete Derivative in 2D"></a>Discrete Derivative in 2D</h3><ul>
+<li><p>Gradient vector<br>$$<br>\nabla f(x,y)&#x3D; \left[<br> \begin{matrix}<br>  f_{x}\<br>   f_{y}<br>  \end{matrix}<br>  \right]<br>$$</p>
+</li>
+<li><p>Gradient magnitude<br>$$<br>|\nabla f(x,y)|&#x3D;\sqrt{f_{x}^{2}+f_{y}^{2}}<br>$$</p>
+</li>
+<li><p>Gradient direction<br>$$<br>\theta&#x3D;tan^{-1}(\frac{\frac{df}{dy}}{\frac{df}{dx}})<br>$$</p>
+</li>
+</ul>
+<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p>矩阵的梯度可以近似为用基于中心离散倒数方程的相邻像素拓展到2D。一个水平滤波器如下：<br>$$<br>\frac{1}{3}<br>\left[<br> \begin{matrix}<br>  -1&amp;0&amp;1\<br>   -1&amp;0&amp;1\<br>   -1&amp;0&amp;1<br>  \end{matrix}<br>  \right]<br>$$<br>当这个滤波器覆盖在像素$x[m,n]$上，可以产生一个输出。这个输出近似于于像素$(m,n)$在水平方向上的梯度，这个滤波器检测水平边缘，同样需要一个单独的内核检测垂直边缘。</p>
+<h2 id="Simple-Edge-Detectors"><a href="#Simple-Edge-Detectors" class="headerlink" title="Simple Edge Detectors"></a>Simple Edge Detectors</h2><h3 id="Characterizing-Edges"><a href="#Characterizing-Edges" class="headerlink" title="Characterizing Edges"></a>Characterizing Edges</h3><p>描述边缘是检测边缘的第一步，是为了边缘可以被识别。首先，定义边缘为图片的强度函数快速变化的位置，也是导数较大的位置。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.1.png"></p>
+<h3 id="Image-Gradient"><a href="#Image-Gradient" class="headerlink" title="Image Gradient"></a>Image Gradient</h3><p>图片的梯度可以被定义为<br>$$<br>\nabla f(x,y)&#x3D;[\frac{\partial f}{\partial x},\frac{\partial f}{\partial y}]<br>$$<br>同时，方向与边缘强度可以被定义为<br>$$<br>\theta&#x3D;tan^{-1}(\frac{\partial f}{\partial y}&#x2F;\frac{\partial f}{\partial x})\<br>||\nabla f(x,y)||&#x3D;\sqrt{(\frac{\partial f}{\partial y})^{2}+(\frac{\partial f}{\partial y})^{2}}<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.2.png"></p>
+<p>梯度向量的方向指向强度变化最快的方向，如上图所示。下图为将梯度应用于图像后的结果。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.3.png"></p>
+<h3 id="Effects-of-Noise"><a href="#Effects-of-Noise" class="headerlink" title="Effects of Noise"></a>Effects of Noise</h3><p>如果边缘噪音过多，偏导数可能无法很好的检测边缘，如下图。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.4.png"></p>
+<p>为了减少噪音影响，图片首先要光滑化。光滑化是重新计算像素值，使得该像素值和周围像素更相似的过程。光滑化是通过将滤波器和图像卷积来实现的（例如：高斯核）。</p>
+<p>当然，光滑化也有损失：模糊了边缘；较大的滤波器会导致边缘损失和图片有用的细节损失。</p>
+<p>总而言之，合适的光滑化可以促进边缘检测。在光滑化$f$后，就可以计算$f*\frac{d}{dx}g$，顶峰处为边缘。</p>
+<h3 id="Gaussian-Blur"><a href="#Gaussian-Blur" class="headerlink" title="Gaussian Blur"></a>Gaussian Blur</h3><p>高斯模糊是用高斯函数减少图片噪音的结果。它是一个低通滤波器，用于降低高频率信号。</p>
+<p>一维<br>$$<br>G(x)&#x3D;\frac{1}{\sqrt{2\pi\sigma}}e^{-\frac{x^{2}}{2\sigma^{2}}}<br>$$<br>二维<br>$$<br>G(x,y)&#x3D;\frac{1}{2\pi\sigma}e^{-\frac{x^{2}+y^{2}}{2\sigma^{2}}}<br>$$</p>
+<h2 id="Designing-a-Good-Edge-Detector"><a href="#Designing-a-Good-Edge-Detector" class="headerlink" title="Designing a Good Edge Detector"></a>Designing a Good Edge Detector</h2><p>一个可行的边缘检测器必须有以下性质：</p>
+<ol>
+<li><p>检测效果好</p>
+<p>必须最小化检测为误报（false positives,由噪音导致的假性边缘）和漏报率（false negatives，漏掉真的边缘）的可能性。</p>
+</li>
+<li><p>定位好</p>
+<p>检测的边缘位置必须与原图实际边缘吻合。检测器还必须在检测哪些像素位于边缘上保持一致。</p>
+</li>
+<li><p>Silent response</p>
+<p>检测器必须最小化真正边缘附近的局部极大值，即每个真正的边缘点只返回一个点。它应该要告知这里有一个特定的边缘，而不是将一个边缘分散为数个边缘。换句话说，只有真正的边缘会被捕捉到。</p>
+<p>下图是正确的边缘；1稳健性差；2定位差；3过多响应</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.5.png"></p>
+</li>
+</ol>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+              <a href="/tags/CS131/" rel="tag"># CS131</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/07/09/Lecture%204%20Pixels%20and%20Filters/" rel="prev" title="CS131 Lecture 4 Pixels and Filters">
+      <i class="fa fa-chevron-left"></i> CS131 Lecture 4 Pixels and Filters
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/11/Lecture%206%20Edge%20Detection/" rel="next" title="CS131 Lecture 6 Edge Detection">
+      CS131 Lecture 6 Edge Detection <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lecture-5-Edge-Detection"><span class="nav-number">1.</span> <span class="nav-text">Lecture 5 Edge Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Edge-Detection-in-Mammals"><span class="nav-number">1.1.</span> <span class="nav-text">Edge Detection in Mammals</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Hubel-amp-Wiesel"><span class="nav-number">1.1.1.</span> <span class="nav-text">Hubel &amp; Wiesel</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Biederman"><span class="nav-number">1.1.2.</span> <span class="nav-text">Biederman</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Walther-Chai-Caddigan-Beck-amp-Fei-Fei"><span class="nav-number">1.1.3.</span> <span class="nav-text">Walther, Chai, Caddigan, Beck &amp; Fei-Fei</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Edge-Detection-for-Computer-Vision"><span class="nav-number">1.2.</span> <span class="nav-text">Edge Detection for Computer Vision</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Types-of-Discrete-Derivative-%E7%A6%BB%E6%95%A3%E5%AF%BC%E6%95%B0-in-1D"><span class="nav-number">1.2.1.</span> <span class="nav-text">Types of Discrete Derivative(离散导数) in 1D</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Discrete-Derivative-in-2D"><span class="nav-number">1.2.2.</span> <span class="nav-text">Discrete Derivative in 2D</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Example"><span class="nav-number">1.2.3.</span> <span class="nav-text">Example</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Simple-Edge-Detectors"><span class="nav-number">1.3.</span> <span class="nav-text">Simple Edge Detectors</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Characterizing-Edges"><span class="nav-number">1.3.1.</span> <span class="nav-text">Characterizing Edges</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Image-Gradient"><span class="nav-number">1.3.2.</span> <span class="nav-text">Image Gradient</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Effects-of-Noise"><span class="nav-number">1.3.3.</span> <span class="nav-text">Effects of Noise</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gaussian-Blur"><span class="nav-number">1.3.4.</span> <span class="nav-text">Gaussian Blur</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Designing-a-Good-Edge-Detector"><span class="nav-number">1.4.</span> <span class="nav-text">Designing a Good Edge Detector</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

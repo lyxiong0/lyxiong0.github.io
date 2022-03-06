@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Lecture 9 Image Resizing and SegmentationIntroduction为了适应不同尺寸和形状的播放器，图片或影片需要调整大小，本章介绍如何在调整大小的同时保存重要内容并减少瑕疵。 Problem Statement输入大小为$n\times m$的原图，输出大小为$n’\times m’​$，能很好代表原图的新图像。我们希望：  新图要能符合设备几何限制 新图要">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS131 Lecture 9 Image Resizing and Segmentation">
+<meta property="og:url" content="http://example.com/2018/08/09/Lecture%209%20Image%20Resizing%20and%20Segmentation/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="Lecture 9 Image Resizing and SegmentationIntroduction为了适应不同尺寸和形状的播放器，图片或影片需要调整大小，本章介绍如何在调整大小的同时保存重要内容并减少瑕疵。 Problem Statement输入大小为$n\times m$的原图，输出大小为$n’\times m’​$，能很好代表原图的新图像。我们希望：  新图要能符合设备几何限制 新图要">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.1.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.10.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.2.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.3.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.4.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.5.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.6.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.7.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.8.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.9.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.11.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.12.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.13.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.14.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.15.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.16.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.17.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.18.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.19.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.20.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.21.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.22.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.23.png">
+<meta property="article:published_time" content="2018-08-09T07:56:25.000Z">
+<meta property="article:modified_time" content="2018-09-01T15:49:30.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="计算机视觉">
+<meta property="article:tag" content="CS131">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.1.png">
+
+<link rel="canonical" href="http://example.com/2018/08/09/Lecture%209%20Image%20Resizing%20and%20Segmentation/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CS131 Lecture 9 Image Resizing and Segmentation | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/09/Lecture%209%20Image%20Resizing%20and%20Segmentation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CS131 Lecture 9 Image Resizing and Segmentation
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-09 15:56:25" itemprop="dateCreated datePublished" datetime="2018-08-09T15:56:25+08:00">2018-08-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-01 23:49:30" itemprop="dateModified" datetime="2018-09-01T23:49:30+08:00">2018-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Lecture-9-Image-Resizing-and-Segmentation"><a href="#Lecture-9-Image-Resizing-and-Segmentation" class="headerlink" title="Lecture 9 Image Resizing and Segmentation"></a>Lecture 9 Image Resizing and Segmentation</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>为了适应不同尺寸和形状的播放器，图片或影片需要调整大小，本章介绍如何在调整大小的同时保存重要内容并减少瑕疵。</p>
+<h3 id="Problem-Statement"><a href="#Problem-Statement" class="headerlink" title="Problem Statement"></a>Problem Statement</h3><p>输入大小为$n\times m$的原图，输出大小为$n’\times m’​$，能很好代表原图的新图像。我们希望：</p>
+<ol>
+<li>新图要能符合设备几何限制</li>
+<li>新图要展现重要内容和结构</li>
+<li>新图要减少瑕疵</li>
+</ol>
+<h3 id="Importance-Measures"><a href="#Importance-Measures" class="headerlink" title="Importance Measures"></a>Importance Measures</h3><ol>
+<li><p>用函数$S:p\rightarrow [0,1]$来确定图像中的重要部分，再用一些操作来改变图像。如下图</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.1.png"></p>
+</li>
+<li><p>除了函数方法，还有注意力模型之类更精巧的方法。</p>
+</li>
+</ol>
+<h2 id="Seam-Carving"><a href="#Seam-Carving" class="headerlink" title="Seam Carving"></a>Seam Carving</h2><h3 id="Basic-Idea"><a href="#Basic-Idea" class="headerlink" title="Basic Idea"></a>Basic Idea</h3><p>人类视觉对边缘更加敏感。因此一个简单而有效的方法是使用基于梯度的能量方程，将光滑区域的内容移除并保存信息量更大边缘。能量公式定义为<br>$$<br>E(I)&#x3D;|\frac{\partial}{\partial x}I|+|\frac{\partial}{\partial y}I|<br>$$<br>不重要的内容即为能量公式值较小的像素。</p>
+<h3 id="Pixel-Removal"><a href="#Pixel-Removal" class="headerlink" title="Pixel Removal"></a>Pixel Removal</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.10.png"></p>
+<p>下图从左至右用了三种不同的像素移除方案：</p>
+<ol>
+<li>移除所有低能量像素</li>
+<li>移除每行最低能量像素</li>
+<li>移除每列最低能量像素</li>
+</ol>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.2.png"></p>
+<p>可以看出第一、二种方法破坏了原图，而第三种方法较前两种好，但仍有大量瑕疵。</p>
+<h3 id="A-Seam"><a href="#A-Seam" class="headerlink" title="A Seam"></a>A Seam</h3><ol>
+<li><p>缝被定义为从头到尾（或从左到右）连接像素的通道。对于从头到尾的像素，我们需要从每列钟选取一个像素，数学定义为：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.3.png"></p>
+</li>
+<li><p>最好的缝是基于像素梯度，能够最小化能量函数的缝。<br>$$<br>s^*&#x3D;argmin_sE(s),\space where\space E(I)&#x3D;|\frac{\partial}{\partial x}I|+|\frac{\partial}{\partial y}I|<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.4.png"></p>
+</li>
+<li><p>可以用递归关系找到最佳缝。如果$M(i,j)$定义为经过像素$(i,j)$的缝的最小能量代价，那么其递归关系为：<br>$$<br>M(i,j)&#x3D;E(i,j)+min(M(i-1,j-1),M(i-1,j),M(i-1,j+1))<br>$$<br>该递归关系可以通过$O(snm)$的动态程序解决，再原始算法钟$s&#x3D;3$。下面为一个图像的能量函数值</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.5.png"></p>
+<p>递归关系为</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.6.png"></p>
+</li>
+<li><p>为了找到最佳缝，我们引入回溯法。从底层能量函数值最低的像素开始，往上发展。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.7.png"></p>
+</li>
+</ol>
+<h3 id="Seam-Carving-Algorithms"><a href="#Seam-Carving-Algorithms" class="headerlink" title="Seam Carving Algorithms"></a>Seam Carving Algorithms</h3><p>算法耗费$O((n-n’)mn)$，每个循环更新$E,s,im$耗费$O(mn)$。如果要垂直调整大小，可以旋转图片用同一算法。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.8.png"></p>
+<p>图像的平均能量会随着缝剪裁算法移除低能量像素而提高。当调整大小时，我们需要移除横向和纵向的缝。如何动态同时删除横竖的缝？参考SIGGRAPH论文，利用再循环方程<br>$$<br>T(r,c)&#x3D;min(T(r-1,c)+E(s^x(I_{n-r-1\times m-c})),T(r,c-1)+E(s^y(I_{n-r\times m-c-1})))\<br>\min_{s^x,s^y,\alpha}\sum_{i&#x3D;1}^kE(\alpha_is_i^x+(1-\alpha_i)s_i^y)<br>$$<br> 同时剪裁横竖缝，得到更多信息。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.9.png"></p>
+<h2 id="Advanced-Seam-Carving"><a href="#Advanced-Seam-Carving" class="headerlink" title="Advanced Seam Carving"></a>Advanced Seam Carving</h2><h3 id="Image-Expansion"><a href="#Image-Expansion" class="headerlink" title="Image Expansion"></a>Image Expansion</h3><p>用相似的方法，我们可以提高图片大小。最原始的方法时迭代地找到能量最低的缝，并复制它们来拓展图片。但是，这种方法会形成下图：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.11.png"></p>
+<p>注意图像右侧看起来很不自然，这是由于每次算法找到的都是同一条缝，导致同一条缝被复制多次。更有效的方法是一次性找到能量最低的$k$条缝，并复制它们，如下图：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.12.png"></p>
+<p>这样形成的图片更加自然。注意这种方法只能以2x来放大图像（没有足够多的缝进行放大）。</p>
+<h3 id="Multi-Size-Image-Representation"><a href="#Multi-Size-Image-Representation" class="headerlink" title="Multi-Size Image Representation"></a>Multi-Size Image Representation</h3><p>实际中，许多图片会储存在它们缝的表示的旁边，使得图片更容易调整大小。这些缝表现和图片规模大小一致，但是它们不储存像素强度，而是由多条能量从低到高、路径排序的缝组成。注意为了一次性计算多条缝，图像的能量在模拟每条缝的移除后必须重新计算。下图是缝表示的一个例子：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.13.png"></p>
+<p>有了右图的表示，可以轻松的移除$k$条缝，只要移除右图对应标签为$1$到$k$的像素。</p>
+<h3 id="Object-Removal"><a href="#Object-Removal" class="headerlink" title="Object Removal"></a>Object Removal</h3><p>通过让用户指定图中物体能量的高低，我们可以保护或移除特定的物体。如下图，红色为保护，绿色为移除物体。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.14.png"></p>
+<h3 id="Limitations"><a href="#Limitations" class="headerlink" title="Limitations"></a>Limitations</h3><ol>
+<li><p>当图片大小放生巨大变化时，效率的上下限。</p>
+</li>
+<li><p>图中物体的重要特征可能是低能量的，导致缝误移除。如下图</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.15.png"></p>
+<p>我们可以看到一些光滑平整的区域虽然梯度小能量低，但对图像十分重要，却会被算法误移除。为了解决这个问题，我们需要通过考虑更多的因素来改变能量。例如：用面部探测或者用户约束，如下图。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.16.png"></p>
+</li>
+</ol>
+<h3 id="Forward-Energy"><a href="#Forward-Energy" class="headerlink" title="Forward Energy"></a>Forward Energy</h3><p>如上文提及，缝剪裁会导致图片平均能量上升，产生锯齿状边缘。改进的方法是，不考虑移除最低能量的缝，而是移除插入最小能量到图像的缝。移除一个像素$P(i,j)$会有三种新的边缘情况，这些新边缘花费为<br>$$<br>C_L(i,j)&#x3D;|I(i,j+1)-I(i,j-1)|+|I(i-1,j)-I(i,j-1)|\<br>C_R(i,j)&#x3D;|I(i,j+1)-I(i,j-1)|+|I(i-1,j)-I(i,j+1)|\<br>C_V(i,j)&#x3D;|I(i,j+1)-I(i,j-1)|<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.17.png"></p>
+<p>这种方式称为”forward energy”，之前的方法称为”backward energy”。forward energy通过最小化添加的能量，保留了光滑的边缘。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.18.png"></p>
+<h3 id="Seam-Carving-in-Videos"><a href="#Seam-Carving-in-Videos" class="headerlink" title="Seam-Carving in Videos"></a>Seam-Carving in Videos</h3><p>比起图像，视频剪裁难度更大，有以下几个问题。</p>
+<p>第一，时间问题。一个30fps的视频，一分钟有1800帧，利用缝剪裁每帧处理至少需要30小时。</p>
+<p>第二，视频连接问题。视频的帧与帧之间是逻辑连续的，而人眼对移动又特别敏感，使得逐帧剪裁的视频产生失真现象。稍改进后的方法是，将视频当作一个3D空间，每个垂直面作为视频的一个图像。从而可以找到整个视频上能量最低的2D缝。剩余操作与2D剪裁相同。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.19.png"></p>
+<h2 id="Segmentation"><a href="#Segmentation" class="headerlink" title="Segmentation"></a>Segmentation</h2><p>我们有多种原因想让计算机可以切割图像。我们可能需要将图像切割成和现实世界中一样，多个相邻的物体组成。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.20.png"></p>
+<p>我们可能想将图像基于附近的像素是相似的切割成多组。我们将这些组称为超像素(superpixels)。超像素允许我们将一些独立像素视作一体，因此使得一些计算更快。如下图。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.21.png"></p>
+<p>各种形式的图像分割帮助我们将一组像素视作一个特征，并从中得到图片信息。切割还能帮助图像效果，像背景移除。</p>
+<p>为了解决如何切割图像问题，我们将切割当作聚类。聚类让我们将相似的数据点聚集并用一个值表示它们。我们需要解决两个问题：</p>
+<ol>
+<li>如何确定两个像素、批(patch)、图像是否相似？</li>
+<li>如何从成对的相似处中计算整体的分类？</li>
+</ol>
+<p>通常有两大类聚类算法：自上而下、自下而上。自上而下将像素和patch分类到一起，因为它们依赖于同一视觉实体。自下而上算法将像素分类到一起，因为它们局部相邻。</p>
+<p>我们还可以用人类识别物体的特定视觉规律来作为聚类算法。例如：相似物体、对称、共同命运、接近度等等。共同命运指一组物体似乎会被一起移除，所以他们有共同的命运，如下图。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.22.png"></p>
+<p>接近度指将物体和它们接近的物体分在一组。如下图中的三个人。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/9.23.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+              <a href="/tags/CS131/" rel="tag"># CS131</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/07/Lecture%208%20Feature%20Descriptors%20and%20Resizing/" rel="prev" title="CS131 Lecture 8 Feature Descriptors and Resizing">
+      <i class="fa fa-chevron-left"></i> CS131 Lecture 8 Feature Descriptors and Resizing
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/11/Lecture%2010%20Semantic%20Segmentation%20and%20Clustering/" rel="next" title="CS131 Lecture 10 Semantic Segmentation and Clustering">
+      CS131 Lecture 10 Semantic Segmentation and Clustering <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lecture-9-Image-Resizing-and-Segmentation"><span class="nav-number">1.</span> <span class="nav-text">Lecture 9 Image Resizing and Segmentation</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Problem-Statement"><span class="nav-number">1.1.1.</span> <span class="nav-text">Problem Statement</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Importance-Measures"><span class="nav-number">1.1.2.</span> <span class="nav-text">Importance Measures</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Seam-Carving"><span class="nav-number">1.2.</span> <span class="nav-text">Seam Carving</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Basic-Idea"><span class="nav-number">1.2.1.</span> <span class="nav-text">Basic Idea</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pixel-Removal"><span class="nav-number">1.2.2.</span> <span class="nav-text">Pixel Removal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-Seam"><span class="nav-number">1.2.3.</span> <span class="nav-text">A Seam</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Seam-Carving-Algorithms"><span class="nav-number">1.2.4.</span> <span class="nav-text">Seam Carving Algorithms</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Advanced-Seam-Carving"><span class="nav-number">1.3.</span> <span class="nav-text">Advanced Seam Carving</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Image-Expansion"><span class="nav-number">1.3.1.</span> <span class="nav-text">Image Expansion</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Multi-Size-Image-Representation"><span class="nav-number">1.3.2.</span> <span class="nav-text">Multi-Size Image Representation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Object-Removal"><span class="nav-number">1.3.3.</span> <span class="nav-text">Object Removal</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Limitations"><span class="nav-number">1.3.4.</span> <span class="nav-text">Limitations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Forward-Energy"><span class="nav-number">1.3.5.</span> <span class="nav-text">Forward Energy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Seam-Carving-in-Videos"><span class="nav-number">1.3.6.</span> <span class="nav-text">Seam-Carving in Videos</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Segmentation"><span class="nav-number">1.4.</span> <span class="nav-text">Segmentation</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

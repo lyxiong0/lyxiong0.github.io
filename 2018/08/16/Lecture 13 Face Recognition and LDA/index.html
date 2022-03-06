@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="#Lecture 13 Face Recognition and LDA  Introduction to Facial RecognitionApplications 数字摄影：聚焦人脸 监视器 组织相册：将相同的人放在同一相册 人物追踪 动作和表情：构建基于心情互动的智能设备 安全和战争：检测特殊人物、敌军 电话会议：提供正在视频的人的信息  A Key Distinction: Detect">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS131 Lecture 13 Face Recognition and LDA">
+<meta property="og:url" content="http://example.com/2018/08/16/Lecture%2013%20Face%20Recognition%20and%20LDA/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="#Lecture 13 Face Recognition and LDA  Introduction to Facial RecognitionApplications 数字摄影：聚焦人脸 监视器 组织相册：将相同的人放在同一相册 人物追踪 动作和表情：构建基于心情互动的智能设备 安全和战争：检测特殊人物、敌军 电话会议：提供正在视频的人的信息  A Key Distinction: Detect">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.1.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.6.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.7.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.8.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.9.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.10.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.11.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.2.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.6.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.3.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.5.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.4.png">
+<meta property="article:published_time" content="2018-08-16T06:25:45.000Z">
+<meta property="article:modified_time" content="2018-09-01T16:46:16.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="计算机视觉">
+<meta property="article:tag" content="CS131">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.1.png">
+
+<link rel="canonical" href="http://example.com/2018/08/16/Lecture%2013%20Face%20Recognition%20and%20LDA/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CS131 Lecture 13 Face Recognition and LDA | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/16/Lecture%2013%20Face%20Recognition%20and%20LDA/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CS131 Lecture 13 Face Recognition and LDA
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-16 14:25:45" itemprop="dateCreated datePublished" datetime="2018-08-16T14:25:45+08:00">2018-08-16</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-02 00:46:16" itemprop="dateModified" datetime="2018-09-02T00:46:16+08:00">2018-09-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>#Lecture 13 Face Recognition and LDA </p>
+<h2 id="Introduction-to-Facial-Recognition"><a href="#Introduction-to-Facial-Recognition" class="headerlink" title="Introduction to Facial Recognition"></a>Introduction to Facial Recognition</h2><h3 id="Applications"><a href="#Applications" class="headerlink" title="Applications"></a>Applications</h3><ul>
+<li>数字摄影：聚焦人脸</li>
+<li>监视器</li>
+<li>组织相册：将相同的人放在同一相册</li>
+<li>人物追踪</li>
+<li>动作和表情：构建基于心情互动的智能设备</li>
+<li>安全和战争：检测特殊人物、敌军</li>
+<li>电话会议：提供正在视频的人的信息</li>
+</ul>
+<h3 id="A-Key-Distinction-Detection-vs-Recognition"><a href="#A-Key-Distinction-Detection-vs-Recognition" class="headerlink" title="A Key Distinction: Detection vs. Recognition"></a>A Key Distinction: Detection vs. Recognition</h3><p><strong>Face Detection</strong>: 检测照片是否包含人脸和照片上人脸的位置</p>
+<p><strong>Face Recognition</strong>: 检测照片包含<em>谁</em>的脸</p>
+<h3 id="Space-of-Faces"><a href="#Space-of-Faces" class="headerlink" title="Space of Faces"></a>Space of Faces</h3><p>如果我们考虑一张大小为$m\times n$灰度图，这张图可以用一个在高维空间$R^{mn}$上的点表示。一张图不止包含脸，所以脸只占了相对小的子空间。我们的任务就是对脸的子空间建模。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.1.png"></p>
+<p>我们计算出K维子空间，这样数据点在子空间的投影在所有子空间中都有最大的方差。这个低维子空间捕捉了脸部关键样貌特点。    </p>
+<h2 id="The-Eigenfaces-Algorithm"><a href="#The-Eigenfaces-Algorithm" class="headerlink" title="The Eigenfaces Algorithm"></a>The Eigenfaces Algorithm</h2><h3 id="Key-Ideas-and-Assumptions"><a href="#Key-Ideas-and-Assumptions" class="headerlink" title="Key Ideas and Assumptions"></a>Key Ideas and Assumptions</h3><ul>
+<li>假设大多数脸部图像都位于低维子空间，由最大方差的前$k$个方向决定</li>
+<li>用PCA检测旋转子空间的向量或特征面</li>
+<li>将所有数据集中的脸部图像表现为特征面的线性组合，特征面被定义为SVD分解的主成份</li>
+</ul>
+<h4 id="What-are-eigenfaces"><a href="#What-are-eigenfaces" class="headerlink" title="What are eigenfaces?"></a>What are eigenfaces?</h4><p>特征面是最大方差方向的特征向量的视觉呈现。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.6.png"></p>
+<h3 id="Training-Algorithm"><a href="#Training-Algorithm" class="headerlink" title="Training Algorithm"></a>Training Algorithm</h3><ol>
+<li><p>排列训练图像：$x_1,…,x_n$</p>
+</li>
+<li><p>计算平均脸：<br>$$<br>\mu&#x3D;\frac1N \sum x_i<br>$$</p>
+</li>
+<li><p>计算协方差矩阵：<br>$$<br>\Sigma&#x3D;\frac1N X_cX_c^T<br>$$</p>
+</li>
+<li><p>用PCA计算协方差矩阵$\Sigma$的特征向量</p>
+</li>
+<li><p>计算每个训练图像$x_i$的投影<br>$$<br>x_i\rightarrow (x_i^c·\phi_1,x_i^c·\phi_2,…,x_i^c·\phi_k)\equiv(a_1,a_2,…,a_k)<br>$$<br>其中$\phi_i$是第$i$个特征向量。</p>
+</li>
+<li><p>重构的脸$x_i\approx \mu+a_1·\phi_1+…+a_k·\phi_k$</p>
+</li>
+</ol>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.7.png"></p>
+<h4 id="Why-can-we-do-this"><a href="#Why-can-we-do-this" class="headerlink" title="Why can we do this?"></a>Why can we do this?</h4><p>因为特征值（特征向量的方差）随着主成份数目的增加迅速下降</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.8.png"></p>
+<h4 id="Reconstruction-and-Error"><a href="#Reconstruction-and-Error" class="headerlink" title="Reconstruction and Error"></a>Reconstruction and Error</h4><p>我们只需要前$k$个特征面用于减少维度。特征面越少损失越多，脸部越不明显。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.9.png"></p>
+<h3 id="Testing-Algorithm"><a href="#Testing-Algorithm" class="headerlink" title="Testing Algorithm"></a>Testing Algorithm</h3><ol>
+<li><p>取查询图像$t$</p>
+</li>
+<li><p>映射至特征向量：<br>$$<br>t\rightarrow((t-\mu)·\phi_1,(t-\mu)·\phi_2,…,(t-\mu)·\phi_k)\equiv(w_1,w_2,..,w_k)<br>$$</p>
+</li>
+<li><p>比较投影$w$和所有$N$个训练投影。用欧几里德距离和KNN算法输出标签。</p>
+</li>
+</ol>
+<h3 id="Advantages-and-Disadvantages"><a href="#Advantages-and-Disadvantages" class="headerlink" title="Advantages and Disadvantages"></a>Advantages and Disadvantages</h3><p><strong>Advantages</strong></p>
+<ul>
+<li>这个方法不需要预先知道脸部、表情信息</li>
+<li>快速、全局最优</li>
+</ul>
+<p><strong>Disadvantages</strong></p>
+<ul>
+<li>要求小心控制的数据<ol>
+<li>所有脸部必须集中在框架。否则结果噪音大</li>
+<li>图像必须大小相同</li>
+<li>对脸的角度敏感</li>
+</ol>
+</li>
+<li>方法不需要预先知识<ol>
+<li>脸的类别之间没有差别</li>
+<li>PCA不考虑与脸相关的标签。因此它可能将不同的脸对应到相同的子空间，使得分类器难以区别这些脸。</li>
+</ol>
+</li>
+<li>PCA投影在从低维重构上可能是最优的，但在在辨别方面不是最优的。</li>
+</ul>
+<h3 id="Beyond-Facial-Recognition-Expressions-and-Emotions"><a href="#Beyond-Facial-Recognition-Expressions-and-Emotions" class="headerlink" title="Beyond Facial Recognition: Expressions and Emotions"></a>Beyond Facial Recognition: Expressions and Emotions</h3><p>这项技术也可以用于检测表达和情绪，且算法不改变。</p>
+<p>高兴↓</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.10.png"></p>
+<p>厌恶↓</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.11.png"></p>
+<h2 id="Linear-Discriminant-Analysis-LDA"><a href="#Linear-Discriminant-Analysis-LDA" class="headerlink" title="Linear Discriminant Analysis (LDA)"></a>Linear Discriminant Analysis (LDA)</h2><h3 id="PCA-vs-LDA"><a href="#PCA-vs-LDA" class="headerlink" title="PCA vs. LDA"></a>PCA vs. LDA</h3><p>PCA与LDA都能减少样本的维度。但是，PCA偏重于重建物体，LDA偏重于分类。LDA会将不同的类相互远离。</p>
+<ul>
+<li>PCA保持最大方差</li>
+<li>LDA找到能够在类之间最大化散射和在类中最小化散射的投影。</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.2.png"></p>
+<p>如图，PCA保持了最大方差，并将所有类的点都映射在正斜率方向上，因此难以判别类别。但是，LDA将点映射到负斜率，导致点被映射到接近同类点，与非同类点相反的位置。</p>
+<h3 id="General-Idea"><a href="#General-Idea" class="headerlink" title="General Idea"></a>General Idea</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.6.png"></p>
+<p>LDA用两个值运行：类间散度、类内散度。类间散度指不同类之间的距离，类内散度指类内点之间的距离。LDA最大化类间散度，最小化类内散度。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.3.png"></p>
+<h3 id="Mathematical-Formulation-of-LDA-with-2-Variables"><a href="#Mathematical-Formulation-of-LDA-with-2-Variables" class="headerlink" title="Mathematical Formulation of LDA with 2 Variables"></a>Mathematical Formulation of LDA with 2 Variables</h3><p>我们想要找到一个投影$w$在$x\in R^n$空间中映射出0和1的点到一个新的空间$z\in R^m$，例如$z&#x3D;w^Tx$。其中，$m&lt;n$，且投影必须最大化以下公式：<br>$$<br>J(w)&#x3D;\frac{S_B\space when\space projected\space onto\space w}{S_W\space when\space projected\space onto\space w}<br>$$<br>公式中，$S_B$代表类间散度，$S_W$代表类内散度。接下来定义一个代表类内点的平均的变量$\mu_i$：<br>$$<br>\mu_i&#x3D;E_{X|Y}[X|Y&#x3D;i]<br>$$<br>定义变量$\Sigma_i$代表类的协方差矩阵：<br>$$<br>\Sigma_i&#x3D;E_{X|Y}[(X-\mu_i)(X-\mu_i)^T|Y&#x3D;i]<br>$$<br>用以上变量，可以定义$S_B$和$S_W$：<br>$$<br>S_B&#x3D;(\mu_1-\mu_0)^2&#x3D;(\mu_1-\mu_0)(\mu_1-\mu_0)^T\<br>S_W&#x3D;(\Sigma_1+\Sigma_0)<br>$$<br>将变量放回原式$J(w)$可得：<br>$$<br>J(w)&#x3D;\frac{w^T(\mu_1-\mu_0)(\mu_1-\mu_0)^Tw}{w^T(\Sigma_1+\Sigma_0)w}<br>$$<br>我们要最大化$J(w)$，即最大化分子，保持分母为常数：<br>$$<br>\max_{w^T(\Sigma_1+\Sigma_0)w&#x3D;K}w^T(\mu_1-\mu_0)(\mu_1-\mu_0)^Tw<br>$$<br>用拉格朗日乘数法，我们定义拉格朗日算子为：<br>$$<br>L&#x3D;w^TS_Bw-\lambda(w^TS_Ww-K)&#x3D;w^T(S_B-\lambda S_W)w+K<br>$$<br>我们必须最大化$L$对$\lambda$和$w$的值。我们可以通过用其关于$w$的梯度和找到关键点的位置：<br>$$<br>\nabla_wL&#x3D;2(S_B-\lambda S_W)w&#x3D;0<br>$$<br>用这个公式，我们可以得到关键点位置：<br>$$<br>S_Bw&#x3D;\lambda S_Ww<br>$$<br>这是一个广义的特征向量问题。在$S_W^{-1}&#x3D;(\Sigma_1+\Sigma_0)^{-1}$存在的情况下，我们得到：<br>$$<br>S_W^{-1}S_Bw&#x3D;\lambda w<br>$$<br>代入$S_B$得：<br>$$<br>S_W^{-1}(\mu_1-\mu_0)&#x3D;\frac\lambda\alpha w<br>$$<br>$w$的大小并不重要，所以我们可以得到映射$w$：<br>$$<br>w*&#x3D;S_W^{-1}(\mu_1-\mu_0)&#x3D;(\Sigma_1-\Sigma_0)^{-1}(\mu_1-\mu_0)<br>$$</p>
+<h3 id="LDA-with-N-Variables-and-C-Classes"><a href="#LDA-with-N-Variables-and-C-Classes" class="headerlink" title="LDA with N Variables and C Classes"></a>LDA with N Variables and C Classes</h3><h4 id="Preliminaries"><a href="#Preliminaries" class="headerlink" title="Preliminaries"></a>Preliminaries</h4><p><strong>Variables:</strong></p>
+<ul>
+<li><p>N个样本：${x_1,…,x_N}$</p>
+</li>
+<li><p>C个类:${Y_1,Y_2,…,Y_C}$。每一类都有N个样本。</p>
+</li>
+<li><p>每个类的平均：类$i$的平均为<br>$$<br>\mu_i&#x3D;\frac 1{N_i}\sum_{x_k\in Y_i}x_k<br>$$</p>
+</li>
+<li><p>所有数据的平均：<br>$$<br>\mu&#x3D;\frac 1N\sum_{k&#x3D;1}^N x_k<br>$$</p>
+</li>
+</ul>
+<p><strong>Scatter Matrices:</strong></p>
+<ul>
+<li>类$i$散度：$S_i&#x3D;\sum_{x_k\in Y_i}(x_k-\mu_i)(x_k-\mu_i)^T$</li>
+<li>类内散度：$S_w&#x3D;\sum^{c}_{i&#x3D;1}S_i$</li>
+<li>类间散度：$S_b&#x3D;\sum_{i&#x3D;1}^cN_i(\mu_i-\mu)(\mu_i-\mu)^T$</li>
+</ul>
+<h4 id="Mathematical-Formulation"><a href="#Mathematical-Formulation" class="headerlink" title="Mathematical Formulation"></a>Mathematical Formulation</h4><p>我们需要一个将所有点从$x\in R^m$映射到$z\in R^n$的投影：<br>$$<br>z&#x3D;w^Tx,x\in R^m,z\in R^n<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.5.png"></p>
+<h3 id="Results-Eigenface-PCA-vs-Fisherface-LDA"><a href="#Results-Eigenface-PCA-vs-Fisherface-LDA" class="headerlink" title="Results: Eigenface(PCA) vs. Fisherface(LDA)"></a>Results: Eigenface(PCA) vs. Fisherface(LDA)</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.4.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+              <a href="/tags/CS131/" rel="tag"># CS131</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/15/Lecture%2012%20Face%20Recognition%20&%20Dimensionality%20Reduction/" rel="prev" title="CS131 Lecture 12 Face Recognition & Dimensionality Reduction">
+      <i class="fa fa-chevron-left"></i> CS131 Lecture 12 Face Recognition & Dimensionality Reduction
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/19/Lecture%2014%20Visual%20Bag%20of%20Words/" rel="next" title="CS131 Lecture 14 Visual Bag of Words">
+      CS131 Lecture 14 Visual Bag of Words <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction-to-Facial-Recognition"><span class="nav-number">1.</span> <span class="nav-text">Introduction to Facial Recognition</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Applications"><span class="nav-number">1.1.</span> <span class="nav-text">Applications</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#A-Key-Distinction-Detection-vs-Recognition"><span class="nav-number">1.2.</span> <span class="nav-text">A Key Distinction: Detection vs. Recognition</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Space-of-Faces"><span class="nav-number">1.3.</span> <span class="nav-text">Space of Faces</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#The-Eigenfaces-Algorithm"><span class="nav-number">2.</span> <span class="nav-text">The Eigenfaces Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Key-Ideas-and-Assumptions"><span class="nav-number">2.1.</span> <span class="nav-text">Key Ideas and Assumptions</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#What-are-eigenfaces"><span class="nav-number">2.1.1.</span> <span class="nav-text">What are eigenfaces?</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Training-Algorithm"><span class="nav-number">2.2.</span> <span class="nav-text">Training Algorithm</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Why-can-we-do-this"><span class="nav-number">2.2.1.</span> <span class="nav-text">Why can we do this?</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Reconstruction-and-Error"><span class="nav-number">2.2.2.</span> <span class="nav-text">Reconstruction and Error</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Testing-Algorithm"><span class="nav-number">2.3.</span> <span class="nav-text">Testing Algorithm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Advantages-and-Disadvantages"><span class="nav-number">2.4.</span> <span class="nav-text">Advantages and Disadvantages</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Beyond-Facial-Recognition-Expressions-and-Emotions"><span class="nav-number">2.5.</span> <span class="nav-text">Beyond Facial Recognition: Expressions and Emotions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linear-Discriminant-Analysis-LDA"><span class="nav-number">3.</span> <span class="nav-text">Linear Discriminant Analysis (LDA)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#PCA-vs-LDA"><span class="nav-number">3.1.</span> <span class="nav-text">PCA vs. LDA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#General-Idea"><span class="nav-number">3.2.</span> <span class="nav-text">General Idea</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mathematical-Formulation-of-LDA-with-2-Variables"><span class="nav-number">3.3.</span> <span class="nav-text">Mathematical Formulation of LDA with 2 Variables</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LDA-with-N-Variables-and-C-Classes"><span class="nav-number">3.4.</span> <span class="nav-text">LDA with N Variables and C Classes</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Preliminaries"><span class="nav-number">3.4.1.</span> <span class="nav-text">Preliminaries</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Mathematical-Formulation"><span class="nav-number">3.4.2.</span> <span class="nav-text">Mathematical Formulation</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Results-Eigenface-PCA-vs-Fisherface-LDA"><span class="nav-number">3.5.</span> <span class="nav-text">Results: Eigenface(PCA) vs. Fisherface(LDA)</span></a></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

@@ -1,0 +1,1518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="普普通通">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Xiong&#39;s Blog">
+<meta property="og:url" content="http://example.com/page/3/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="普普通通">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:author" content="Liyao Xiong">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/page/3/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : true,
+    isPost : false,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content index posts-expand">
+            
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/05/Lecture%201%20Course%20Introduction/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2018/07/05/Lecture%201%20Course%20Introduction/" class="post-title-link" itemprop="url">CS131 Lecture 1 Course Introduction</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-05 13:12:34" itemprop="dateCreated datePublished" datetime="2018-07-05T13:12:34+08:00">2018-07-05</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-01 23:44:45" itemprop="dateModified" datetime="2018-09-01T23:44:45+08:00">2018-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h1 id="Lecture-1-Course-Introduction"><a href="#Lecture-1-Course-Introduction" class="headerlink" title="Lecture 1 Course Introduction"></a>Lecture 1 Course Introduction</h1><h2 id="什么是计算机视觉？"><a href="#什么是计算机视觉？" class="headerlink" title="什么是计算机视觉？"></a>什么是计算机视觉？</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><ul>
+<li><p>从数字图像中提取信息。这些信息可以随着定义不同而改变，可以是空间测量、现实增强等等</p>
+</li>
+<li><p>构造一个可以理解图片意思并能应用的算法。</p>
+<h3 id="一个艰难的问题"><a href="#一个艰难的问题" class="headerlink" title="一个艰难的问题"></a>一个艰难的问题</h3><p>50年来，计算视觉都没有很好的被解决。</p>
+</li>
+<li><p>可以暴力算出棋类解法，但是无法写诗</p>
+</li>
+<li><p>目标识别比3D建模更难</p>
+</li>
+<li><p>计算机视觉难在像素和其意义的不同</p>
+<h2 id="理解人类视觉"><a href="#理解人类视觉" class="headerlink" title="理解人类视觉"></a>理解人类视觉</h2><h3 id="视觉定义"><a href="#视觉定义" class="headerlink" title="视觉定义"></a>视觉定义</h3></li>
+<li><p>一个可以提取尽可能多的信息的传感器（眼睛、相机）。这方面相机优于人眼，因为可以通过技术看到更远的地方。</p>
+</li>
+<li><p>处理器需要处理信息并提取其中的含义。这部分计算机视觉仍然落后于人类。</p>
+<h3 id="人类视觉系统"><a href="#人类视觉系统" class="headerlink" title="人类视觉系统"></a>人类视觉系统</h3><p>1962年，科学家发现猫的一些视觉神经只有在特殊的线条位置、特别的角度会产生反映。由此引发了对人类视觉的研究。</p>
+<h3 id="人类视觉有多强？"><a href="#人类视觉有多强？" class="headerlink" title="人类视觉有多强？"></a>人类视觉有多强？</h3></li>
+<li><p>速度<br>人类视觉系统效率极高，下图是人类对动物&#x2F;非动物图片反映时间</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/1.1.png"></p>
+</li>
+<li><p>错觉<br>人类视觉会因为专注于图片的重要部分而忽视不相关的小细节，如果信号十分接近背景，那就十分难以从图片的相关部分中检测和分割出来。</p>
+</li>
+<li><p>环境（背景知识）<br>人类依赖先前的知识来识别图片的线索（图片的重点、特殊位置会出现什么），这是计算机视觉难以做到的。环境也能帮助大脑补偿阴影中的颜色，但是有时候环境也会愚弄人类。</p>
+<h3 id="从大自然中学习"><a href="#从大自然中学习" class="headerlink" title="从大自然中学习"></a>从大自然中学习</h3><p>计算机视觉不是完全模仿人脑，然而，神经学家希望能深入了解视觉、语言和其他形式的智力背后的概念。 </p>
+<h2 id="从图片中提取信息"><a href="#从图片中提取信息" class="headerlink" title="从图片中提取信息"></a>从图片中提取信息</h2><p>可以提取两类信息：度量值、语义信息</p>
+<h3 id="度量设备"><a href="#度量设备" class="headerlink" title="度量设备"></a>度量设备</h3><p>自动驾驶到未知地点需要扫描周围环境确定最佳路径，这时计算机视觉就可以作为度量设备测量环境并创造环境地图。立体摄像头通过三角测量提供深度信息，像眼睛一样。如果我们将视角点提高到包含物体所有面，我们就可以创造物体的3D表面，甚至可以通过Google图片重构一个纪念碑的3D模型。同时，计算机视觉还可以帮助机器理解物品的3D几何结构，以便于机器找到好的把握位置。</p>
+<h3 id="语义信息来源"><a href="#语义信息来源" class="headerlink" title="语义信息来源"></a>语义信息来源</h3><p>在度量信息之上还包含着密集的语义信息。我们可以标记图片中的各种物体，例如：整个风景、人、动作、姿态、脸等等。医学图片也有很多语义信息，例如：通过皮肤细胞的图片来判断是否有癌症。</p>
+<h2 id="计算机视觉的应用"><a href="#计算机视觉的应用" class="headerlink" title="计算机视觉的应用"></a>计算机视觉的应用</h2><p>以下是一份不完全的计算机视觉应用列表</p>
+</li>
+<li><p>特效：将人类演员的动作表情复制到动画人物上。我们需要检测3D空间内演员脸上标记的准确位置，然后将它们重构到人物上，例如：阿凡达。</p>
+</li>
+<li><p>3D城市模型：用于将无人机拍到的照片整合到一起，创建城市的3D模型。</p>
+</li>
+<li><p>风景识别：识别图片的拍摄地点。</p>
+</li>
+<li><p>面部检测：可以帮助相机识别并专注于人脸，拍出更好的照片。</p>
+</li>
+<li><p>光学字符检测：用于读取邮政编码之类，最老的应用之一。</p>
+</li>
+<li><p>移动视觉搜索：加快以图搜图的速度。</p>
+</li>
+<li><p>自动驾驶</p>
+</li>
+<li><p>自助收银</p>
+</li>
+<li><p>基于视觉的互动：Microsoft’s Kinect 和 任天堂的Wii</p>
+</li>
+<li><p>增强现实： AR(Augmented Reality)</p>
+</li>
+<li><p>虚拟显示：VR(Virtual Reality)</p>
+</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/10/17/Matlab-Week3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/10/17/Matlab-Week3/" class="post-title-link" itemprop="url">Matlab Week3</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-10-17 00:00:00" itemprop="dateCreated datePublished" datetime="2017-10-17T00:00:00+08:00">2017-10-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-10-24 10:59:30" itemprop="dateModified" datetime="2017-10-24T10:59:30+08:00">2017-10-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Matrices-and-Operators"><a href="#Matrices-and-Operators" class="headerlink" title="Matrices and Operators"></a>Matrices and Operators</h2><h3 id="The-colon-Operator"><a href="#The-colon-Operator" class="headerlink" title="The colon Operator"></a>The colon Operator</h3><p>a:b:c表示行向量a,a+b,…,a+nb(a+nb&lt;c)，若仅输入a:b则默认c&#x3D;1，若输入的a&gt;b则返回空矩阵</p>
+<h3 id="Accessing-Parts-of-a-Matrix"><a href="#Accessing-Parts-of-a-Matrix" class="headerlink" title="Accessing Parts of a Matrix"></a>Accessing Parts of a Matrix</h3><ul>
+<li>x(a,b)返回x矩阵中a行b列的元素</li>
+<li>X(a,b)&#x3D;c，若X矩阵不存在或者(a,b)超出其行列数，则matlab会拓展出一个最小满足该要求的矩阵，除了(a,b)位置为c其他新增位置为0。X存在则c替换(a,b)原有数字</li>
+<li>X([a,b],c)，返回第c列中的a、b行的元素，有各种变式</li>
+<li>end是matlab中的一个关键字，不能作为变量名，矩阵索引中可以当作一个表示最后的数字</li>
+</ul>
+<h3 id="Combining-and-Transforming-Matrices"><a href="#Combining-and-Transforming-Matrices" class="headerlink" title="Combining and Transforming Matrices"></a>Combining and Transforming Matrices</h3><ul>
+<li>可以将矩阵作为一个整体进行拼合，例如C&#x3D;[A,B]，注意行拼合行数相同，列拼合列数相同</li>
+<li>‘表示矩阵转置</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/10/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week11/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/10/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week11/" class="post-title-link" itemprop="url">机器学习 Week11</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-10-17 00:00:00" itemprop="dateCreated datePublished" datetime="2017-10-17T00:00:00+08:00">2017-10-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-10-18 16:11:15" itemprop="dateModified" datetime="2017-10-18T16:11:15+08:00">2017-10-18</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Photo-OCR"><a href="#Photo-OCR" class="headerlink" title="Photo OCR"></a>Photo OCR</h2><h3 id="Problem-Description-and-Pipeline"><a href="#Problem-Description-and-Pipeline" class="headerlink" title="Problem Description and Pipeline"></a>Problem Description and Pipeline</h3><p>Photo OCR全称为photo optical character recognition(照片光学字符识别)，用于读取图片中的文字信息。</p>
+<p>photo OCR步骤（又称机器学习流水线）：</p>
+<ul>
+<li>给定图片，检测有文字的位置</li>
+<li>通过得到的矩形文字框，对里面的字母进行独立分割</li>
+<li>识别字母，通过修正</li>
+</ul>
+<h3 id="Sliding-Windows"><a href="#Sliding-Windows" class="headerlink" title="Sliding Windows"></a>Sliding Windows</h3><p>滑动窗分类器用于文字检测(text detection)，确定一个长宽固定的矩形框，在一幅图片中每次一个步长(又称步幅参数stride parameter)移动矩形框遍历图片获得图像块数据，通常步长选择为4-8像素。</p>
+<p>在图片识别中，将识别到有文字的图像块周边进行检测，如果周边也有被检测到的图像块，就扩展连接两个图像块。同时可以人工忽略检测后长宽不正常的图像块。</p>
+<p>检测后，将识别到两个字母间的图像块设置为正样本y&#x3D;1，识别到完整字母的为负样本y&#x3D;0</p>
+<h3 id="Getting-Lots-of-Data-and-Artificial-Data"><a href="#Getting-Lots-of-Data-and-Artificial-Data" class="headerlink" title="Getting Lots of Data and Artificial Data"></a>Getting Lots of Data and Artificial Data</h3><p>使用人工数据合成(artificial data synthesis)收集大量数据，通常有两种方法。</p>
+<ol>
+<li>在已有数据的基础上拓展其他数据。例如：将收集到含有字母的图像块，用不同的字体替换图中字母，就得到了新的图像块。</li>
+<li>将数据变形（图像块扭曲，音频变调、加噪声等等）以获得更多数据</li>
+<li>“Crowd source”众包，雇别人帮你收集、标记数据</li>
+</ol>
+<ul>
+<li>需要将已有数据变形才能获得新数据，单纯的复制多个相同的数据是无用的</li>
+</ul>
+<h3 id="Ceiling-Analysis-What-Part-of-the-Pipeline-to-Work-on-Next"><a href="#Ceiling-Analysis-What-Part-of-the-Pipeline-to-Work-on-Next" class="headerlink" title="Ceiling Analysis: What Part of the Pipeline to Work on Next"></a>Ceiling Analysis: What Part of the Pipeline to Work on Next</h3><p>上限分析(Ceiling Analysis)可以帮助你找到最值得花时间去改进的模块。原理：人工将某一模块全部设置为正确y&#x3D;1，查看整个系统的准确率提高多少，比较所花时间后选择改进性价比最高的模块进行改进。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/10/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week10/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/10/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week10/" class="post-title-link" itemprop="url">机器学习 Week10</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-10-11 00:00:00" itemprop="dateCreated datePublished" datetime="2017-10-11T00:00:00+08:00">2017-10-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-10-16 17:43:37" itemprop="dateModified" datetime="2017-10-16T17:43:37+08:00">2017-10-16</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Gradient-Descent-with-Large-Datasets"><a href="#Gradient-Descent-with-Large-Datasets" class="headerlink" title="Gradient Descent with Large Datasets"></a>Gradient Descent with Large Datasets</h2><h3 id="Learning-With-Large-Datasets"><a href="#Learning-With-Large-Datasets" class="headerlink" title="Learning With Large Datasets"></a>Learning With Large Datasets</h3><p>先使用小的数据集（例如m&#x3D;1000），绘制学习曲线(Jtrain(θ)、Jcv(θ))，看m为小数值的时候是否出现高偏差(high variance)，出现则用大数据集</p>
+<h3 id="Stochastic-Gradient-Descent"><a href="#Stochastic-Gradient-Descent" class="headerlink" title="Stochastic Gradient Descent"></a>Stochastic Gradient Descent</h3><p>随机梯度下降通常用于大数据算法，扫描所有算法，对每个样本分别进行梯度下降。应该提前随机打乱数据，可以让梯度下降更快。第二步的整个循环一般进行1-10次，通常m越大执行次数越小。同时，Jtrain必须执行batch gradient descent（批量梯度下降，为了学习α），而不一定需要执行Stochastic Gradient Descent</p>
+<p><img src="https://i.imgur.com/bXec05e.png"></p>
+<h3 id="Mini-Batch-Gradient-Descent"><a href="#Mini-Batch-Gradient-Descent" class="headerlink" title="Mini-Batch Gradient Descent"></a>Mini-Batch Gradient Descent</h3><p>取b&#x3D;mini-batch size, b介于1-m之间，步骤同随机梯度下降，只是循环内多出Σ项</p>
+<h4 id="为什么选择mini-batch-而不是stochastic"><a href="#为什么选择mini-batch-而不是stochastic" class="headerlink" title="为什么选择mini-batch 而不是stochastic?"></a>为什么选择mini-batch 而不是stochastic?</h4><p>因为mini-batch可以用向量化的方法直接计算</p>
+<h3 id="Stochastic-Gradient-Descent-Convergence"><a href="#Stochastic-Gradient-Descent-Convergence" class="headerlink" title="Stochastic Gradient Descent Convergence"></a>Stochastic Gradient Descent Convergence</h3><p>检查算法是否收敛：</p>
+<p>在更新θ前，计算cost(θ,(x,y))，每一千次迭代就计算一次平均的cost并画出</p>
+<p><img src="https://i.imgur.com/y672TLf.png"></p>
+<ul>
+<li>左上曲线代表已经收敛，其中红色曲线震荡更小，说明红色曲线的α值更小</li>
+<li>右上曲线也已收敛，红色曲线代表增加平均样本数（每5000计算一次）</li>
+<li>左下代表没有收敛，同样，红色曲线代表增加平均样本数（每5000计算一次）</li>
+<li>右下代表算法发散，需要使用小α</li>
+</ul>
+<p>如果不改变α，算法最后会在全局最小值处震荡，如果需要接近全局最小值，则需要令α随着迭代次数减小。</p>
+<h2 id="Advanced-Topics"><a href="#Advanced-Topics" class="headerlink" title="Advanced Topics"></a>Advanced Topics</h2><h3 id="Online-Learning"><a href="#Online-Learning" class="headerlink" title="Online Learning"></a>Online Learning</h3><p>例如：快递网站提供运费查询，如果用户查询后未寄件则记为负样本y&#x3D;0，若寄出，则记为y&#x3D;1.</p>
+<p>算法：用逻辑回归或者神经网络计算P(y&#x3D;1)，每进来一个用户学习一次，不保存数据，学习后直接丢弃该数据。</p>
+<p>优点：对大量用户的网站进行偏好优化</p>
+<p>应用2：预估点击率CTR，推送给用户最有可能被点击的条目</p>
+<h3 id="Map-Reduce-and-Data-Parallelism"><a href="#Map-Reduce-and-Data-Parallelism" class="headerlink" title="Map Reduce and Data Parallelism"></a>Map Reduce and Data Parallelism</h3><p>映射简约(Map Reduce)，可以让多台计算机来计算同一大规模算法。</p>
+<p>过程：将数据平分为几个部分，分别交给不同计算机计算，最后汇总给中央处理器计算。</p>
+<p>要求：算法可以拆分为函数的求和</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/10/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week9/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/10/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week9/" class="post-title-link" itemprop="url">机器学习 Week9</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-10-03 00:00:00" itemprop="dateCreated datePublished" datetime="2017-10-03T00:00:00+08:00">2017-10-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-10-15 00:29:21" itemprop="dateModified" datetime="2017-10-15T00:29:21+08:00">2017-10-15</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="异常检测-Anomaly-detection"><a href="#异常检测-Anomaly-detection" class="headerlink" title="异常检测(Anomaly detection)"></a>异常检测(Anomaly detection)</h2><p>简介：通过一系列特征变量X建造一个模型p(x)，若p(x)&lt;ε，则可以认为该数据异常，进行进一步检测。</p>
+<p>应用：制造业、用户行为检测、数据中心</p>
+<h3 id="高斯分布-正态分布"><a href="#高斯分布-正态分布" class="headerlink" title="高斯分布(正态分布)"></a>高斯分布(正态分布)</h3><p>x~N(μ,σ²)</p>
+<p>~表示服从····分布，N表示Normal(正态)，μ表示均值，σ²表示方差（σ为标准差）</p>
+<p>μ决定中心位置，σ越小曲线越窄高，但曲线所围面积总为1</p>
+<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><p>Π：累乘标志</p>
+<p>步骤：</p>
+<ol>
+<li>找出可以用于检测错误的特征x，或者可以描述相关属性的特征x</li>
+<li>找出m个无标签数据构成的训练集，拟合出期望与方差值</li>
+<li>计算p(x)，如果p(X)&lt;ε，则异常</li>
+</ol>
+<p>公式如下：</p>
+<p><img src="https://i.imgur.com/8q7PaN4.png"></p>
+<h2 id="如何开发异常检测系统"><a href="#如何开发异常检测系统" class="headerlink" title="如何开发异常检测系统"></a>如何开发异常检测系统</h2><h3 id="如何评价一个异常检测算法"><a href="#如何评价一个异常检测算法" class="headerlink" title="如何评价一个异常检测算法"></a>如何评价一个异常检测算法</h3><p>以6:2:2的比例将好的样本分配给训练集&#x2F;CV&#x2F;测试集，将坏的样本以1:1的比例分配给CV&#x2F;测试集（有时候训练集会参杂一些坏样本，不影响结果）</p>
+<p>方法：</p>
+<ol>
+<li>用训练集拟合p(x)</li>
+<li>用CV&#x2F;测试集的x来预测y，p(x)&gt;&#x3D;ε，y&#x3D;0，正常</li>
+</ol>
+<p>评估(在CV中)：因为y大量偏向于0，所以分类准确度不是一个好的评估方法。</p>
+<p>应该使用召回率&#x2F;查准率、F1-score之类的方法评估</p>
+<h3 id="与监督学习对比"><a href="#与监督学习对比" class="headerlink" title="与监督学习对比"></a>与监督学习对比</h3><p>异常检测：</p>
+<ul>
+<li>大量的负样本（正常）与极少数的正样本（异常）</li>
+<li>有很多不同类型的正样本（异常）</li>
+<li>可能会出现新的异常种类，所以需要对负样本建模，而不是正样本</li>
+</ul>
+<p>监督学习：</p>
+<ul>
+<li>大量的正、负样本</li>
+<li>正样本特征均类似，不会出现新的类型</li>
+</ul>
+<h3 id="特征变量的选择"><a href="#特征变量的选择" class="headerlink" title="特征变量的选择"></a>特征变量的选择</h3><p>如果数据不遵循高斯分布，则要通过取指数、对数的方法转换为高斯分布（通过hist指令画出直方图观察）</p>
+<p>常见问题：异常样本的p(x)也很大。</p>
+<p>解决：观察被错误判断异常样本，找出新的特征变量。同时可以通过整合两个特征变量形成新的特征变量，例如x3&#x3D;(x1)²&#x2F;x2</p>
+<h2 id="推荐系统"><a href="#推荐系统" class="headerlink" title="推荐系统"></a>推荐系统</h2><h3 id="基于内容的推荐"><a href="#基于内容的推荐" class="headerlink" title="基于内容的推荐"></a>基于内容的推荐</h3><p>nu&#x3D;用户数量，nm&#x3D;电影数量。</p>
+<p>给予内容的不同特征以不同比重值，加上x0&#x3D;1构成特征矩阵x(x∈n+1阶)。对每个用户j构造参数θ(j)(θ∈n+1阶)，其中Θ(0)&#x3D;0，θ中其他值表示用户对该类型的喜爱程度。则可以预测用户j对电影i有θ(j)‘.*x(i)星。</p>
+<p><img src="https://i.imgur.com/gTHyOrL.png"></p>
+<p><img src="https://i.imgur.com/7IBt0jX.png"></p>
+<h3 id="协同过滤-Collaborative-Filtering"><a href="#协同过滤-Collaborative-Filtering" class="headerlink" title="协同过滤(Collaborative Filtering)"></a>协同过滤(Collaborative Filtering)</h3><p>特点：自动学习需要的特征，即一直θ值，用于学习x的值</p>
+<p><img src="https://i.imgur.com/c480rkA.png"></p>
+<p>结合内容推荐：先计算θ，再计算x-&gt;θ-&gt;x·······，反复迭代</p>
+<h3 id="协同过滤算法"><a href="#协同过滤算法" class="headerlink" title="协同过滤算法"></a>协同过滤算法</h3><p>将x与θ的迭代式结合，一步完成，同时<em>不需要x0和θ0</em>：</p>
+<p><img src="https://i.imgur.com/CmX3n0P.png"></p>
+<h2 id="协同过滤向量法实现"><a href="#协同过滤向量法实现" class="headerlink" title="协同过滤向量法实现"></a>协同过滤向量法实现</h2><p>Y–用户对每部电影的评分矩阵；X–用户向量；Θ–每行是每个用户的θ；预测矩阵：Θ‘*X</p>
+<p><em>协同过滤向量法也被称为 低zhi矩阵分解</em></p>
+<h3 id="如何衡量两个电影间相似性？"><a href="#如何衡量两个电影间相似性？" class="headerlink" title="如何衡量两个电影间相似性？"></a>如何衡量两个电影间相似性？</h3><p>计算两部电影间的距离||x(i)-x(j)||</p>
+<h3 id="细节：均值归一化"><a href="#细节：均值归一化" class="headerlink" title="细节：均值归一化"></a>细节：均值归一化</h3><p>如果出现未评分的新用户，则先根据先前评分计算出平均评分μ，再将每个用户评分都减去平均评分，最后形成新的评分矩阵Y替代先前的Y。而新用户的评分则在新Y中设置为0。</p>
+<p>所以预测矩阵也随之更改为Θ‘*X+μ(平均值)</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/09/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/09/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week8/" class="post-title-link" itemprop="url">机器学习 Week8</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-26 00:00:00" itemprop="dateCreated datePublished" datetime="2017-09-26T00:00:00+08:00">2017-09-26</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-09-28 13:56:52" itemprop="dateModified" datetime="2017-09-28T13:56:52+08:00">2017-09-28</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="聚类-clustering"><a href="#聚类-clustering" class="headerlink" title="聚类(clustering)"></a>聚类(clustering)</h2><h3 id="无监督学习-unsupervised-learning"><a href="#无监督学习-unsupervised-learning" class="headerlink" title="无监督学习(unsupervised learning)"></a>无监督学习(unsupervised learning)</h3><p>输入没有标记的数据，通过算法找出结构。</p>
+<h3 id="K均值算法-K-Means-Algorithm"><a href="#K均值算法-K-Means-Algorithm" class="headerlink" title="K均值算法(K-Means Algorithm)"></a>K均值算法(K-Means Algorithm)</h3><p>选择k个聚类中心（需要聚k个类），K均值要<strong>迭代</strong>的做两件事：簇分配和移动聚类中心。</p>
+<ul>
+<li>簇分配：遍历所有样本，根据样本更靠近哪个聚类中心来分类。</li>
+<li>移动聚类中心：将两个聚类中心移动到同类型的均值处。</li>
+</ul>
+<p>最终聚类中心不再移动时，算法完成。</p>
+<p>详细步骤：</p>
+<p><img src="https://i.imgur.com/qxYf1dZ.png"></p>
+<p><em>注意图中K的大小写，小写k是聚类的下标，大写K为聚类的总数</em> ，c(i)的值为x(i)最靠近的那个聚类的编号（下标）。如果出现某个簇没有被分配数据，则删除这个簇，或者重新随机分配一个簇。</p>
+<h3 id="优化目标函数-Optimization-Objective"><a href="#优化目标函数-Optimization-Objective" class="headerlink" title="优化目标函数(Optimization Objective)"></a>优化目标函数(Optimization Objective)</h3><p><img src="https://i.imgur.com/Ix6Snsn.png"></p>
+<p>优化目标函数也称作失真代价函数(distortion cost function)，实际上，K均值算法的第一步簇分配就是选择c(1)到c(m)来最小化函数J。第二步移动聚类中心则是选择能够最小化函数J的μ值。</p>
+<p>注意，函数J只会一直下降，如果出现波动则算法错误。</p>
+<h3 id="随机初始化-Random-Initialization"><a href="#随机初始化-Random-Initialization" class="headerlink" title="随机初始化(Random Initialization)"></a>随机初始化(Random Initialization)</h3><p>随机挑选K个样本成为K个聚类中心</p>
+<p>如何避免局部最优：初始化10次，得到代价函数J最小的那一个.（K一般为2-10个）</p>
+<h3 id="选择聚类数目"><a href="#选择聚类数目" class="headerlink" title="选择聚类数目"></a>选择聚类数目</h3><ul>
+<li>肘部法则：画出J-K的折线图，选择a—b—c中a—b变化急剧，b—c变化变缓的b点K值（类似于肘部）。</li>
+<li>根据后来的需求决定K，例如：T恤的生产，选择3个S M L或者加上XS XL成为5个。</li>
+</ul>
+<h2 id="维数约减-dimensionality-reduction"><a href="#维数约减-dimensionality-reduction" class="headerlink" title="维数约减(dimensionality reduction)"></a>维数约减(dimensionality reduction)</h2><h3 id="数据压缩"><a href="#数据压缩" class="headerlink" title="数据压缩"></a>数据压缩</h3><p>将数据从2D降到1D：将所有数据投影到一条直线上</p>
+<p>将数据从3D降到2D：将所有数据投影到一个平面上</p>
+<h3 id="可视化数据"><a href="#可视化数据" class="headerlink" title="可视化数据"></a>可视化数据</h3><p>把数据从高维降至二、三维，画出点图</p>
+<h3 id="主成分分析法-Principal-Component-Analysis-PCA"><a href="#主成分分析法-Principal-Component-Analysis-PCA" class="headerlink" title="主成分分析法(Principal Component Analysis,PCA)"></a>主成分分析法(Principal Component Analysis,PCA)</h3><p>定义：构造一个向量（二维中为两个相互垂直的向量），使得投影点到向量延长直线（平面）的距离之和最小。</p>
+<p>与线性规划的区别：线性规划最小化的是点到直线的垂线距离（垂直于x轴）的平方和，而PCA则是最小化点到直线的距离（垂直于直线）和。</p>
+<h4 id="数据预处理"><a href="#数据预处理" class="headerlink" title="数据预处理"></a>数据预处理</h4><p>特征缩放、均值归一化：</p>
+<p><img src="https://i.imgur.com/yhCWTJ2.png"></p>
+<h4 id="具体步骤"><a href="#具体步骤" class="headerlink" title="具体步骤"></a>具体步骤</h4><p><img src="https://i.imgur.com/Ol5xupO.png"></p>
+<ul>
+<li>协方差和求和符号Σ重复，注意区分。</li>
+<li>U为nxn矩阵，x为nx1矩阵，设Ureduce为U的前k列矩阵（即为nxk，降至k维），z&#x3D;Ureduce‘*x（kx1矩阵）</li>
+</ul>
+<h2 id="PCA的应用"><a href="#PCA的应用" class="headerlink" title="PCA的应用"></a>PCA的应用</h2><h3 id="解压缩维度"><a href="#解压缩维度" class="headerlink" title="解压缩维度"></a>解压缩维度</h3><p>因为z&#x3D;Ureduce‘*x用于压缩，所有x&#x3D;Ureduce x z即可用于解压</p>
+<h3 id="如何选择K值（降到K维）"><a href="#如何选择K值（降到K维）" class="headerlink" title="如何选择K值（降到K维）"></a>如何选择K值（降到K维）</h3><p>平均平方映射误差&#x2F;数据总偏差&lt;&#x3D;0.01，即保留了99%的差异性。另外常用的数值是&lt;&#x3D;0.05或者&lt;&#x3D;0.10</p>
+<p><img src="https://i.imgur.com/rJOMzVC.png"></p>
+<p>应用：</p>
+<p><img src="https://i.imgur.com/ohE1T4t.png"></p>
+<h3 id="一些建议"><a href="#一些建议" class="headerlink" title="一些建议"></a>一些建议</h3><ul>
+<li>逻辑回归应用PCA只在训练集中，而不用在交叉验证集使用。</li>
+<li>不要用PCA减少特征数来避免过拟合</li>
+<li>使用PCA之前，先考虑没有PCA数据是否可以训练（PCA的帮助有多大?）</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/09/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week7/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/09/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week7/" class="post-title-link" itemprop="url">机器学习 Week7</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-20 00:00:00" itemprop="dateCreated datePublished" datetime="2017-09-20T00:00:00+08:00">2017-09-20</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-09-26 22:32:30" itemprop="dateModified" datetime="2017-09-26T22:32:30+08:00">2017-09-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Large-Margin-Classification"><a href="#Large-Margin-Classification" class="headerlink" title="Large Margin Classification"></a>Large Margin Classification</h2><h3 id="Optimization-Objective"><a href="#Optimization-Objective" class="headerlink" title="Optimization Objective"></a>Optimization Objective</h3><p>支持向量机(Support Vector Machine,SVM)：用于学习复杂的非线性方程的算法</p>
+<p>可以从线性的代价函数中推导而出，如下：</p>
+<p><img src="https://i.imgur.com/CwCUWST.png"></p>
+<p>相比线性函数去掉1&#x2F;m：习惯问题，不影响</p>
+<p>将A+λB的形式换为CA+B的形式：控制权重的不同方式</p>
+<h3 id="Large-Margin-Intuition"><a href="#Large-Margin-Intuition" class="headerlink" title="Large Margin Intuition"></a>Large Margin Intuition</h3><p>SVM在分类时会以一个最大间距来分类数据，C越大，过拟合的可能性越大，即高方差低偏差小λ。</p>
+<h2 id="Kernels-核函数"><a href="#Kernels-核函数" class="headerlink" title="Kernels(核函数)"></a>Kernels(核函数)</h2><p>(高斯)核函数 ：</p>
+<p><img src="https://i.imgur.com/grPDbkL.png"></p>
+<p>其中f1代替了Θ1+Θ2*x1·····中的x1，而σ越大，特征变量值减小越慢。θ的大小决定了标记点的权重，当x靠近标记点时预测值就会为1，否则为0.</p>
+<h3 id="如何选择标记点"><a href="#如何选择标记点" class="headerlink" title="如何选择标记点"></a>如何选择标记点</h3><p>选择每一个训练样本作为标记点</p>
+<h3 id="各个参数的影响"><a href="#各个参数的影响" class="headerlink" title="各个参数的影响"></a>各个参数的影响</h3><p>C:越大，过拟合的可能性越大，即高方差低偏差小λ。</p>
+<p>σ²:越大则特征变量值f减小越慢且变化平缓，同时高偏差低方差</p>
+<h2 id="如何使用SVM"><a href="#如何使用SVM" class="headerlink" title="如何使用SVM"></a>如何使用SVM</h2><p>使用好的软件库，而不是自己编写SVM软件（比如：liblinear,libsvm）</p>
+<p>需要设置：</p>
+<ul>
+<li>参数C</li>
+<li>选择核函数（相似度函数），例如：</li>
+</ul>
+<p><img src="https://i.imgur.com/oheT8ce.png"></p>
+<ul>
+<li>核函数需要满足的条件：Mercer’s Theorem</li>
+</ul>
+<h3 id="高斯函数"><a href="#高斯函数" class="headerlink" title="高斯函数"></a>高斯函数</h3><p>什么时候选择高斯核函数：特征变量x的维数n比较小，如果取值范围较大，需要进行归一化。</p>
+<p>Matlab需要做的：</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>=<span class="title">kernel</span><span class="params">(x1,x2)</span></span></span><br><span class="line">	f=<span class="built_in">exp</span>(-delta_x^<span class="number">2</span>/(<span class="number">2</span>*sigma^<span class="number">2</span>)); <span class="comment">%delta_x为x1到x2的距离</span></span><br><span class="line"><span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="逻辑函数与SVM的选择"><a href="#逻辑函数与SVM的选择" class="headerlink" title="逻辑函数与SVM的选择"></a>逻辑函数与SVM的选择</h3><p>特征数n比较多（n&gt;1000）：逻辑函数或者不是高斯核函数的SVM</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/09/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week6/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/09/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week6/" class="post-title-link" itemprop="url">机器学习 Week6</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-08 00:00:00" itemprop="dateCreated datePublished" datetime="2017-09-08T00:00:00+08:00">2017-09-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-09-26 11:21:51" itemprop="dateModified" datetime="2017-09-26T11:21:51+08:00">2017-09-26</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="如何评估一个学习算法"><a href="#如何评估一个学习算法" class="headerlink" title="如何评估一个学习算法"></a>如何评估一个学习算法</h2><h3 id="评估假设函数"><a href="#评估假设函数" class="headerlink" title="评估假设函数"></a>评估假设函数</h3><p>将训练集以7：3分为训练集和测试集，m表示训练集总数，m(test)表示测试集总数。（注意随机选择）</p>
+<p>评估步骤：</p>
+<ol>
+<li><p>用70%的训练集算出θ</p>
+</li>
+<li><p>计算测试误差Jtest（θ）:a. 对于线性规划<br>$$<br>J_{test}(\Theta) &#x3D; \dfrac{1}{2m_{test}} \sum_{i&#x3D;1}^{m_{test}}(h_\Theta(x^{(i)}<em>{test}) - y^{(i)}</em>{test})^2<br>$$<br>b.对于分类问题</p>
+</li>
+</ol>
+<p>$$<br>err(h_\Theta(x),y) &#x3D; \begin{matrix} 1 &amp; \mbox{if } h_\Theta(x) \geq 0.5\ and\ y &#x3D; 0\ or\ h_\Theta(x) &lt; 0.5\ and\ y &#x3D; 1\newline 0 &amp; \mbox otherwise \end{matrix}<br>$$</p>
+<p>​          err函数结果为1&#x2F;0（&gt;&#x3D;0.5则取1，1表示结果正确），接下来，计算平均误差<br>$$<br>\text{Test Error} &#x3D; \dfrac{1}{m_{test}} \sum^{m_{test}}<em>{i&#x3D;1} err(h_\Theta(x^{(i)}</em>{test}), y^{(i)}_{test})<br>$$</p>
+<h3 id="模型选择问题"><a href="#模型选择问题" class="headerlink" title="模型选择问题"></a>模型选择问题</h3><p>将数据集分为三部分：训练集 60% &#x2F; 交叉验证集（CV，cross validation set） 20% &#x2F; 测试集 20%</p>
+<h4 id="步骤"><a href="#步骤" class="headerlink" title="步骤"></a>步骤</h4><ol>
+<li>对每个多项式次数d通过训练集计算出Θ</li>
+<li>用交叉验证集找出test error最小的Θ</li>
+<li>通过Jtest（Θd ）评估误差</li>
+</ol>
+<h2 id="偏差-bias-与方差-variance"><a href="#偏差-bias-与方差-variance" class="headerlink" title="偏差(bias)与方差(variance)"></a>偏差(bias)与方差(variance)</h2><p>算法的表现不理想总与偏差（欠拟合）和方差（过拟合）有关。</p>
+<p><img src="https://i.imgur.com/nUACohi.png"></p>
+<h3 id="正则化与偏差-x2F-方差"><a href="#正则化与偏差-x2F-方差" class="headerlink" title="正则化与偏差&#x2F;方差"></a>正则化与偏差&#x2F;方差</h3><p>选择正确的λ的方法：</p>
+<ol>
+<li>选择一系列的λ（例如：0.01，0.02，0.04，0.08········10.24）</li>
+<li>写出一些带有不同的多项式次数或者变体的模型</li>
+<li>对于每个λ、每个模型都计算出不同的Θ</li>
+<li>通过θ计算CV error（with λ），再用CV error计算Jcv(θ)（不带正则化部分）</li>
+<li>选择错误最低的λ（在CV上）</li>
+<li>用选出的λ与θ计算Jtest</li>
+</ol>
+<h3 id="学习曲线learning-curve"><a href="#学习曲线learning-curve" class="headerlink" title="学习曲线learning curve"></a>学习曲线learning curve</h3><p>画出Jtrain与Jcv关于m(测试集大小)的函数图像</p>
+<ul>
+<li>高方差：小λ，大多项式次数，过拟合。随着m增大，Jcv与Jtrain逐渐接近，但有仍有较大差距。</li>
+<li>高偏差：小多项式次数，欠拟合。随着m增大，Jcv与Jtrain逐渐接近，最后趋向直线。</li>
+</ul>
+<h3 id="决定下一步"><a href="#决定下一步" class="headerlink" title="决定下一步"></a>决定下一步</h3><ul>
+<li>取得更多样本 —-解决高方差</li>
+<li>减少特征数—-解决高方差</li>
+<li>增加特征数—-解决高偏差</li>
+<li>增加多项式特征（x1²，x2²，x1x2·····）—-解决高偏差</li>
+<li>增加λ —高偏差</li>
+<li>减少λ —高方差</li>
+</ul>
+<h3 id="与神经网络联系"><a href="#与神经网络联系" class="headerlink" title="与神经网络联系"></a>与神经网络联系</h3><p>过少单元的神经网络容易造成欠拟合的高偏差，反之，过多单元的神经网络容易造成过拟合的高方差。</p>
+<h2 id="建立一个垃圾邮件分类器"><a href="#建立一个垃圾邮件分类器" class="headerlink" title="建立一个垃圾邮件分类器"></a>建立一个垃圾邮件分类器</h2><h3 id="需要着重考虑的问题"><a href="#需要着重考虑的问题" class="headerlink" title="需要着重考虑的问题"></a>需要着重考虑的问题</h3><ol>
+<li>决定x&#x3D;邮件的特征？例如：一系列能区分垃圾&#x2F;非垃圾邮件的单词, deal&#x2F;buy·····出现单词X(i)&#x3D;1，否则x(i)&#x3D;0。</li>
+<li>如何改进算法？</li>
+</ol>
+<ul>
+<li>收集大量数据，例如：虚假邮箱收集垃圾邮件</li>
+<li>用更复杂的变量，例如：判断邮箱名或邮箱标题、邮箱路由信息</li>
+<li>更复杂的算法，例如：学会判断dea1与deal是相同的（有意的拼写错误）</li>
+</ul>
+<p><em>很难确定哪种方式改进分类器最有效，有时候会随机决定一个方法</em></p>
+<h3 id="误差分析"><a href="#误差分析" class="headerlink" title="误差分析"></a>误差分析</h3><h4 id="推荐的方法"><a href="#推荐的方法" class="headerlink" title="推荐的方法"></a>推荐的方法</h4><ul>
+<li>从<em>简单、快速的算法</em>开始，并通过交叉验证检查</li>
+<li>画出学习曲线，检验高方差、高偏差，进一步改进</li>
+<li>误差分析：看被算法错误分析的样本找到分类错误的规律（被分类错的样本都有什么共同特征），进行改进</li>
+<li>最好有数值计算的方法来评估（例如：不知道该不该用新方法时，用交叉验证快速计算新旧方法的错误率，选择错误率低的方法）</li>
+</ul>
+<h2 id="处理偏斜数据-skewed-data"><a href="#处理偏斜数据-skewed-data" class="headerlink" title="处理偏斜数据(skewed data)"></a>处理偏斜数据(skewed data)</h2><h3 id="对偏差类的误差度量值-Error-Metrics-for-Skewed-Classes"><a href="#对偏差类的误差度量值-Error-Metrics-for-Skewed-Classes" class="headerlink" title="对偏差类的误差度量值(Error Metrics for Skewed Classes)"></a>对偏差类的误差度量值(Error Metrics for Skewed Classes)</h3><p>定义：整个样本偏向于某一类，例如：癌症率测试样本，得癌症的为少数，样本偏向未得癌症</p>
+<p>这时候，需要另一种评估度量值</p>
+<h4 id="查准率-precision-x2F-召回率-recall"><a href="#查准率-precision-x2F-召回率-recall" class="headerlink" title="查准率(precision)&#x2F;召回率(recall)"></a>查准率(precision)&#x2F;召回率(recall)</h4><p>查准率：如果有一个1、0参杂的测试集，如果我们全预测为1，预测正确的概率</p>
+<p>召回率：如果有一个全部属于1的测试集，能准确预测出多少1的概率</p>
+<p>查准率和召回率都越高越好</p>
+<h3 id="保持召回率和查准率的平衡"><a href="#保持召回率和查准率的平衡" class="headerlink" title="保持召回率和查准率的平衡"></a>保持召回率和查准率的平衡</h3><p>查准率和召回率一般为相反变化。需要高查准率时，可以把界限降低，需要高召回率时则相反。</p>
+<p>方案：</p>
+<ul>
+<li><p>画出x&#x3D;召回率，y&#x3D;查准率的图像</p>
+</li>
+<li><p>F1值：2x（PxR）&#x2F;（R+P）,F值越高越好，表示查准率和召回率均较高</p>
+</li>
+</ul>
+<h2 id="机器学习的数据"><a href="#机器学习的数据" class="headerlink" title="机器学习的数据"></a>机器学习的数据</h2><p>在有足够特征用于预测y的前提下，大量数据可以很好的改进算法。</p>
+<p>如何证明有足够的特征值x？找一个人类专家，如果能通过x预测出y，则其有足够特征。</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/09/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/09/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week5/" class="post-title-link" itemprop="url">机器学习Week5</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-09-03 00:00:00" itemprop="dateCreated datePublished" datetime="2017-09-03T00:00:00+08:00">2017-09-03</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-09-04 16:50:42" itemprop="dateModified" datetime="2017-09-04T16:50:42+08:00">2017-09-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="代价函数-Cost-Function-和-反向传播-Backpropagation"><a href="#代价函数-Cost-Function-和-反向传播-Backpropagation" class="headerlink" title="代价函数(Cost Function) 和 反向传播(Backpropagation)"></a>代价函数(Cost Function) 和 反向传播(Backpropagation)</h2><h3 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h3><h4 id="一些缩写"><a href="#一些缩写" class="headerlink" title="一些缩写"></a>一些缩写</h4><ul>
+<li>L &#x3D; 总层数</li>
+<li>sl &#x3D; l层的单元数（不包括偏置单元）</li>
+<li>K &#x3D; 输出单元数</li>
+</ul>
+<h4 id="代价函数-1"><a href="#代价函数-1" class="headerlink" title="代价函数"></a>代价函数</h4><p><img src="https://i.imgur.com/MPK5FaW.png"></p>
+<p>由逻辑回归的代价函数推广得到神经网络的代价函数。其中，前半部分∑k&#x3D;1 K表示h(x)的所有维（输出单元数）相加，后半部分两个∑表示所有单元的θ之和。</p>
+<h3 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h3><p>最小化代价函数的一种方式，也是通过计算J(θ)的导数来实现。具体方式如下：</p>
+<p><img src="https://i.imgur.com/mdbVRtz.png"></p>
+<p>深入理解：<br>$$<br>J(\Theta) &#x3D; - \frac{1}{m} \sum_{t&#x3D;1}^m\sum_{k&#x3D;1}^K \left[ y^{(t)}<em>k \ \log (h_\Theta (x^{(t)}))<em>k + (1 - y^{(t)}<em>k)\ \log (1 - h_\Theta(x^{(t)})<em>k)\right] + \frac{\lambda}{2m}\sum</em>{l&#x3D;1}^{L-1} \sum</em>{i&#x3D;1}^{s_l} \sum</em>{j&#x3D;1}^{s_l+1} ( \Theta</em>{j,i}^{(l)})^2 \<br>cost(t) &#x3D;y^{(t)} \ \log (h_\Theta (x^{(t)})) + (1 - y^{(t)})\ \log (1 - h_\Theta(x^{(t)})) \<br>delta_j^{(l)} &#x3D; \dfrac{\partial}{\partial z_j^{(l)}} cost(t)<br>$$</p>
+<h2 id="反向传播算法的实现"><a href="#反向传播算法的实现" class="headerlink" title="反向传播算法的实现"></a>反向传播算法的实现</h2><h3 id="将θ从矩阵展开为向量"><a href="#将θ从矩阵展开为向量" class="headerlink" title="将θ从矩阵展开为向量"></a>将θ从矩阵展开为向量</h3><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">thetaVec=[theta1(:);theta2(:)]; <span class="comment">%矩阵(:)表示将矩阵中元素取出并排列成向量</span></span><br><span class="line">theta1=<span class="built_in">reshape</span>(thetaVec(<span class="number">1</span>:<span class="number">110</span>),<span class="number">10</span>,<span class="number">11</span>); <span class="comment">%将向量thetaVec中1——110元素取出并排列成10*11矩阵</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.imgur.com/c7Dly86.png"></p>
+<h3 id="梯度检验-gradient-checking"><a href="#梯度检验-gradient-checking" class="headerlink" title="梯度检验(gradient checking)"></a>梯度检验(gradient checking)</h3><p>有时候反向传播算法表面上可以计算，实际上存在一些bug，这时候就要哟用到梯度检验来检测以减少错误。</p>
+<p><img src="https://i.imgur.com/WsaeBGQ.png"></p>
+<p>matlab代码如下：</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">epsilon = <span class="number">1e-4</span>;</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:n,</span><br><span class="line">  thetaPlus = theta;</span><br><span class="line">  thetaPlus(<span class="built_in">i</span>) += epsilon;</span><br><span class="line">  thetaMinus = theta;</span><br><span class="line">  thetaMinus(<span class="built_in">i</span>) -= epsilon;</span><br><span class="line">  gradApprox(<span class="built_in">i</span>) = (J(thetaPlus) - J(thetaMinus))/(<span class="number">2</span>*epsilon)</span><br><span class="line"><span class="keyword">end</span>;</span><br></pre></td></tr></table></figure>
+
+<p>若与反向传播算法计算出的导数结果相似，则正确。</p>
+<h4 id="要点"><a href="#要点" class="headerlink" title="要点"></a>要点</h4><ul>
+<li>一旦用梯度检验检测算法没有错误后，就要把梯度检验关掉，再正式进行分类器的迭代训练。否则，整个算法会变得很慢。</li>
+</ul>
+<h3 id="随机初始化"><a href="#随机初始化" class="headerlink" title="随机初始化"></a>随机初始化</h3><p>讨论了θ的初始值(initialtheta)，由于将θ全部初始化为0的时候，θ的值会无法更新且始终为0，同样其他值也永远不会改变，所以要进行θ的随机初始化（也称为打破对称）。</p>
+<p><img src="https://i.imgur.com/Wopi5p0.png"></p>
+<p>matlab实现：</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">%If the dimensions of Theta1 is 10x11, Theta2 is 10x11 and Theta3 is 1x11.</span></span><br><span class="line"></span><br><span class="line">Theta1 = <span class="built_in">rand</span>(<span class="number">10</span>,<span class="number">11</span>) * (<span class="number">2</span> * INIT_EPSILON) - INIT_EPSILON;</span><br><span class="line">Theta2 = <span class="built_in">rand</span>(<span class="number">10</span>,<span class="number">11</span>) * (<span class="number">2</span> * INIT_EPSILON) - INIT_EPSILON;</span><br><span class="line">Theta3 = <span class="built_in">rand</span>(<span class="number">1</span>,<span class="number">11</span>) * (<span class="number">2</span> * INIT_EPSILON) - INIT_EPSILON;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="单元以及层数的选择"><a href="#单元以及层数的选择" class="headerlink" title="单元以及层数的选择"></a>单元以及层数的选择</h3><p>输入单元：x的个数</p>
+<p>输出单元：分类器y的个数，同时需要将y写成向量形式</p>
+<p>隐藏层数：默认选择只有一个隐藏层，如果一定要有多个隐藏层，则每个隐藏层的单元数要求相同</p>
+<p>隐藏层的单元数：一般来说略大于输入单元的个数</p>
+<h3 id="神经网络训练过程"><a href="#神经网络训练过程" class="headerlink" title="神经网络训练过程"></a>神经网络训练过程</h3><ol>
+<li>随机初始化权值(weight)，一般初始化为很小接近于的数</li>
+<li>执行向前传播算法，计算h(x)</li>
+<li>计算代价函数J(θ)</li>
+<li>使用向后传播算法计算J(θ)的偏微分</li>
+<li>利用梯度检查检测反向传播算法，并在检测后删除梯度检查代码</li>
+<li>用梯度下降法或者其他高级优化算法最小化J(θ)并得到θ值</li>
+</ol>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/08/31/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week4/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/08/31/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week4/" class="post-title-link" itemprop="url">机器学习Week4</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-08-31 00:00:00" itemprop="dateCreated datePublished" datetime="2017-08-31T00:00:00+08:00">2017-08-31</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-09-04 12:04:51" itemprop="dateModified" datetime="2017-09-04T12:04:51+08:00">2017-09-04</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="神经网络"><a href="#神经网络" class="headerlink" title="神经网络"></a>神经网络</h2><p> 模拟大脑，用于解决样本量大的非线性分类问题。θ&#x3D;模型参数&#x3D;权重，表示一个波矩阵，起到控制层与层之间的作用。矩阵大小：下一层特征量数X（本层特征量数+1）</p>
+<p>layer1输入层（输入特征项x0,x1，…,xn）——&gt;layer2,3,…,n-1隐藏层（激励函数a0,a1,…,an）——&gt;layern输出层(最终的一个神经元)。</p>
+<p>其中，x0&#x3D;1,a0&#x3D;1被称为bios unit（偏置单元），可以选择性画出。</p>
+<p><img src="https://i.imgur.com/FKg3QPA.png"></p>
+<h3 id="实现方法"><a href="#实现方法" class="headerlink" title="实现方法"></a>实现方法</h3><p>依据cost公式通过向前传播的方法依层计算</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+
+  
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" href="/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

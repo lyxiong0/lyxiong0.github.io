@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Lecture 14 Visual Bag of WordsIntroduction首先我们要将图像表现为特征向量形式。接下来创建图像图像的空间形式，观察在低维的图像值。然后将每个图像转换成一组系数，并投影到PCA空间。转换后的数据用分类器分类，例如：K-means、HAC。 Idea of Bag of Words词袋模型是一个简化目标表示的方式，将其作为它们子部分的集合，以便于分类之类的操作。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS131 Lecture 14 Visual Bag of Words">
+<meta property="og:url" content="http://example.com/2018/08/19/Lecture%2014%20Visual%20Bag%20of%20Words/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="Lecture 14 Visual Bag of WordsIntroduction首先我们要将图像表现为特征向量形式。接下来创建图像图像的空间形式，观察在低维的图像值。然后将每个图像转换成一组系数，并投影到PCA空间。转换后的数据用分类器分类，例如：K-means、HAC。 Idea of Bag of Words词袋模型是一个简化目标表示的方式，将其作为它们子部分的集合，以便于分类之类的操作。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.8.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.9.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.10.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.1.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.2.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.3.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.11.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.4.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.5.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.6.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.7.png">
+<meta property="article:published_time" content="2018-08-19T12:07:32.000Z">
+<meta property="article:modified_time" content="2018-09-01T16:47:42.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="计算机视觉">
+<meta property="article:tag" content="CS131">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.8.png">
+
+<link rel="canonical" href="http://example.com/2018/08/19/Lecture%2014%20Visual%20Bag%20of%20Words/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CS131 Lecture 14 Visual Bag of Words | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/19/Lecture%2014%20Visual%20Bag%20of%20Words/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CS131 Lecture 14 Visual Bag of Words
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-19 20:07:32" itemprop="dateCreated datePublished" datetime="2018-08-19T20:07:32+08:00">2018-08-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-02 00:47:42" itemprop="dateModified" datetime="2018-09-02T00:47:42+08:00">2018-09-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Lecture-14-Visual-Bag-of-Words"><a href="#Lecture-14-Visual-Bag-of-Words" class="headerlink" title="Lecture 14 Visual Bag of Words"></a>Lecture 14 Visual Bag of Words</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>首先我们要将图像表现为特征向量形式。接下来创建图像图像的空间形式，观察在低维的图像值。然后将每个图像转换成一组系数，并投影到PCA空间。转换后的数据用分类器分类，例如：K-means、HAC。</p>
+<h3 id="Idea-of-Bag-of-Words"><a href="#Idea-of-Bag-of-Words" class="headerlink" title="Idea of Bag of Words"></a>Idea of Bag of Words</h3><p>词袋模型是一个简化目标表示的方式，将其作为它们子部分的集合，以便于分类之类的操作。例如：一个段落里的单词列表和单词的频率就可以构成一个词袋，我们用词袋来表现段落以便于后续分析。</p>
+<p>在计算机视觉领域，我们将图像考虑为图像特征的集合。同样，结合特征的频率，我们也可以运用词袋模型来进行预测任务，例如：分类、脸部检测。</p>
+<p>词袋模型主要分为两步：</p>
+<ol>
+<li><p>从多张图片上构造特征“字典”或者“单词表”——图像中存在什么通用特征？例如：房间的色系、脸的部分。</p>
+<ul>
+<li><p>提取特征</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.8.png"></p>
+</li>
+<li><p>学习视觉词典</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.9.png"></p>
+</li>
+<li><p>用视觉词典量化特征</p>
+</li>
+</ul>
+</li>
+<li><p>给定一张新图像，将它们转换为我们收集过的特征直方图——我们在1中构建的特征频率。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.10.png"></p>
+</li>
+</ol>
+<h3 id="Origins"><a href="#Origins" class="headerlink" title="Origins"></a>Origins</h3><p>词袋可以看作一个体现在一系列图像或者文档上建立的字典的频率——新数据可以建立这个模型并用于后续预测任务。</p>
+<h2 id="Algorithm-Summary"><a href="#Algorithm-Summary" class="headerlink" title="Algorithm Summary"></a>Algorithm Summary</h2><h3 id="Extracting-Interesting-Features"><a href="#Extracting-Interesting-Features" class="headerlink" title="Extracting Interesting Features"></a>Extracting Interesting Features</h3><p>我们可以选择我们想要的任何特征。例如：简单的将图片分割，用子图片作为特征（如下图）。后者我们可以用SIFT特征的角检测。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.1.png"></p>
+<h3 id="Learning-Visual-Vocabulary"><a href="#Learning-Visual-Vocabulary" class="headerlink" title="Learning Visual Vocabulary"></a>Learning Visual Vocabulary</h3><p>一旦我们找到特征，我们必须将大特征集转换为一套小“主题”。“主题”等于在自然语言分析中的“单词”，也等于计算机视觉中的纹理基元(texton)。</p>
+<p>我们可以用任何聚类技术（通常为K-means，Mean Shift或者HAC也可用）来聚类特征。接下来用每个集群的中心作为纹理基元。纹理集被称作视觉词典，如下图。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.2.png"></p>
+<h3 id="Quantize-Features"><a href="#Quantize-Features" class="headerlink" title="Quantize Features"></a>Quantize Features</h3><p>码矢量(codevector)是纹理基元在这种情况下的同义词，码矢量集构成码本(codebook)。我们用码本量化特征：用相同的方法从新图像中提取特征，接下来用码本将特征向量映射到相近的码矢量标签。</p>
+<p>码本的大小（等于集群的个数）是很重要的超参数。太小会导致码矢量没有代表性；太大会导致码本过拟合。</p>
+<h3 id="Represent-Images-by-Frequencies"><a href="#Represent-Images-by-Frequencies" class="headerlink" title="Represent Images by Frequencies"></a>Represent Images by Frequencies</h3><p>首先，我们可以将数据集中的每张图表现为码矢量频率的直方图（如下图），我们通过特征量化完成。接着，我们有两个选择，取决于问题类型。如果是监督学习，可以基于直方图训练一个分类器。因为这个分类器是在纹理基元上训练的，所以对类之间的区分是很稳定的。如果是非监督学习，我们可以对直方图进一步聚类来找到数据集中的视觉集合。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.3.png"></p>
+<h3 id="Large-Scale-Image-Search"><a href="#Large-Scale-Image-Search" class="headerlink" title="Large-Scale Image Search"></a>Large-Scale Image Search</h3><p>词袋模型在大规模图像检索上十分有效。词袋模型可以帮助构造一个有效检索的数据集。首先，从数据中提取特征。接着用k-means（通常k&#x3D;100000）构造一个词典。接下来我们为每个词计算一个权重。赋予权重可以帮助我们降低特定词的重要性。例如：把”is”, “are”之类的词降低权重。在图像中就是把无用特征赋予低权重。</p>
+<p>词频逆文档频率(Term Frequency Inverse Document Frequency, TF-IDF)通过单词在文件中的频率赋予权重。</p>
+<p>一个单词$j$的逆文档频率(IDF)为：<br>$$<br>IDF&#x3D;log(\frac{Num\space Docs}{Num\space Docs_{j\space appears}})<br>$$<br>图像中bin $j$的值表示为：<br>$$<br>Bin_j&#x3D;frequency_{j\space in\space I}*IDF<br>$$<br>我们可以对文档构造一个词映射的逆文档，以便于快速寻找新图像和数据集中所有图像的相似性。我们只考虑bins和新图像重叠的图像。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.11.png"></p>
+<p>大规模数据检索的缺点在于算法的表现随着数据集的增大而削弱。因为量化误差和不完美的特征检测，词袋模型有时会产生噪声图像相似度。</p>
+<h2 id="Spatial-Pyramid-Matching"><a href="#Spatial-Pyramid-Matching" class="headerlink" title="Spatial Pyramid Matching"></a>Spatial Pyramid Matching</h2><h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><p>空间金字塔匹配(Spatial Pyramid Matching)可以将空间信息结合到模型中。</p>
+<h3 id="Pyramids"><a href="#Pyramids" class="headerlink" title="Pyramids"></a>Pyramids</h3><p>一个金字塔通过多张源图像的拷贝构建。每层金字塔大小是上一层的$1&#x2F;4$。层数越低，分辨率越高。从几何角度看，整个多尺度表现看起来像一个金字塔， 原始图像位于最底部，每个周期导致更小的图像叠加在另外一个图像上。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.4.png"></p>
+<h3 id="Bags-of-Words-BoW-Pyramids"><a href="#Bags-of-Words-BoW-Pyramids" class="headerlink" title="Bags of Words(BoW) + Pyramids"></a>Bags of Words(BoW) + Pyramids</h3><p>空间金字塔匹配将图像分割为越来越细的子区域(sub-region)，并允许我们计算每个子区域的局部特征直方图(BoW)。</p>
+<p>如下图，如果金字塔上方的BoW包含天空特征，中部包含植被和山特征，底层包含山特征，那么整张图很可能被分类为山。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.5.png"></p>
+<h3 id="Some-results"><a href="#Some-results" class="headerlink" title="Some results"></a>Some results</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.6.png"></p>
+<h2 id="Naive-Bayes"><a href="#Naive-Bayes" class="headerlink" title="Naïve Bayes"></a>Naïve Bayes</h2><h3 id="Basic-Idea"><a href="#Basic-Idea" class="headerlink" title="Basic Idea"></a>Basic Idea</h3><p>一旦我们产生了一个视觉词直方图，我们可以用朴素贝叶斯(Naïve Bayes)来对直方图进行分类。我们简单的衡量一个给定的视觉词是否存在，然后假定一个视觉词的存在&#x2F;缺失和给定类的每个视觉词条件独立。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.7.png"></p>
+<p>如上图，考虑一些视觉词直方图$X$，$x_i$是视觉词$i$在直方图中的总和。我们只在意视觉词$i$是否存在，即$x_i\in {0,1}$</p>
+<h3 id="Prior"><a href="#Prior" class="headerlink" title="Prior"></a>Prior</h3><p>$P(c)$是在所有类中出现类$c$的概率。所以对总共$m$个物体类，我们有<br>$$<br>\sum_{i&#x3D;1}^m P(c)&#x3D;1<br>$$<br>对于一个用直方图$x$表现的图像和一些物体类$c$，我们可以计算<br>$$<br>P(x|c)&#x3D;\prod_{i&#x3D;1}^m P(x_i|c)<br>$$</p>
+<h3 id="Posterior"><a href="#Posterior" class="headerlink" title="Posterior"></a>Posterior</h3><p>现在我们可以用贝叶斯理论(Bayes Theorem)来计算图像$x$属于类$c_j$的概率：<br>$$<br>P(c|x)&#x3D;\frac{P(c)P(x|c)}{\sum_{c’} P(c’)P(x|c’)}<br>$$<br>$c’$表示所有类。拓展分子和分母，我们可以重写方程：<br>$$<br>P(c|x)&#x3D;\frac{P(c)\prod_{i&#x3D;1}^m P(x_i|c)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$</p>
+<h3 id="Classification"><a href="#Classification" class="headerlink" title="Classification"></a>Classification</h3><p>为了将用直方图$x$表现的图像分类，我们简单的找到能够最大化方程(6)的类$c^*$：<br>$$<br>c^*&#x3D;\arg\max_c P(c|x)<br>$$<br>因为公式中含有大量的小概率累乘，所以可能会产生一个接近于0的不稳定值。因此，我们改用logs计算概率：<br>$$<br>c^*&#x3D;\arg\max_clogP(c|x)<br>$$<br>现在我们考虑两个类$c_1$和$c_2$：<br>$$<br>P(c_1|x)&#x3D;\frac{P(c_1)\prod_{i&#x3D;1}^m P(x_i|c_1)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$<br>和<br>$$<br>P(c_2|x)&#x3D;\frac{P(c_2)\prod_{i&#x3D;1}^m P(x_i|c_2)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$<br>因为分母是固定的，所以我们计算最大值时可以忽视分母。即($\propto$是正比于的意思)<br>$$<br>P(c_1|x)\propto P(c_1)\prod_{i&#x3D;1}^m P(x_i|c_1)<br>$$<br>和<br>$$<br>P(c_2|x)\propto P(c_2)\prod_{i&#x3D;1}^m P(x_i|c_2)<br>$$<br>对于类$c$<br>$$<br>P(c|x)\propto P(c)\prod_{i&#x3D;1}^m P(x_i|c)<br>$$<br>用上logs：<br>$$<br>logP(c|x)\propto logP(c)+\sum_{i&#x3D;1}^m logP(x_i|c)<br>$$<br>现在，分类任务变成<br>$$<br>\begin{align*}<br>c^*&amp;&#x3D;\arg\max_c P(c|x) \<br>&amp;&#x3D;\arg\max_c logP(c|x)\<br>&amp;&#x3D;\arg\max_c logP(c) +\sum_{i&#x3D;1}^m logP(x_i|c)<br>\end{align*}<br>$$</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+              <a href="/tags/CS131/" rel="tag"># CS131</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/16/Lecture%2013%20Face%20Recognition%20and%20LDA/" rel="prev" title="CS131 Lecture 13 Face Recognition and LDA">
+      <i class="fa fa-chevron-left"></i> CS131 Lecture 13 Face Recognition and LDA
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/21/Lecture%2015%20Detecting%20Objects%20by%20Parts/" rel="next" title="CS131 Lecture 15 Detecting Objects by Parts">
+      CS131 Lecture 15 Detecting Objects by Parts <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lecture-14-Visual-Bag-of-Words"><span class="nav-number">1.</span> <span class="nav-text">Lecture 14 Visual Bag of Words</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Introduction"><span class="nav-number">1.1.</span> <span class="nav-text">Introduction</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Idea-of-Bag-of-Words"><span class="nav-number">1.1.1.</span> <span class="nav-text">Idea of Bag of Words</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Origins"><span class="nav-number">1.1.2.</span> <span class="nav-text">Origins</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Algorithm-Summary"><span class="nav-number">1.2.</span> <span class="nav-text">Algorithm Summary</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Extracting-Interesting-Features"><span class="nav-number">1.2.1.</span> <span class="nav-text">Extracting Interesting Features</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Learning-Visual-Vocabulary"><span class="nav-number">1.2.2.</span> <span class="nav-text">Learning Visual Vocabulary</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Quantize-Features"><span class="nav-number">1.2.3.</span> <span class="nav-text">Quantize Features</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Represent-Images-by-Frequencies"><span class="nav-number">1.2.4.</span> <span class="nav-text">Represent Images by Frequencies</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Large-Scale-Image-Search"><span class="nav-number">1.2.5.</span> <span class="nav-text">Large-Scale Image Search</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Spatial-Pyramid-Matching"><span class="nav-number">1.3.</span> <span class="nav-text">Spatial Pyramid Matching</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Motivation"><span class="nav-number">1.3.1.</span> <span class="nav-text">Motivation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pyramids"><span class="nav-number">1.3.2.</span> <span class="nav-text">Pyramids</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bags-of-Words-BoW-Pyramids"><span class="nav-number">1.3.3.</span> <span class="nav-text">Bags of Words(BoW) + Pyramids</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Some-results"><span class="nav-number">1.3.4.</span> <span class="nav-text">Some results</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Naive-Bayes"><span class="nav-number">1.4.</span> <span class="nav-text">Naïve Bayes</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Basic-Idea"><span class="nav-number">1.4.1.</span> <span class="nav-text">Basic Idea</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Prior"><span class="nav-number">1.4.2.</span> <span class="nav-text">Prior</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Posterior"><span class="nav-number">1.4.3.</span> <span class="nav-text">Posterior</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Classification"><span class="nav-number">1.4.4.</span> <span class="nav-text">Classification</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

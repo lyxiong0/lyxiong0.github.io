@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Lecture 6 Edge DetectionEdge DetectionEdge Basic图片上的边缘主要有四个可能的来源：不连续的表面（表面角度突然改变）、深度不连续（一个表面重叠在另一个上）、表面颜色不连续、光照不连续（明&#x2F;暗）。从数学上来看，梯度大的位置为边缘。  Sobel Noise Detector这个算法利用2个$3\times 3$核，与图像卷积，结构近似于原始图像">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS131 Lecture 6 Edge Detection">
+<meta property="og:url" content="http://example.com/2018/07/11/Lecture%206%20Edge%20Detection/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="Lecture 6 Edge DetectionEdge DetectionEdge Basic图片上的边缘主要有四个可能的来源：不连续的表面（表面角度突然改变）、深度不连续（一个表面重叠在另一个上）、表面颜色不连续、光照不连续（明&#x2F;暗）。从数学上来看，梯度大的位置为边缘。  Sobel Noise Detector这个算法利用2个$3\times 3$核，与图像卷积，结构近似于原始图像">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.1.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.2.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.3.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.4.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.5.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.6.png">
+<meta property="article:published_time" content="2018-07-11T06:34:56.000Z">
+<meta property="article:modified_time" content="2018-09-01T15:43:48.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="计算机视觉">
+<meta property="article:tag" content="CS131">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.1.png">
+
+<link rel="canonical" href="http://example.com/2018/07/11/Lecture%206%20Edge%20Detection/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CS131 Lecture 6 Edge Detection | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/11/Lecture%206%20Edge%20Detection/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CS131 Lecture 6 Edge Detection
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-11 14:34:56" itemprop="dateCreated datePublished" datetime="2018-07-11T14:34:56+08:00">2018-07-11</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-01 23:43:48" itemprop="dateModified" datetime="2018-09-01T23:43:48+08:00">2018-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Lecture-6-Edge-Detection"><a href="#Lecture-6-Edge-Detection" class="headerlink" title="Lecture 6 Edge Detection"></a>Lecture 6 Edge Detection</h1><h2 id="Edge-Detection"><a href="#Edge-Detection" class="headerlink" title="Edge Detection"></a>Edge Detection</h2><h3 id="Edge-Basic"><a href="#Edge-Basic" class="headerlink" title="Edge Basic"></a>Edge Basic</h3><p>图片上的边缘主要有四个可能的来源：不连续的表面（表面角度突然改变）、深度不连续（一个表面重叠在另一个上）、表面颜色不连续、光照不连续（明&#x2F;暗）。从数学上来看，梯度大的位置为边缘。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.1.png"></p>
+<h3 id="Sobel-Noise-Detector"><a href="#Sobel-Noise-Detector" class="headerlink" title="Sobel Noise Detector"></a>Sobel Noise Detector</h3><p>这个算法利用2个$3\times 3$核，与图像卷积，结构近似于原始图像的x和y导数。<br>$$<br>G_{x}&#x3D; \left[<br> \begin{matrix}<br>  1&amp;0&amp;-1\<br>   2&amp;0&amp;-2\<br>   1&amp;0&amp;-1<br>  \end{matrix}<br>  \right] ,<br>  G_{y}&#x3D; \left[<br> \begin{matrix}<br>  1&amp;2&amp;1\<br>   0&amp;0&amp;0\<br>   -1&amp;-2&amp;-1<br>  \end{matrix}<br>  \right]<br>$$<br>这些矩阵代表了光滑化和微分的结果<br>$$<br>G_{x}&#x3D; \left[<br> \begin{matrix}<br>  1&amp;0&amp;-1\<br>   2&amp;0&amp;-2\<br>   1&amp;0&amp;-1<br>  \end{matrix}<br>  \right]&#x3D;\left[<br> \begin{matrix}<br>  1\<br>   2\<br>   1<br>  \end{matrix}<br>  \right]<br>  \left[<br> \begin{matrix}<br>  1&amp;0&amp;-1\<br>  \end{matrix}<br>  \right]<br>$$<br>但是Sobel Filter有许多问题，包括定位差。并且Sobel Filter比起倾斜边缘，更偏向于水平和垂直边缘。</p>
+<h3 id="Canny-Edge-Detector"><a href="#Canny-Edge-Detector" class="headerlink" title="Canny Edge Detector"></a>Canny Edge Detector</h3><p>Canny Edge Detector算法有五步：</p>
+<ul>
+<li><p>抑制噪音</p>
+<p>我们可以用一个类似于Sobel Filter的方法，同时减少噪音并计算x、y方向上的导数。</p>
+</li>
+<li><p>计算梯度大小与方向<br>$$<br>|\nabla f(x,y)|&#x3D;\sqrt{f_{x}^{2}+f_{y}^{2}}\<br>\theta&#x3D;tan^{-1}(f_{y}&#x2F;f_{x})<br>$$</p>
+</li>
+<li><p>应用non-maximum消除</p>
+<p>我们假设只有梯度最大时出现边缘，所以消除掉所有不含最大梯度值的像素。基本上，如果一个像素不是正方向上三个像素和反方向上三个像素中梯度值最大的一个，那么就将这个像素设为0。并且，所有的梯度值都要四舍五入到接近45°</p>
+</li>
+<li><p>滞后阈值法(Hysteresis thresholding)</p>
+<p>所有保留的像素都服从于滞后阈值法。这部分用两个值作为高低阈值。像素值高于高阈值的为强边缘，低于低阈值的设为0，在两个阈值之间的为弱边缘。</p>
+</li>
+<li><p>通过连通性(Connectivity)分析检测边缘</p>
+<p>所有强边缘像素都是边缘。但对于弱边缘像素，只有和强边缘像素相连的弱边缘像素才是边缘。这一部分使用BFS或者DFS来找到所有边缘。</p>
+</li>
+</ul>
+<h2 id="Hough-Transform-霍夫变换"><a href="#Hough-Transform-霍夫变换" class="headerlink" title="Hough Transform(霍夫变换)"></a>Hough Transform(霍夫变换)</h2><h3 id="Intro-to-Hough-Transform"><a href="#Intro-to-Hough-Transform" class="headerlink" title="Intro to Hough Transform"></a>Intro to Hough Transform</h3><p>霍夫变换是检测图像特别结构，也就是线条，的一个方法。无论如何，霍夫变换可以检测任何参数方程已知的结构。它在噪音和部分遮挡下提供了一个强健的检测器。</p>
+<h3 id="Goal-of-Hough-Transform-for-detecting-lines"><a href="#Goal-of-Hough-Transform-for-detecting-lines" class="headerlink" title="Goal of Hough Transform for detecting lines"></a>Goal of Hough Transform for detecting lines</h3><p>要使用霍夫变换，首先要确定图像中构成直线的像素集。这项工作要在边缘检测器检测出边缘后进行，这样才能更好的找出组成直线的像素集。</p>
+<h3 id="Detecting-lines-using-Hough-Transform-in-a-b-space"><a href="#Detecting-lines-using-Hough-Transform-in-a-b-space" class="headerlink" title="Detecting lines using Hough Transform in a,b space"></a>Detecting lines using Hough Transform in a,b space</h3><p>假设一条穿过像素$x_{i},y_{i}$的线为：<br>$$<br>y_{i}&#x3D;a<em>x_{i}+b<br>$$<br>那么，可以得出将像素转换到$a,b$空间的公式：<br>$$<br>b&#x3D;-a</em>x_{i}+y_{i}<br>$$<br>这个公式代表了一条在$a,b$空间上的线，并且每个在线上的点$a,b$代表了一条穿过点$x_{i},y_{i}$的线。</p>
+<p>因此，对于边缘像素集上的每一个像素，我们都将它转换到$a,b$空间上得到一条线。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.2.png"></p>
+<p>$a,b$空间上两条线交点处的ab值代表了$y_{i}&#x3D;a<em>x_{i}+b$这条线同时穿过几个点。例如：xy空间上有$x_{1},y_{1}&#x3D;(1,1)$和$x_{2},y_{2}&#x3D;(2,3)$，转换得到ab空间上两条线$b&#x3D;-a</em>1+1$和$b&#x3D;-a*2+3$，联立方程解得$a&#x3D;2,b&#x3D;-1$。这种ab空间上的交叉点告诉了我们在xy空间上同时经过两点的线。</p>
+<h3 id="Accumulator-Cells"><a href="#Accumulator-Cells" class="headerlink" title="Accumulator Cells"></a>Accumulator Cells</h3><p>为了得到最佳的线，我们将ab空间量化为细胞。对于ab空间中的每一条线，我们都会在这条线经过的每个细胞上添加一个计数。最后，有最多计数的细胞代表ab空间上有最多的交点，即为在xy空间上穿过最多点的线。所以可以代表图像真正的线。</p>
+<p>霍夫变换的具体算法为：</p>
+<ul>
+<li>通过将参数空间(a,b)划分成细胞来进行量化。</li>
+<li>量化后的空间常被称为累加器细胞</li>
+<li>计算一条线在特定细胞交叉的次数<ul>
+<li>针对每一对被检测为边缘的点$(x_{1},y_{1}),(x_{2},y_{2})$，找到其在$(a,b)$空间上的交叉点(a’,b’)</li>
+<li>在$(a’,b’)$所属细胞（范围$[[a_{min},a_{max}],[b_{min},b_{max}]]$）上增加值</li>
+<li>值超过某个特定界限的细胞可认为是(x,y)空间上的一条线</li>
+</ul>
+</li>
+</ul>
+<h3 id="Hough-transform-in-rho-theta-space"><a href="#Hough-transform-in-rho-theta-space" class="headerlink" title="Hough transform in $\rho ,\theta$ space"></a>Hough transform in $\rho ,\theta$ space</h3><p>用ab空间表示线的问题在于它们收到限制而且不能表示垂线。所以，我们考虑用极坐标(polar coordinates)来表示线。<br>$$<br>x<em>cos\theta +y</em>sin\theta &#x3D;\rho<br>$$<br>在极坐标中，线被表示为类正弦波函数。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.3.png"></p>
+<p>同ab空间，在极坐标中交叉点仍然表示同时穿过几个点的直线。所以，我们同样可以使用上面提到的累加器算法。</p>
+<h3 id="Concluding-Remarks"><a href="#Concluding-Remarks" class="headerlink" title="Concluding Remarks"></a>Concluding Remarks</h3><p>霍夫变换有以下优点：</p>
+<ul>
+<li>概念简单，易于实践</li>
+<li>可以很好的处理缺失、遮挡的数据</li>
+<li>可以找到有参数方程的结构，不止是线</li>
+</ul>
+<p>和缺点：</p>
+<ul>
+<li>参数越多，计算复杂度越高</li>
+<li>只能找一种结构（例如，不能同时找线和圆）</li>
+<li>不能检测线段的长度和位置</li>
+<li>在同一条线上的线段不能分割</li>
+</ul>
+<h2 id="RANSAC"><a href="#RANSAC" class="headerlink" title="RANSAC"></a>RANSAC</h2><p>随着模型复杂度的提高（例，参数量的提高），霍夫变化失去了效率。这个章节将阐述RAndom SAmple Consensus (RANSAC，随机样本一致性)技术的设计，它提供了一种计算效率高的拟合图像模型的方法。</p>
+<h3 id="Introduction-RANSAC-Basics"><a href="#Introduction-RANSAC-Basics" class="headerlink" title="Introduction RANSAC Basics"></a>Introduction RANSAC Basics</h3><p>RANSAC用于估算图像模型的参数。RANSAC背后的基本想法是：用随机选择的数据最小子集来解决拟合问题，并选出最佳拟合。为了实现这个想法，RANSAC尝试反复地识别符合我们想拟合的模型的数据点。</p>
+<p>下图a)描述了一个被拟合进数据的线性模型，虽然大部分点可以和线性模型，但是两个偏离的绿点可以极大影响整体拟合精度。RANSAC算法将通过识别数据正常值(inliers)和异常值(outliers)来解决这个问题。</p>
+<p>RANSAC随机在数据中选择样本（样本不是点，而是包含许多点的集合），基于一个假设：只要选择足够多的样本，拟合效果差的可能性较低。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.4.png"></p>
+<h3 id="Applications"><a href="#Applications" class="headerlink" title="Applications"></a>Applications</h3><p>RANSAC算法可以估算不同模型的参数。这已经被证明在图像拼接（上图b)）、异常值检测、车道识别（线性模型估计）、立体相机计算方面有效。</p>
+<h3 id="The-Algorithm"><a href="#The-Algorithm" class="headerlink" title="The Algorithm"></a>The Algorithm</h3><p>RANSAC算法迭代的采样原始数据的标称子集（例如，线性估计所用的两个点）。模型对每个样本拟合，且计算对应这种拟合的正常值数量，这包括接近于拟合模型的数据点。在两个极限值内的点（例如，两个标准偏差，或者一个先前决定的像素数量）被视作正常值。如果数据的大部分是正常值，那么拟合模型效果较好。在拟合效果好的情况下，模型会使用所有正常值进行重新拟合，而异常值将被丢弃。反复执行以上过程，找出有足够多的正常值的模型，再对比选择出最佳模型。</p>
+<p>下图展示了这个过程，图三为最佳拟合。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.5.png"></p>
+<p>以下是RANSAC的伪代码</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Determine:</span><br><span class="line">	n -- the smallest number of points required</span><br><span class="line">	k -- the number of iterations required</span><br><span class="line">	t -- the threshold used to  identify a point that fits well</span><br><span class="line">	d -- the number of nearby points required to assert a model fits well</span><br><span class="line">Until there is a good fit or k iterations have occurred</span><br><span class="line">	draw a sample of n points from the data </span><br><span class="line">	uniformly and at random</span><br><span class="line">	</span><br><span class="line">	fit to that set of n points</span><br><span class="line">	</span><br><span class="line">	for each data points outside the sample</span><br><span class="line">		</span><br><span class="line">		test the distance from the point to the line against t; </span><br><span class="line">		if the distance from the point to the line</span><br><span class="line">		is less than t,the point is close</span><br><span class="line">		</span><br><span class="line">	end</span><br><span class="line">	if there are d or more points close to the line</span><br><span class="line">	then there is a good fit. Refit the line using all</span><br><span class="line">	these points, and terminate</span><br><span class="line">end</span><br></pre></td></tr></table></figure>
+
+<p>RANSAC主要循环的步骤如下：</p>
+<ol>
+<li>随机从数组中选择一组种子</li>
+<li>用所选的种子进行参数估计</li>
+<li>确定正常值（靠近估计模型的点数量）</li>
+<li>（如果存在足够多的正常值，）用这些正常值重新估计模型</li>
+<li>重复1-4，最终保证模型有最多的正常值和最佳的拟合。</li>
+</ol>
+<h3 id="How-Many-Samples-are-Needed"><a href="#How-Many-Samples-are-Needed" class="headerlink" title="How Many Samples are Needed?"></a>How Many Samples are Needed?</h3><p>RANSAC是一种非确定性模型拟合方法，意味着需要足够多的样本来对参数进行可靠的估计。需要的样本数取决于：</p>
+<ul>
+<li>需要拟合的参数的数量</li>
+<li>噪音的数量</li>
+</ul>
+<p>下图列出了基于$p&#x3D;0.99$和样本大小变化（例如，参数的数量）和异常值的分数（例如，噪音）的所需最小样本数。噪音越多、模型越大，所需的样本数也就越多。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/6.6.png"></p>
+<p>需要选择足够多的样本($k$)，这样所有样本都失败的概率($P_{f}$)较低：<br>$$<br>P_{f}&#x3D;(1-W^{n})^{k}&#x3D;1-p<br>$$<br>其中，$W、n$分别表示样本拟合正确的概率和每个样本所含点的数量。所以，最小样本数为：<br>$$<br>k&#x3D;\frac{log(1-p)}{log(1-W^{n})}<br>$$</p>
+<h3 id="Advantages-Limitations-and-Considerations"><a href="#Advantages-Limitations-and-Considerations" class="headerlink" title="Advantages, Limitations, and Considerations"></a>Advantages, Limitations, and Considerations</h3><p>优势：</p>
+<ul>
+<li>实现简单</li>
+<li>在模型拟合领域适用范围广</li>
+<li>计算效率高</li>
+<li>抽样方法为所有可能的特征组合提供了更好的解决问题的方法。</li>
+</ul>
+<p>在一些情况下，使用霍夫转换更好：</p>
+<ul>
+<li>特征数小。例如，线性模型估计（2个特征）用霍夫转换，但图像拼接需要像RANSAC一样计算效率更高的方法</li>
+<li>噪音数高；如上文所提及，更多的噪音需要更广泛的抽样方法（即更多的样本数），提高了计算成本。更高的噪音也减少了正确参数估计的机会和异常值分类的精度。</li>
+</ul>
+<p>值得注意的是，RANSAC最大的限制是在高噪下表现较差，而现实世界的问题总是有着较高的异常值。</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+              <a href="/tags/CS131/" rel="tag"># CS131</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/07/10/Lecture%205%20Edge%20detection/" rel="prev" title="CS131 Lecture 5 Edge Detection">
+      <i class="fa fa-chevron-left"></i> CS131 Lecture 5 Edge Detection
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/13/Lecture%206-7%20Features%20and%20FittingFeature%20Descriptor/" rel="next" title="CS131 Lecture 6-7 Features and Fitting/Feature Descriptor">
+      CS131 Lecture 6-7 Features and Fitting/Feature Descriptor <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lecture-6-Edge-Detection"><span class="nav-number">1.</span> <span class="nav-text">Lecture 6 Edge Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Edge-Detection"><span class="nav-number">1.1.</span> <span class="nav-text">Edge Detection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Edge-Basic"><span class="nav-number">1.1.1.</span> <span class="nav-text">Edge Basic</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sobel-Noise-Detector"><span class="nav-number">1.1.2.</span> <span class="nav-text">Sobel Noise Detector</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Canny-Edge-Detector"><span class="nav-number">1.1.3.</span> <span class="nav-text">Canny Edge Detector</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Hough-Transform-%E9%9C%8D%E5%A4%AB%E5%8F%98%E6%8D%A2"><span class="nav-number">1.2.</span> <span class="nav-text">Hough Transform(霍夫变换)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Intro-to-Hough-Transform"><span class="nav-number">1.2.1.</span> <span class="nav-text">Intro to Hough Transform</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Goal-of-Hough-Transform-for-detecting-lines"><span class="nav-number">1.2.2.</span> <span class="nav-text">Goal of Hough Transform for detecting lines</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Detecting-lines-using-Hough-Transform-in-a-b-space"><span class="nav-number">1.2.3.</span> <span class="nav-text">Detecting lines using Hough Transform in a,b space</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Accumulator-Cells"><span class="nav-number">1.2.4.</span> <span class="nav-text">Accumulator Cells</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hough-transform-in-rho-theta-space"><span class="nav-number">1.2.5.</span> <span class="nav-text">Hough transform in $\rho ,\theta$ space</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Concluding-Remarks"><span class="nav-number">1.2.6.</span> <span class="nav-text">Concluding Remarks</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#RANSAC"><span class="nav-number">1.3.</span> <span class="nav-text">RANSAC</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Introduction-RANSAC-Basics"><span class="nav-number">1.3.1.</span> <span class="nav-text">Introduction RANSAC Basics</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Applications"><span class="nav-number">1.3.2.</span> <span class="nav-text">Applications</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#The-Algorithm"><span class="nav-number">1.3.3.</span> <span class="nav-text">The Algorithm</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#How-Many-Samples-are-Needed"><span class="nav-number">1.3.4.</span> <span class="nav-text">How Many Samples are Needed?</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Advantages-Limitations-and-Considerations"><span class="nav-number">1.3.5.</span> <span class="nav-text">Advantages, Limitations, and Considerations</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

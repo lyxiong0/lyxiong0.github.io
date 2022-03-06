@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Lecture 4 Pixels and FiltersImage Sampling and QuantizationImage Type Binary Type 每个像素不是黑(0)就是白(1)  Grayscale Images 比起Binary Type，每个像素在黑白之间有更大的范围(0-255)，即多了中间的灰色部分   Color Images 有多个颜色通道，每张图片可以在不同的颜色">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS131 Lecture 4 Pixels and Filters">
+<meta property="og:url" content="http://example.com/2018/07/09/Lecture%204%20Pixels%20and%20Filters/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="Lecture 4 Pixels and FiltersImage Sampling and QuantizationImage Type Binary Type 每个像素不是黑(0)就是白(1)  Grayscale Images 比起Binary Type，每个像素在黑白之间有更大的范围(0-255)，即多了中间的灰色部分   Color Images 有多个颜色通道，每张图片可以在不同的颜色">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.5.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.6.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.1.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.2.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.7.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.8.png">
+<meta property="og:image" content="d:/Machine%20Learning/cs131/Lecture3_4/4.3.png">
+<meta property="og:image" content="d:/Machine%20Learning/cs131/Lecture3_4/4.4.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.9.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.10.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.11.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.12.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.13.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.14.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.15.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.16.png">
+<meta property="article:published_time" content="2018-07-09T01:46:36.000Z">
+<meta property="article:modified_time" content="2018-09-01T15:44:11.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="计算机视觉">
+<meta property="article:tag" content="CS131">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.5.png">
+
+<link rel="canonical" href="http://example.com/2018/07/09/Lecture%204%20Pixels%20and%20Filters/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CS131 Lecture 4 Pixels and Filters | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/09/Lecture%204%20Pixels%20and%20Filters/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CS131 Lecture 4 Pixels and Filters
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-09 09:46:36" itemprop="dateCreated datePublished" datetime="2018-07-09T09:46:36+08:00">2018-07-09</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-01 23:44:11" itemprop="dateModified" datetime="2018-09-01T23:44:11+08:00">2018-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Lecture-4-Pixels-and-Filters"><a href="#Lecture-4-Pixels-and-Filters" class="headerlink" title="Lecture 4 Pixels and Filters"></a>Lecture 4 Pixels and Filters</h1><h2 id="Image-Sampling-and-Quantization"><a href="#Image-Sampling-and-Quantization" class="headerlink" title="Image Sampling and Quantization"></a>Image Sampling and Quantization</h2><h3 id="Image-Type"><a href="#Image-Type" class="headerlink" title="Image Type"></a>Image Type</h3><ul>
+<li><p>Binary Type 每个像素不是黑(0)就是白(1)</p>
+</li>
+<li><p>Grayscale Images 比起Binary Type，每个像素在黑白之间有更大的范围(0-255)，即多了中间的灰色部分</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.5.png"></p>
+</li>
+<li><p>Color Images 有多个颜色通道，每张图片可以在不同的颜色模型(RGB, LAB, HSV)上呈现，每个颜色通道值的范围取决于所选的颜色模型。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.6.png"></p>
+</li>
+</ul>
+<h3 id="Sampling-and-Resolution"><a href="#Sampling-and-Resolution" class="headerlink" title="Sampling and Resolution"></a>Sampling and Resolution</h3><p>图片是采样的，由离散的像素组成，不是连续的，所以可能因为像素密度造成图片有颗粒感。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.1.png"></p>
+<ul>
+<li>Resolution 一个取样参数，由dots per inch(DPI)确定。标准DPI&#x3D;72</li>
+<li>Pixels 像素是可量化的，用一系列(通常为0-255)的值表示。量化和采样会因为有限的精度而丢失信息</li>
+</ul>
+<h2 id="Image-Histograms-直方图"><a href="#Image-Histograms-直方图" class="headerlink" title="Image Histograms(直方图)"></a>Image Histograms(直方图)</h2><p>直方图用于测试灰度图的强度：一个特定的像素值(0-255)在图像中出现了几次。下图为在两个水平方向上的取样</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.2.png"></p>
+<p>直方图可以帮助我们删除图中某些特征，例如：</p>
+<ul>
+<li>天空：光滑的曲线表示图像着色的一致性，和图中的天空一样</li>
+<li>草：锯齿状的曲线表示着色变化范围大，和图中草的阴影部分一样</li>
+</ul>
+<p>直方图提供了一个物品的量化描述，所以可以作为分类器(classifiers)的输入。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">histogram</span>(<span class="params">im</span>):</span><br><span class="line">    h = np.zeros(<span class="number">255</span>)</span><br><span class="line">    <span class="keyword">for</span> row <span class="keyword">in</span> im.shape[<span class="number">0</span>]:</span><br><span class="line">        <span class="keyword">for</span> col <span class="keyword">in</span> im.shape[<span class="number">1</span>]:</span><br><span class="line">            val = im[row, col]</span><br><span class="line">            h[val] += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Images-as-Functions"><a href="#Images-as-Functions" class="headerlink" title="Images as Functions"></a>Images as Functions</h2><p>计算机视觉处理的图像大部分是数字的，即为一种离散的形式。这种离散化是通过对常规网格上的二维空间采样得到的，最后用一个整数数值的矩阵表示图像。</p>
+<p>处理图片时，我们可以将所有图片视作一个无限宽高的矩阵。但是，放置的图片只是一个有限的子矩阵。因此我们可以将图片写作矩阵的坐标。</p>
+<p>也可以用$f[m,n]$表示坐标(m,n)上的像素的强度，方括号表示$f[m,n]$是离散函数。</p>
+<p>例如：</p>
+<ul>
+<li>灰阶图：$f:[a,b]\times [c,d] \rightarrow [0,255]$ ，表示区域宽在ab之间，区域长在cd之间，值的范围在0-255</li>
+<li>彩图：$g[x,y]&#x3D;\left [ \begin{matrix} r[x,y] \ g[x,y] \b[x,y] \end{matrix} \right ] $ ，其中$r,g,b:[a,b]\times [c,d] \rightarrow 255$</li>
+</ul>
+<h2 id="Linear-Systems-Filters"><a href="#Linear-Systems-Filters" class="headerlink" title="Linear Systems (Filters)"></a>Linear Systems (Filters)</h2><p>$filtering$：转换像素值形成新图片的过程，目的是为了提取有用信息（例：边缘检测）或调整图片的视觉特性（例：降噪）。</p>
+<p>过滤器是系统的一个例子，也是将输入函数$f[m,n]$转换到输出函数$g[m,n]$的单位。</p>
+<p>符号$S$指系统操作员(system operator)，它将一组可能的输出映射到一组可能的输入，可以写作<br>$$<br>f[m,n] \rightarrow System\space S \rightarrow g[m,n]\<br>S[g]&#x3D;f \<br>S{f[m,n]}&#x3D;g[m,n]\<br>f[m,n] \xrightarrow[]{S} g[m,n]<br>$$</p>
+<h3 id="Examples-of-Filters"><a href="#Examples-of-Filters" class="headerlink" title="Examples of Filters"></a>Examples of Filters</h3><h4 id="Moving-Average"><a href="#Moving-Average" class="headerlink" title="Moving Average"></a>Moving Average</h4><p>这种过滤器将一个像素值设置为周围像素的平均值，在2D上即为3x3的9个像素整合为1个，数学表达为<br>$$<br>g[m,n]&#x3D;\frac{1}{9}  \sum\limits_{i&#x3D;-1}^1 \sum\limits_{j&#x3D;-1}^1 f[m-i,n-j]<br>$$<br>这种加权平均(Weighted Average)过滤器可以将尖锐的边缘光滑化，产生模糊或者光滑的效果。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.7.png"></p>
+<h4 id="Image-Segmentation"><a href="#Image-Segmentation" class="headerlink" title="Image Segmentation"></a>Image Segmentation</h4><p>基于简单的阈值(Threshold)系统可以做到基本的图像分割，数学上表示为<br>$$<br>g[m,n]&#x3D; \left{<br>             \begin{array}{lr}<br>            255, &amp;f[m,n]\geq t\<br>            0, &amp;otherwise<br>             \end{array}<br>\right.<br>$$<br>这种基本的图像分割过滤器将像素划分为二元分类器，非黑即白，取决于阈值函数。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.8.png"></p>
+<h3 id="Properties-of-Systems"><a href="#Properties-of-Systems" class="headerlink" title="Properties of Systems"></a>Properties of Systems</h3><p>以下是系统<strong>可能有</strong>的性质</p>
+<h4 id="Amplitude-振幅-Properties"><a href="#Amplitude-振幅-Properties" class="headerlink" title="Amplitude(振幅) Properties"></a>Amplitude(振幅) Properties</h4><p>可加性、同次性、叠加性、稳定性、可逆性</p>
+<p><img src="D:/Machine%20Learning/cs131/Lecture3_4/4.3.png" alt="4.3"></p>
+<h4 id="Spatial-Properties"><a href="#Spatial-Properties" class="headerlink" title="Spatial Properties"></a>Spatial Properties</h4><p>因果性、移位不变性</p>
+<p><img src="D:/Machine%20Learning/cs131/Lecture3_4/4.4.png" alt="4.4"></p>
+<h3 id="Linear-Systems"><a href="#Linear-Systems" class="headerlink" title="Linear Systems"></a>Linear Systems</h3><p>线性系统指满足叠加性的系统。当应用一个线性系统进行过滤，我们对每个原始像素值使用相同的权重集进行加权求和，得到新的像素值。一个线性移位不变系统(Linear shift invariant systems,LSI)是具有移位不变性的线性系统。</p>
+<p>线性系统还具有脉冲响应(impulse response)。函数$\delta_{2}[m,n]$由以下定义：<br>$$<br>\delta_{2}[m,n]&#x3D;\left{<br>             \begin{array}{lr}<br>            1, &amp; m&#x3D;0\space and \space n&#x3D;0\<br>            0, &amp;otherwise<br>             \end{array}<br>\right.<br>$$<br>则脉冲响应$r&#x3D;S[\delta_{2}]$</p>
+<p>而一个简单的线性移位不变系统根据delta函数的移位特性来移动像素。<br>$$<br>f[m,n]&#x3D;\sum\limits_{i&#x3D;- \infty}^\infty \sum\limits_{j&#x3D;-\infty}^\infty f[i,j]\delta_{2}[m-i,n-j]<br>$$<br>接下来，我们可以定义线性移位不变系统的过滤器$h$<br>$$<br>h[m,n]&#x3D;\alpha_{1}\delta_{2,1}[m-i,n-j] +\alpha_{2}\delta_{2,2}[m-i,n-j]+\ldots<br>$$<br>对于所有线性系统，Delta[m,n]函数：在某个特定像素值为1，给予一个回应。h[m,n]函数：一个移动的delta函数，即基于一个移动回应。</p>
+<p>LSI例子：</p>
+<ol>
+<li><p>一个移动平均过滤器即为LSI，它是脉冲响应的总和，并且满足以下条件：</p>
+<ul>
+<li>系统满足叠加性</li>
+<li>有脉冲响应：$S[\delta_{2}[m,n]]&#x3D;\delta_{2}[m,n]$</li>
+<li>离散卷积(convolution)：$f[n,m]*h[n,m]$(原始函数脉冲响应进行移位)</li>
+</ul>
+</li>
+<li><p>阈值系统不是线性系统。因为以下反例<br>$$<br>f_{1}[m,n]+f_{2}[m,n]&gt;T \<br>f_{1}[m,n]&lt;T\<br>f_{2}[m,n]&lt;T<br>$$</p>
+</li>
+</ol>
+<h2 id="Convolution-and-Correlation"><a href="#Convolution-and-Correlation" class="headerlink" title="Convolution and Correlation"></a>Convolution and Correlation</h2><h3 id="Convolution-卷积"><a href="#Convolution-卷积" class="headerlink" title="Convolution 卷积"></a>Convolution 卷积</h3><p>最简单解释卷积的方式是把它当作一个用周围像素的信息来整合成目标像素的系统，如：平均移动系统。</p>
+<p>卷积的符号为$*$，例如：$f[m,n]*h[m,n]$表示函数和移动脉冲响应相乘。</p>
+<p>卷积让我们可以通过考虑系统脉冲响应，简单的计算任何经过系统的输入信号的输出。首先，我们要理解图和将信号化为一系列的脉冲函数。</p>
+<p>前文已经提过，任何信号都可以分解为脉冲函数$\delta[n]$的加权和，即任何信号$x$都可以写作<br>$$<br>x[n]&#x3D;\sum\limits_{k&#x3D;- \infty}^\infty x[k]\delta[n-k]<br>$$<br>系统的脉冲响应为$h[n]$，是将脉冲函数输入系统产生的输出。缩放一个线性系统的脉冲函数将导致脉冲响应以同样的大小缩放。若系统是移动不变的，移动脉冲函数也会同样的移动脉冲响应。下图体现了这些性质。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.9.png"></p>
+<p>所以，将信号$x[n]&#x3D;\sum_{k&#x3D;- \infty}^\infty x[k]\delta[n-k]$输入一个线性、移动不变的系统，得到输出为$y[n]&#x3D;\sum_{k&#x3D;- \infty}^\infty x[k]h[n-k]$。</p>
+<p>同样，卷积可以在二维上执行，有以下几种计算方法。</p>
+<ul>
+<li>将信号$x[n，m]&#x3D;\sum_{i&#x3D;- \infty}^\infty \sum_{j&#x3D;- \infty}^\infty x[i,j]\delta[n-i,m-j]$输入一个线性、移动不变的系统，得到输出为$y[n，m]&#x3D;\sum_{i&#x3D;- \infty}^\infty \sum_{j&#x3D;- \infty}^\infty x[i,j]h[n-i,m-j]$。</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.10.png"></p>
+<ul>
+<li>将卷积核(Kernel)旋转180°，并将原始图像进行zero-padding（用0在四周添加边缘），最后在pad的图像上滑动卷积核进行加权求和。</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.11.png"></p>
+<ul>
+<li>利用傅里叶变换<br>$$<br>F(f<em>h)&#x3D;F(f)·F(h) \<br>f</em>h&#x3D;F^{-1}(F(f)·F(h))<br>$$</li>
+</ul>
+<p>实例：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.12.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.13.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.14.png"></p>
+<h4 id="Sharpening-Filter-锐化过滤器"><a href="#Sharpening-Filter-锐化过滤器" class="headerlink" title="Sharpening Filter 锐化过滤器"></a>Sharpening Filter 锐化过滤器</h4><p>强调和原图平均水平的差异</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.15.png"></p>
+<h3 id="Correlation-相关性"><a href="#Correlation-相关性" class="headerlink" title="Correlation 相关性"></a>Correlation 相关性</h3><p>等于卷积计算时内核没有翻转的结果。二维交叉相关为：<br>$$<br>r[k，l]&#x3D;\sum\limits_{i&#x3D;- \infty}^\infty \sum_{j&#x3D;- \infty}^\infty f[m+k,n+l]g[m,n]  \<br>&#x3D;f[n,m]<em>g^{</em>}[-n,-m]<br>$$<br>其中$g^{<em>}$表示$g$的共轭复数，在本节课中，$g(n,m)$为实数，所以$g^{</em>}&#x3D;g$</p>
+<p>和卷积的区别：</p>
+<ul>
+<li>卷积是一个积分，它表示当一个函数在另一个函数上移动的时候的重叠部分。也就是说，卷积是一个过滤操作。</li>
+<li>相关性比较了两个数据集的相似性。相关性计算了两个输入函s数相互移动时的相似性测量值。两个函数匹配都越高，它的结果值越大。也就是说，相关性是两个信号关联性的测量值。</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.16.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+              <a href="/tags/CS131/" rel="tag"># CS131</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/07/08/Lecture%203%20Linear%20Algebra%20Primer%20Part%202/" rel="prev" title="CS131 Lecture 3 Linear Algebra Primer Part 2">
+      <i class="fa fa-chevron-left"></i> CS131 Lecture 3 Linear Algebra Primer Part 2
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/10/Lecture%205%20Edge%20detection/" rel="next" title="CS131 Lecture 5 Edge Detection">
+      CS131 Lecture 5 Edge Detection <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lecture-4-Pixels-and-Filters"><span class="nav-number">1.</span> <span class="nav-text">Lecture 4 Pixels and Filters</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Image-Sampling-and-Quantization"><span class="nav-number">1.1.</span> <span class="nav-text">Image Sampling and Quantization</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Image-Type"><span class="nav-number">1.1.1.</span> <span class="nav-text">Image Type</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Sampling-and-Resolution"><span class="nav-number">1.1.2.</span> <span class="nav-text">Sampling and Resolution</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Image-Histograms-%E7%9B%B4%E6%96%B9%E5%9B%BE"><span class="nav-number">1.2.</span> <span class="nav-text">Image Histograms(直方图)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Images-as-Functions"><span class="nav-number">1.3.</span> <span class="nav-text">Images as Functions</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Linear-Systems-Filters"><span class="nav-number">1.4.</span> <span class="nav-text">Linear Systems (Filters)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Examples-of-Filters"><span class="nav-number">1.4.1.</span> <span class="nav-text">Examples of Filters</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Moving-Average"><span class="nav-number">1.4.1.1.</span> <span class="nav-text">Moving Average</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Image-Segmentation"><span class="nav-number">1.4.1.2.</span> <span class="nav-text">Image Segmentation</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Properties-of-Systems"><span class="nav-number">1.4.2.</span> <span class="nav-text">Properties of Systems</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Amplitude-%E6%8C%AF%E5%B9%85-Properties"><span class="nav-number">1.4.2.1.</span> <span class="nav-text">Amplitude(振幅) Properties</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Spatial-Properties"><span class="nav-number">1.4.2.2.</span> <span class="nav-text">Spatial Properties</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Linear-Systems"><span class="nav-number">1.4.3.</span> <span class="nav-text">Linear Systems</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Convolution-and-Correlation"><span class="nav-number">1.5.</span> <span class="nav-text">Convolution and Correlation</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Convolution-%E5%8D%B7%E7%A7%AF"><span class="nav-number">1.5.1.</span> <span class="nav-text">Convolution 卷积</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Sharpening-Filter-%E9%94%90%E5%8C%96%E8%BF%87%E6%BB%A4%E5%99%A8"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">Sharpening Filter 锐化过滤器</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Correlation-%E7%9B%B8%E5%85%B3%E6%80%A7"><span class="nav-number">1.5.2.</span> <span class="nav-text">Correlation 相关性</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

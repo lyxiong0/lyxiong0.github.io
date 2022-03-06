@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Lecture 3 Linear Algebra Primer Part 2Transformation Matrices矩阵可以用多种方式将向量转换，最简单的例子是缩放： $\left [ \begin{matrix} s_{x} &amp; 0 \ 0 &amp; s_{y} \end{matrix} \right ]  $ x $\left [ \begin{matrix} x \ y \e">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS131 Lecture 3 Linear Algebra Primer Part 2">
+<meta property="og:url" content="http://example.com/2018/07/08/Lecture%203%20Linear%20Algebra%20Primer%20Part%202/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="Lecture 3 Linear Algebra Primer Part 2Transformation Matrices矩阵可以用多种方式将向量转换，最简单的例子是缩放： $\left [ \begin{matrix} s_{x} &amp; 0 \ 0 &amp; s_{y} \end{matrix} \right ]  $ x $\left [ \begin{matrix} x \ y \e">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.2.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.3.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.4.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.5.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.6.png">
+<meta property="article:published_time" content="2018-07-08T01:14:59.000Z">
+<meta property="article:modified_time" content="2018-09-01T15:44:23.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="计算机视觉">
+<meta property="article:tag" content="CS131">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.2.png">
+
+<link rel="canonical" href="http://example.com/2018/07/08/Lecture%203%20Linear%20Algebra%20Primer%20Part%202/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CS131 Lecture 3 Linear Algebra Primer Part 2 | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/07/08/Lecture%203%20Linear%20Algebra%20Primer%20Part%202/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CS131 Lecture 3 Linear Algebra Primer Part 2
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-07-08 09:14:59" itemprop="dateCreated datePublished" datetime="2018-07-08T09:14:59+08:00">2018-07-08</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-01 23:44:23" itemprop="dateModified" datetime="2018-09-01T23:44:23+08:00">2018-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Lecture-3-Linear-Algebra-Primer-Part-2"><a href="#Lecture-3-Linear-Algebra-Primer-Part-2" class="headerlink" title="Lecture 3 Linear Algebra Primer Part 2"></a>Lecture 3 Linear Algebra Primer Part 2</h1><h2 id="Transformation-Matrices"><a href="#Transformation-Matrices" class="headerlink" title="Transformation Matrices"></a>Transformation Matrices</h2><p>矩阵可以用多种方式将向量转换，最简单的例子是缩放：</p>
+<p>$\left [ \begin{matrix} s_{x} &amp; 0 \ 0 &amp; s_{y} \end{matrix} \right ]  $ x $\left [ \begin{matrix} x \ y \end{matrix} \right ]$ &#x3D; $\left [ \begin{matrix} s_{x} x \  s_{y}y \end{matrix} \right ]$</p>
+<h3 id="Rotate-旋转"><a href="#Rotate-旋转" class="headerlink" title="Rotate 旋转"></a>Rotate 旋转</h3><p>也可以用矩阵来逆时针旋转向量$\theta$角：</p>
+<p>$x’&#x3D;cos\theta x-sin\theta y\ y’&#x3D;cos\theta y+sin\theta x\ R&#x3D;\left [ \begin{matrix} cos\theta &amp; -sin\theta \ sin\theta &amp; cos\theta \end{matrix} \right ]  $</p>
+<h3 id="Scaling-缩放"><a href="#Scaling-缩放" class="headerlink" title="Scaling 缩放"></a>Scaling 缩放</h3><p><strong>Homogeneous Coordinates</strong> 齐次坐标，简而言之，用$N+1$维向量表示$N$维向量。</p>
+<p><strong>Cartesian</strong> 笛卡尔坐标，也就是常说的xy坐标系</p>
+<p>笛卡尔坐标于齐次坐标的转换：$(x,y,w)&#x3D;(x&#x2F;w,y&#x2F;w)$</p>
+<p>所以，为了向原有向量添加常数，以下运用到齐次坐标的原理</p>
+<p>$P&#x3D;\left [ \begin{matrix} x \ y \1 \end{matrix} \right ],S&#x3D; \left [ \begin{matrix} s_{x}&amp;0&amp;0 \ 0&amp; s_{y} &amp;0 \0&amp;0&amp;1 \end{matrix} \right ] \ P’&#x3D;S·P$</p>
+<h3 id="Translating-移动"><a href="#Translating-移动" class="headerlink" title="Translating 移动"></a>Translating 移动</h3><p>$P&#x3D;\left [ \begin{matrix} x \ y \1 \end{matrix} \right ],T&#x3D; \left [ \begin{matrix} 1&amp;0&amp;t_{x} \ 0&amp; 1 &amp;t_{y} \0&amp;0&amp;1 \end{matrix} \right ] \ P’&#x3D;T·P$</p>
+<p>以上旋转、缩放、移动可以同时应用，即$P’&#x3D;T·R·S·P$。作用顺序从右往左（可以交换），前式表示先移动后旋转再缩放。</p>
+<h2 id="Matrix-Inverse-逆"><a href="#Matrix-Inverse-逆" class="headerlink" title="Matrix Inverse(逆)"></a>Matrix Inverse(逆)</h2><ul>
+<li>$AA^{-1}&#x3D;I$</li>
+<li>$(AB)^{-1}&#x3D;B^{-1}A^{-1}$</li>
+<li>$A^{-T}&#x3D;(A^{T})^{-1}&#x3D;(A^{-1})^{T}$</li>
+<li>非方矩阵的逆矩阵不存在</li>
+</ul>
+<h2 id="Pseudoinverse-伪逆矩阵"><a href="#Pseudoinverse-伪逆矩阵" class="headerlink" title="Pseudoinverse(伪逆矩阵)"></a>Pseudoinverse(伪逆矩阵)</h2><p>通常为了解方程$AX&#x3D;B$，会使用$X&#x3D;A^{-1}B$，在python上命令为<code>np.linalg.inv(A)*B</code>。但是有时候计算$A^{-1}$十分耗时，甚至$A^{-1}$可能不存在。</p>
+<p>所以这时我们需要伪逆矩阵，具体原理暂时不了解，使用python命令<code>np.linalg.solve(A,B)</code>会返回方程$AX&#x3D;B$的最优解。</p>
+<h2 id="Matrix-Rank-秩"><a href="#Matrix-Rank-秩" class="headerlink" title="Matrix Rank(秩)"></a>Matrix Rank(秩)</h2><ul>
+<li>一个变换矩阵A的秩告诉你它会将矩阵转换到几个维度上，例如，$r(A)&#x3D;1$，则$p’&#x3D;Ap$返回一条线</li>
+<li>col-rank：最大线性无关列数目</li>
+<li>row-rank：最大线性无关行数目</li>
+<li>满秩矩阵：$mxm\space &amp; \space r(A)&#x3D;m$</li>
+</ul>
+<h2 id="Eigenvalues-特征值-and-Eigenvectors-特征向量"><a href="#Eigenvalues-特征值-and-Eigenvectors-特征向量" class="headerlink" title="Eigenvalues(特征值) and Eigenvectors(特征向量)"></a>Eigenvalues(特征值) and Eigenvectors(特征向量)</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>当A点乘特征向量时，不会改变方向，只会放缩。即$Ax&#x3D;\lambda x,x\not &#x3D; 0$，$x$为特征向量，$\lambda$为特征值。</p>
+<h3 id="求解"><a href="#求解" class="headerlink" title="求解"></a>求解</h3><ol>
+<li>解$|\lambda I-A|&#x3D;0$得到特征值$\lambda$</li>
+<li>带入原式得特征向量</li>
+</ol>
+<h3 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h3><ul>
+<li>矩阵的迹&#x3D;特征值之和</li>
+<li>行列式(determinant)A&#x3D;特征值之积</li>
+<li>矩阵的秩&#x3D;非零特征值的个数</li>
+<li>对角矩阵的特征值&#x3D;对角线上的值</li>
+</ul>
+<h3 id="Spectral-谱-Theory"><a href="#Spectral-谱-Theory" class="headerlink" title="Spectral(谱) Theory"></a>Spectral(谱) Theory</h3><p><strong>特征对(eigenpair)</strong> 特征值和其对应的特征向量</p>
+<p><strong>谱(spectrum)</strong> 包含所有特征值的集合</p>
+<p><strong>谱半径(spectrum radius)</strong> 绝对值最大的特征值，它的上界为该矩阵的无限范数</p>
+<h3 id="Diagonalization-对角化"><a href="#Diagonalization-对角化" class="headerlink" title="Diagonalization 对角化"></a>Diagonalization 对角化</h3><p>若$nxn$矩阵A有n个线性无关特征值，则A可以对角化</p>
+<ul>
+<li>满足$A^{<em>}A&#x3D;AA^{</em>}$的矩阵可以对角化，其中$A^{*}$是A的复共轭矩阵</li>
+<li>有n个相异(distinct)特征值的矩阵可对角化</li>
+</ul>
+<p>计算：对角化矩阵$A&#x3D;VDV^{T}$，其中V为特征向量组合成的矩阵，D为对角值为特征值的对角矩阵，DV相对应</p>
+<h3 id="Symmetric-对称-Matrix"><a href="#Symmetric-对称-Matrix" class="headerlink" title="Symmetric(对称) Matrix"></a>Symmetric(对称) Matrix</h3><p>如果A是对称的，则其特征值为真，且特征向量标准正交(orthonormal)。</p>
+<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><ul>
+<li>PageRank</li>
+<li>薛定谔方程</li>
+<li>PCA</li>
+</ul>
+<h2 id="矩阵计算"><a href="#矩阵计算" class="headerlink" title="矩阵计算"></a>矩阵计算</h2><h3 id="Gradient"><a href="#Gradient" class="headerlink" title="Gradient"></a>Gradient</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.2.png"></p>
+<h3 id="Gradient-性质"><a href="#Gradient-性质" class="headerlink" title="Gradient 性质"></a>Gradient 性质</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.3.png"></p>
+<h3 id="Hessian"><a href="#Hessian" class="headerlink" title="Hessian"></a>Hessian</h3><p>即梯度的梯度</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.4.png"></p>
+<h3 id="Hessian-性质"><a href="#Hessian-性质" class="headerlink" title="Hessian 性质"></a>Hessian 性质</h3><ul>
+<li>Hessian是对称的</li>
+</ul>
+<h3 id="矩阵计算例子"><a href="#矩阵计算例子" class="headerlink" title="矩阵计算例子"></a>矩阵计算例子</h3><h4 id="梯度例子"><a href="#梯度例子" class="headerlink" title="梯度例子"></a>梯度例子</h4><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.5.png"></p>
+<h4 id="Hessian例子"><a href="#Hessian例子" class="headerlink" title="Hessian例子"></a>Hessian例子</h4><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.6.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+              <a href="/tags/CS131/" rel="tag"># CS131</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/07/07/Lecture%202%20Color%20and%20Linear%20Algebra/" rel="prev" title="CS131 Lecture 2 Color and Linear Algebra">
+      <i class="fa fa-chevron-left"></i> CS131 Lecture 2 Color and Linear Algebra
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/07/09/Lecture%204%20Pixels%20and%20Filters/" rel="next" title="CS131 Lecture 4 Pixels and Filters">
+      CS131 Lecture 4 Pixels and Filters <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lecture-3-Linear-Algebra-Primer-Part-2"><span class="nav-number">1.</span> <span class="nav-text">Lecture 3 Linear Algebra Primer Part 2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Transformation-Matrices"><span class="nav-number">1.1.</span> <span class="nav-text">Transformation Matrices</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Rotate-%E6%97%8B%E8%BD%AC"><span class="nav-number">1.1.1.</span> <span class="nav-text">Rotate 旋转</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Scaling-%E7%BC%A9%E6%94%BE"><span class="nav-number">1.1.2.</span> <span class="nav-text">Scaling 缩放</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Translating-%E7%A7%BB%E5%8A%A8"><span class="nav-number">1.1.3.</span> <span class="nav-text">Translating 移动</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Matrix-Inverse-%E9%80%86"><span class="nav-number">1.2.</span> <span class="nav-text">Matrix Inverse(逆)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Pseudoinverse-%E4%BC%AA%E9%80%86%E7%9F%A9%E9%98%B5"><span class="nav-number">1.3.</span> <span class="nav-text">Pseudoinverse(伪逆矩阵)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Matrix-Rank-%E7%A7%A9"><span class="nav-number">1.4.</span> <span class="nav-text">Matrix Rank(秩)</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Eigenvalues-%E7%89%B9%E5%BE%81%E5%80%BC-and-Eigenvectors-%E7%89%B9%E5%BE%81%E5%90%91%E9%87%8F"><span class="nav-number">1.5.</span> <span class="nav-text">Eigenvalues(特征值) and Eigenvectors(特征向量)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9A%E4%B9%89"><span class="nav-number">1.5.1.</span> <span class="nav-text">定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B1%82%E8%A7%A3"><span class="nav-number">1.5.2.</span> <span class="nav-text">求解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%A7%E8%B4%A8"><span class="nav-number">1.5.3.</span> <span class="nav-text">性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Spectral-%E8%B0%B1-Theory"><span class="nav-number">1.5.4.</span> <span class="nav-text">Spectral(谱) Theory</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Diagonalization-%E5%AF%B9%E8%A7%92%E5%8C%96"><span class="nav-number">1.5.5.</span> <span class="nav-text">Diagonalization 对角化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Symmetric-%E5%AF%B9%E7%A7%B0-Matrix"><span class="nav-number">1.5.6.</span> <span class="nav-text">Symmetric(对称) Matrix</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8"><span class="nav-number">1.5.7.</span> <span class="nav-text">应用</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5%E8%AE%A1%E7%AE%97"><span class="nav-number">1.6.</span> <span class="nav-text">矩阵计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Gradient"><span class="nav-number">1.6.1.</span> <span class="nav-text">Gradient</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Gradient-%E6%80%A7%E8%B4%A8"><span class="nav-number">1.6.2.</span> <span class="nav-text">Gradient 性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hessian"><span class="nav-number">1.6.3.</span> <span class="nav-text">Hessian</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Hessian-%E6%80%A7%E8%B4%A8"><span class="nav-number">1.6.4.</span> <span class="nav-text">Hessian 性质</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%A9%E9%98%B5%E8%AE%A1%E7%AE%97%E4%BE%8B%E5%AD%90"><span class="nav-number">1.6.5.</span> <span class="nav-text">矩阵计算例子</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%A2%AF%E5%BA%A6%E4%BE%8B%E5%AD%90"><span class="nav-number">1.6.5.1.</span> <span class="nav-text">梯度例子</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Hessian%E4%BE%8B%E5%AD%90"><span class="nav-number">1.6.5.2.</span> <span class="nav-text">Hessian例子</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

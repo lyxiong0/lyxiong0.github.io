@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Lecture 11 Object RecognitionMean-Shift一种通过分析密度方程检测它局部最大值的模式寻找(mode-seeking)技术。 Optimizations为了提高算法速度，需要平移窗或减少窗的数量。使用吸引盆(basin of attraction)方法达成。 Parallelization 移动不同窗口的计算是独立的，可以被分割给多个不同的处理器平行运算。因此可以">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS131 Lecture 11 Object Recognition">
+<meta property="og:url" content="http://example.com/2018/08/13/Lecture%2011%20Object%20Recognition/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="Lecture 11 Object RecognitionMean-Shift一种通过分析密度方程检测它局部最大值的模式寻找(mode-seeking)技术。 Optimizations为了提高算法速度，需要平移窗或减少窗的数量。使用吸引盆(basin of attraction)方法达成。 Parallelization 移动不同窗口的计算是独立的，可以被分割给多个不同的处理器平行运算。因此可以">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.1.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.7.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.8.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.9.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.10.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.2.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.11.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.3.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.4.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.5.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.6.png">
+<meta property="article:published_time" content="2018-08-13T08:23:31.000Z">
+<meta property="article:modified_time" content="2018-09-02T07:56:27.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="计算机视觉">
+<meta property="article:tag" content="CS131">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.1.png">
+
+<link rel="canonical" href="http://example.com/2018/08/13/Lecture%2011%20Object%20Recognition/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CS131 Lecture 11 Object Recognition | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/13/Lecture%2011%20Object%20Recognition/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CS131 Lecture 11 Object Recognition
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-13 16:23:31" itemprop="dateCreated datePublished" datetime="2018-08-13T16:23:31+08:00">2018-08-13</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-02 15:56:27" itemprop="dateModified" datetime="2018-09-02T15:56:27+08:00">2018-09-02</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Lecture-11-Object-Recognition"><a href="#Lecture-11-Object-Recognition" class="headerlink" title="Lecture 11 Object Recognition"></a>Lecture 11 Object Recognition</h1><h2 id="Mean-Shift"><a href="#Mean-Shift" class="headerlink" title="Mean-Shift"></a>Mean-Shift</h2><p>一种通过分析密度方程检测它局部最大值的模式寻找(mode-seeking)技术。</p>
+<h3 id="Optimizations"><a href="#Optimizations" class="headerlink" title="Optimizations"></a>Optimizations</h3><p>为了提高算法速度，需要平移窗或减少窗的数量。使用吸引盆(basin of attraction)方法达成。</p>
+<p><strong>Parallelization</strong> 移动不同窗口的计算是独立的，可以被分割给多个不同的处理器平行运算。因此可以在没有损失精度的前提下，平行计算提高速度。</p>
+<p><strong>Basin of Attraction</strong> 因为靠近窗移动路径和停止位置的点很可能被包含进同一集群，所以我们在初始化时就加入这些点，以减少计算时间。</p>
+<p>方法：</p>
+<ol>
+<li><p>在移动完窗的停止点，将半径$r$内的所有点加入。因为停止点密度较大。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.1.png"></p>
+</li>
+<li><p>将窗移位路径上，所有半径在$c,c\leq r$内的点加入。因为窗是往密度大的地区移动的。</p>
+</li>
+</ol>
+<p>需要权衡$r$和$c$值，因为值越小，越少附近点被加入，计算量增加。但值小也减少了错误率，提高了精度。</p>
+<h3 id="Technical-Details"><a href="#Technical-Details" class="headerlink" title="Technical Details"></a>Technical Details</h3><p>为了正确移动窗，我们需要确定一个有最高密度的邻近地区，来计算移动向量。这里我们使用多变量核密度估计(the multivariate kernel density estimate)，是估计一个随机变量的概率密度函数的方法。</p>
+<p>给定$n$个数据点$x\in R^d$，使用径向对称核(radially symmetric kernel)$K(x)$，多变量核密度估计被定义为：<br>$$<br>\hat{f}<em>K&#x3D;\frac{1}{nh^d}\sum</em>{i&#x3D;1}^nK(\frac{x-x_i}{h})<br>$$<br>其中，$h$是带宽(bandwidth)参数，定义了核的半径。径向对称核$K(x)$定义为<br>$$<br>K(x)&#x3D;c_kk(||x||^2)<br>$$<br>其中，$c_k$代表标准化常数。</p>
+<p>选择合适的$h$对精确密度估计十分重要。$h$过小导致半径过小，使得数据受到噪音影响。$h$过大导致包括太多偏远点，集群数减少。</p>
+<p>多变量核密度估计的导数为<br>$$<br>\nabla\hat{f}(x)&#x3D;\frac{2c_{k,d}}{nh^{d+2}}[\sum_{i&#x3D;1}^ng(||\frac{x-x_i}{h}||^2)][\frac{\sum_{i&#x3D;1}^{n}x_ig(||\frac{x-x_i}{h}||^2)}{\sum_{i&#x3D;1}^{n}g(||\frac{x-x_i}{h}||^2)}-x]<br>$$<br>其中$g(x)&#x3D;-K’(x)$，代表被选择的核剖面的导数。</p>
+<p>第一项$\frac{2c_{k,d}}{nh^{d+2}}[\sum_{i&#x3D;1}^ng(||\frac{x-x_i}{h}||^2)]$，与$x$的密度估计成正比。第二项$[\frac{\sum_{i&#x3D;1}^{n}x_ig(||\frac{x-x_i}{h}||^2)}{\sum_{i&#x3D;1}^{n}g(||\frac{x-x_i}{h}||^2)}-x]$，是指向最大密度的均值-偏移矢量。</p>
+<h3 id="Mean-shift-Procedure"><a href="#Mean-shift-Procedure" class="headerlink" title="Mean-shift Procedure"></a>Mean-shift Procedure</h3><p>对于给定的点$x_t$，执行以下步骤找到集群中心。</p>
+<ol>
+<li><p>计算均值-偏移矢量$m$（公式(13)的第二项）：<br>$$<br>m&#x3D;[\frac{\sum_{i&#x3D;1}^{n}x_ig(||\frac{x-x_i}{h}||^2)}{\sum_{i&#x3D;1}^{n}g(||\frac{x-x_i}{h}||^2)}-x]<br>$$</p>
+</li>
+<li><p>用均值-偏移矢量转换密度窗：<br>$$<br>x_i^{t+1}&#x3D;x^t_i+m(x_i^t)<br>$$</p>
+</li>
+<li><p>重复以上两步，直到收敛<br>$$<br>\nabla f(x_i)&#x3D;0<br>$$</p>
+</li>
+</ol>
+<h3 id="Kernel-Functions"><a href="#Kernel-Functions" class="headerlink" title="Kernel Functions"></a>Kernel Functions</h3><p>$K(x)$是一个非负函数，在$x$的所有值上相加为1。这些要求保证了核密度评估会产生概率密度函数。</p>
+<p>常用的核函数有：</p>
+<ul>
+<li><p>均匀（矩形）<br>$$<br>K(x)&#x3D; \left{<br>         \begin{array}{lr}<br>        \frac12, &amp;|x|\leq 1\<br>        0, &amp;otherwise<br>         \end{array}<br>\right.<br>$$</p>
+</li>
+<li><p>高斯<br>$$<br>K(x)&#x3D; \frac1{\sqrt{2\pi}}e^{-\frac1 2u^2}<br>$$</p>
+</li>
+<li><p>Epanechnikov（抛物线）<br>$$<br>K(x)&#x3D; \left{<br>         \begin{array}{lr}<br>        \frac34(1-x^2), &amp;|x|\leq 1\<br>        0, &amp;otherwise<br>         \end{array}<br>\right.<br>$$</p>
+</li>
+</ul>
+<h3 id="Mean-Shift-Conclusions"><a href="#Mean-Shift-Conclusions" class="headerlink" title="Mean-Shift Conclusions"></a>Mean-Shift Conclusions</h3><p>优点：</p>
+<ul>
+<li>非常普遍，可以独立应用。</li>
+<li>均值-偏移对数据集群形状无要求</li>
+<li>只需要一个因子定义窗的大小。如果需要应用吸引盆，则加上$r$和$c$因子。</li>
+<li>找到可变数量的模式。分布函数的模式是局部最大值，这些局部最大值的位置就是集群中心。</li>
+<li>对异常值有强健性。如果异常值与其他点的距离大于窗大小，均值-偏移不会将异常值强制加入已有的集群。</li>
+</ul>
+<p>缺点：</p>
+<ul>
+<li>输出取决于窗大小，但不容易定义合适的窗大小。</li>
+<li>计算量相对来说较大</li>
+<li>不能很好的拓展特征空间的维度</li>
+</ul>
+<h2 id="Object-recognition"><a href="#Object-recognition" class="headerlink" title="Object recognition"></a>Object recognition</h2><h2 id="Object-recognition-tasks"><a href="#Object-recognition-tasks" class="headerlink" title="Object recognition tasks"></a>Object recognition tasks</h2><p>物体识别可以被分为数个不同的视觉识别任务</p>
+<p><strong>Classification</strong> 分类任务是让计算机基于物品目录给物体标记标签。专注于“图像内是否有特定物品？”</p>
+<p><strong>Image search</strong> 搜索包含特定物体的图像</p>
+<p><strong>Organizing photo collections</strong> 物体识别可以基于图像位置、活动相似性、人物等等来帮助组织图像。</p>
+<p><strong>Detection</strong> 专注于“这个特定物体在图像的哪个位置？”传统探测方法只把物体在图像上框出。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.7.png"></p>
+<p>但结合图像分割技术，物体也可被更准确的选出（即标出物体轮廓），被称作准确定位(accurate localization)。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.8.png"></p>
+<p>检测也可以用于寻找几何和语义特征。例如：物体之间的距离；图像拍摄物体的角度</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.9.png"></p>
+<p><strong>Single Instance Recognition</strong> 单一实例识别寻求识别图像上特定的物体或地标，而不是通常的物体大类。例如：寻找金毛犬，而不只是识别出狗；寻找某品牌的麦片</p>
+<p><strong>Activity or event recognition</strong> 活动或事件识别用于检测图中发生了什么事，例如：图中场景是否发生在婚礼上。</p>
+<h3 id="Challenges"><a href="#Challenges" class="headerlink" title="Challenges"></a>Challenges</h3><p><strong>Category numbers</strong> 目前最好的识别方法只能分类1000种物体，检测200种物体，远低于人类识别物体数量。</p>
+<p><strong>Viewpoint variation</strong> 看物体视角不同</p>
+<p><strong>Illumination</strong> 不同程度的光照，会导致阴影、物体细节被遮挡</p>
+<p><strong>Scale</strong> 一个类下的物体大小多变，不能只识别一个大小。一种解决方法是取得包含多种大小变化的数据集。</p>
+<p><strong>Deformation</strong> 同一物体可能有各种看起来不同的形态。例如：人的不同姿势。</p>
+<p><strong>Occlusion</strong> 物体可能被遮挡，导致部分几何特征被隐藏。</p>
+<p><strong>Background cluster</strong> 由于背景相似，导致物体难以被识别，或者导致物体与同类看起来很不一样。</p>
+<p><strong>Intra-class variation</strong> 一类物体可能有很不同的形状。例如：沙发、板凳都属于椅子类。</p>
+<h2 id="K-nearest-neighbors"><a href="#K-nearest-neighbors" class="headerlink" title="K-nearest neighbors"></a>K-nearest neighbors</h2><h3 id="Supervised-learning"><a href="#Supervised-learning" class="headerlink" title="Supervised learning"></a>Supervised learning</h3><p>目标：用已有的数据集找到以下方程：<br>$$<br>y&#x3D;f(x)<br>$$<br>其中，$y$是输出，$f$是预测函数，$x$是图像的特征集。</p>
+<p>监督学习分训练与测试两个阶段。在第一阶段，使$f$与训练集${(x_1,y_1}$相符。$f$可以用最小化预测误差来评估，即$y$与$f$之间的差异。</p>
+<p>在第二阶段，我们用测试集评估方程$y&#x3D;f(x)$。</p>
+<p>任意决策规则将输入空间划分为由决策边界分割的决策区域。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.10.png"></p>
+<h3 id="Nearest-neighbor-classifier"><a href="#Nearest-neighbor-classifier" class="headerlink" title="Nearest neighbor classifier"></a>Nearest neighbor classifier</h3><p>最近邻分类器是基于最近的邻居给物体分类的算法。将测试点标记为最近邻居的标签。</p>
+<p>最近邻居通过特征间的欧几里德距离找到。设$X^n$和$X^m$分别是训练集中的第$n$和第$m$个数据点，则距离方程为：<br>$$<br>Dist(X^n,X^m)&#x3D;||X^n-X^m||^2&#x3D;\sqrt{\sum_i (X^n_i-X^m_i)^2}<br>$$<br>最近邻分类器的定义允许在训练集中的每个数据点周围形成复杂的决策边界。</p>
+<h3 id="K-nearest-neighbors-classifier"><a href="#K-nearest-neighbors-classifier" class="headerlink" title="K-nearest neighbors classifier"></a>K-nearest neighbors classifier</h3><p>K-最近邻分类器：计算K个最近的邻居，然后通过在最近邻集上计算一个分数，来标记新物体。常用的方法是用大多数邻居属于的类标记新物体。启发法被用于打破联系，并根据最有效的方法进行评估。</p>
+<p>例子：下图中”+”为待标记的数据，根据绿圈内的五个邻居占大多数的，这个点将被标记为绿”O”。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.2.png"></p>
+<h3 id="Pros-of-using-k-nearest-neighbors"><a href="#Pros-of-using-k-nearest-neighbors" class="headerlink" title="Pros of using k-nearest neighbors"></a>Pros of using k-nearest neighbors</h3><ul>
+<li>K-NN算法简单，值得作为第一个尝试的模型。</li>
+<li>K-NN决策边界灵活</li>
+<li>当有无限样本时，1-NN被证明误差最多是贝叶斯最优误差的两倍。</li>
+</ul>
+<h3 id="Problems-with-K-NN"><a href="#Problems-with-K-NN" class="headerlink" title="Problems with K-NN"></a>Problems with K-NN</h3><h4 id="Choosing-the-value-of-K"><a href="#Choosing-the-value-of-K" class="headerlink" title="Choosing the value of K"></a>Choosing the value of K</h4><p>若$K​$值过小，算法会对噪音点过敏感。如果$K​$值过大，邻居会包括过多的其他类点，精度下降。随着$K​$的增加，决策边界也会更加平滑。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.11.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.3.png"></p>
+<p><strong>Solution</strong>: 交叉验证</p>
+<p>从训练集中分离出交叉验证集。用不同的$K$在训练集上训练，在交叉验证集上验证。最后选择在交叉验证集上精度最高的$K$，用于测试集。</p>
+<h4 id="Euclidean-measurement"><a href="#Euclidean-measurement" class="headerlink" title="Euclidean measurement"></a>Euclidean measurement</h4><p>欧几里德测量可能会得出反直觉的结果。例如：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.4.png"></p>
+<p><strong>Solution</strong> 标准化</p>
+<p>将向量标准化至单位长度。</p>
+<h4 id="Curse-of-dimensionality"><a href="#Curse-of-dimensionality" class="headerlink" title="Curse of dimensionality"></a>Curse of dimensionality</h4><p>当维数增长，K-NN算法会越来越慢。这代表我们需要更多的实例用于训练。</p>
+<p>目前尚未有最佳的方法解决维数灾难。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.5.png"></p>
+<p><strong>Problem</strong>: 假设有5000个点均匀分布在单位超立方体中，我们想要应用5-NN算法，假设我们的查询点在原点：</p>
+<ul>
+<li>在1维，我们平均需要走过$\frac{5}{5000}&#x3D;0.001$距离，来捕捉5-NN</li>
+<li>在2维，我们平均需要走过$\sqrt{0.001}$距离，得到一个包含0.001体积的正方形。</li>
+<li>在$d$维，我们需要$(0.001)^{\frac{1}{d}}$</li>
+</ul>
+<p><strong>Note</strong>: K-NN只是众多分类器中的一种。</p>
+<h3 id="Bias-variance-trade-off"><a href="#Bias-variance-trade-off" class="headerlink" title="Bias-variance trade-off"></a>Bias-variance trade-off</h3><p>减少泛化误差的关键是找到正确数量&#x2F;类型的参数。泛化误差有两种：偏差(bias)、方差(variance)。偏差：在训练集上平均模型与训练模型有多少不同？方差：不同训练集的模型估计有多少不同？</p>
+<p>我们需要在方差与偏差间找到平衡点。太少参数的模型因为高偏差（不灵活）；太多参数的模型因为高方差（对样本过于敏感），而导致精确低。非正确拟合类型如下：</p>
+<p><strong>Underfitting</strong>: 模型过于“简单”，无法表示所有相关特征</p>
+<ul>
+<li>高偏差低方差</li>
+<li>高训练、高测试误差</li>
+</ul>
+<p><strong>Overfitting</strong>: 模型过于“复杂”，对数据中不相关的特征（噪音）进行了拟合。</p>
+<ul>
+<li>低偏差高方差</li>
+<li>高训练、高测试误差</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/11.6.png"></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+              <a href="/tags/CS131/" rel="tag"># CS131</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/08/11/Lecture%2010%20Semantic%20Segmentation%20and%20Clustering/" rel="prev" title="CS131 Lecture 10 Semantic Segmentation and Clustering">
+      <i class="fa fa-chevron-left"></i> CS131 Lecture 10 Semantic Segmentation and Clustering
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/15/Lecture%2012%20Face%20Recognition%20&%20Dimensionality%20Reduction/" rel="next" title="CS131 Lecture 12 Face Recognition & Dimensionality Reduction">
+      CS131 Lecture 12 Face Recognition & Dimensionality Reduction <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lecture-11-Object-Recognition"><span class="nav-number">1.</span> <span class="nav-text">Lecture 11 Object Recognition</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Mean-Shift"><span class="nav-number">1.1.</span> <span class="nav-text">Mean-Shift</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Optimizations"><span class="nav-number">1.1.1.</span> <span class="nav-text">Optimizations</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Technical-Details"><span class="nav-number">1.1.2.</span> <span class="nav-text">Technical Details</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mean-shift-Procedure"><span class="nav-number">1.1.3.</span> <span class="nav-text">Mean-shift Procedure</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Kernel-Functions"><span class="nav-number">1.1.4.</span> <span class="nav-text">Kernel Functions</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Mean-Shift-Conclusions"><span class="nav-number">1.1.5.</span> <span class="nav-text">Mean-Shift Conclusions</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-recognition"><span class="nav-number">1.2.</span> <span class="nav-text">Object recognition</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Object-recognition-tasks"><span class="nav-number">1.3.</span> <span class="nav-text">Object recognition tasks</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Challenges"><span class="nav-number">1.3.1.</span> <span class="nav-text">Challenges</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#K-nearest-neighbors"><span class="nav-number">1.4.</span> <span class="nav-text">K-nearest neighbors</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Supervised-learning"><span class="nav-number">1.4.1.</span> <span class="nav-text">Supervised learning</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Nearest-neighbor-classifier"><span class="nav-number">1.4.2.</span> <span class="nav-text">Nearest neighbor classifier</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#K-nearest-neighbors-classifier"><span class="nav-number">1.4.3.</span> <span class="nav-text">K-nearest neighbors classifier</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pros-of-using-k-nearest-neighbors"><span class="nav-number">1.4.4.</span> <span class="nav-text">Pros of using k-nearest neighbors</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Problems-with-K-NN"><span class="nav-number">1.4.5.</span> <span class="nav-text">Problems with K-NN</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Choosing-the-value-of-K"><span class="nav-number">1.4.5.1.</span> <span class="nav-text">Choosing the value of K</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Euclidean-measurement"><span class="nav-number">1.4.5.2.</span> <span class="nav-text">Euclidean measurement</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Curse-of-dimensionality"><span class="nav-number">1.4.5.3.</span> <span class="nav-text">Curse of dimensionality</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Bias-variance-trade-off"><span class="nav-number">1.4.6.</span> <span class="nav-text">Bias-variance trade-off</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

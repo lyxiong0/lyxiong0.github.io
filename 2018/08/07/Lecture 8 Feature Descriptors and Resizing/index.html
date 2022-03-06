@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 6.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
+  </script>
+
+  <meta name="description" content="Lecture 8 Feature Descriptors and ResizingScale invariant keypoint detectionMotivation给定有较大尺度差别的两张相同情景下的图片，目标是独立的检测每张图中相同关键点。解决方案是寻找再空间和尺度上合适函数的极大值。 General methodology通过合理放缩窗口，我们可以捕捉到相同的内容。如下图，右侧的窗要放">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CS131 Lecture 8 Feature Descriptors and Resizing">
+<meta property="og:url" content="http://example.com/2018/08/07/Lecture%208%20Feature%20Descriptors%20and%20Resizing/index.html">
+<meta property="og:site_name" content="Xiong&#39;s Blog">
+<meta property="og:description" content="Lecture 8 Feature Descriptors and ResizingScale invariant keypoint detectionMotivation给定有较大尺度差别的两张相同情景下的图片，目标是独立的检测每张图中相同关键点。解决方案是寻找再空间和尺度上合适函数的极大值。 General methodology通过合理放缩窗口，我们可以捕捉到相同的内容。如下图，右侧的窗要放">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.1.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.2.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.3.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.6.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.4.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.7.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.8.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.9.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.5.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.10.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.12.png">
+<meta property="og:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.11.png">
+<meta property="article:published_time" content="2018-08-07T08:19:09.000Z">
+<meta property="article:modified_time" content="2018-09-01T15:46:46.000Z">
+<meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="计算机视觉">
+<meta property="article:tag" content="CS131">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.1.png">
+
+<link rel="canonical" href="http://example.com/2018/08/07/Lecture%208%20Feature%20Descriptors%20and%20Resizing/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>CS131 Lecture 8 Feature Descriptors and Resizing | Xiong's Blog</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+<!-- hexo injector head_end start -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-math@4.0.0/dist/style.css">
+<!-- hexo injector head_end end --></head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Xiong's Blog</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+        <div class="search-header">
+  <span class="search-icon">
+    <i class="fa fa-search"></i>
+  </span>
+  <div class="search-input-container">
+    <input autocomplete="off" autocapitalize="off"
+           placeholder="搜索..." spellcheck="false"
+           type="search" class="search-input">
+  </div>
+  <span class="popup-btn-close">
+    <i class="fa fa-times-circle"></i>
+  </span>
+</div>
+<div id="search-result">
+  <div id="no-result">
+    <i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>
+  </div>
+</div>
+
+    </div>
+  </div>
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2018/08/07/Lecture%208%20Feature%20Descriptors%20and%20Resizing/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CS131 Lecture 8 Feature Descriptors and Resizing
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2018-08-07 16:19:09" itemprop="dateCreated datePublished" datetime="2018-08-07T16:19:09+08:00">2018-08-07</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2018-09-01 23:46:46" itemprop="dateModified" datetime="2018-09-01T23:46:46+08:00">2018-09-01</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" itemprop="url" rel="index"><span itemprop="name">计算机视觉</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="Lecture-8-Feature-Descriptors-and-Resizing"><a href="#Lecture-8-Feature-Descriptors-and-Resizing" class="headerlink" title="Lecture 8 Feature Descriptors and Resizing"></a>Lecture 8 Feature Descriptors and Resizing</h1><h2 id="Scale-invariant-keypoint-detection"><a href="#Scale-invariant-keypoint-detection" class="headerlink" title="Scale invariant keypoint detection"></a>Scale invariant keypoint detection</h2><h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><p>给定有较大尺度差别的两张相同情景下的图片，目标是独立的检测每张图中相同关键点。解决方案是寻找再空间和尺度上合适函数的极大值。</p>
+<h3 id="General-methodology"><a href="#General-methodology" class="headerlink" title="General methodology"></a>General methodology</h3><p>通过合理放缩窗口，我们可以捕捉到相同的内容。如下图，右侧的窗要放大至左侧窗才能获得相同信息。  </p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.1.png"></p>
+<p>从尺度不变角度上，我们需要找到一个描述什么是“捕捉相同内容”的方法。这里我们考虑一个以区域内容作为输入，对该区域的所有尺度范围相同值作为输出的函数$f(window)$</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.2.png"></p>
+<p>在每两张图中，我们可以独立的检测区域极值作为关键点。对应区域极值的窗大小（上图$s_1$和$s_2$）反映了两张图片之间的尺度不同。</p>
+<h4 id="Average-intensity"><a href="#Average-intensity" class="headerlink" title="Average intensity"></a>Average intensity</h4><p>第一种方法，用窗内像素的平均强度作为$f(window)$，因为平均强度不随尺度变化而变化。但是，平均强度不能很好的捕捉窗内的对比度改变。要捕捉对比度，我们需要加入导数。</p>
+<h4 id="Difference-of-Gaussians-DoG"><a href="#Difference-of-Gaussians-DoG" class="headerlink" title="Difference of Gaussians (DoG)"></a>Difference of Gaussians (DoG)</h4><p>第二种方法，用高斯差分。</p>
+<p>考虑一个图片$I$。首先，我们将$I$与有不同$\sigma$的高斯滤波器卷积。接下来，我们用尺度收缩的$I$重复第一步的卷积工作。至此我们得到了有不同的$\sigma$和图片尺度的高斯金字塔（如图三左），接着将临近的高斯卷积图像相减得到高斯差分(Difference of Gaussians)，如图三右：<br>$$<br>DOG(\sigma)&#x3D;(G(k\sigma)-G(\sigma))*I<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.3.png"></p>
+<p>直观来讲，高斯差分捕捉了$I$在不同尺度下的细节，也即保留了$\sigma_1$和$\sigma_2$之间不同的细节。$\sigma$越大，高斯差分捕捉到的细节越粗糙。如下图</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.6.png"></p>
+<p>有了x-y尺度空间上的高斯差分金字塔， 现在我们可以在3D空间上检测局部极值以检测关键点和相关尺度。为了检测局部极值，我们将一个坐标和它的26个邻居（3D空间上，见下图），若该坐标大于或者小于26个邻居，则为局部极值。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.4.png"></p>
+<h4 id="Harris-Laplacian"><a href="#Harris-Laplacian" class="headerlink" title="Harris-Laplacian"></a>Harris-Laplacian</h4><p>第三种方法用哈里斯-拉普拉斯算子方法。相比于高斯差分，这种方法更高效，但是计算量也更大。</p>
+<p>首先，对不同尺度的$I$运行哈里斯检测器，局部化每个尺度上的关键点。接下来，选择在所有尺度中可以最大化拉普拉斯算子的关键点。</p>
+<p><strong>转变为尺度不变检测器：</strong>现在我们有多种方法检测不同尺度上的固定关键点，我们可以继续研究在一个尺度不变方式上描述这些关键点的方法，以便匹配关键点。</p>
+<h2 id="SIFT-an-image-region-descriptor"><a href="#SIFT-an-image-region-descriptor" class="headerlink" title="SIFT: an image region descriptor"></a>SIFT: an image region descriptor</h2><p>尺度不变特征转换 (Scale-invariant feature transform, SIFT)  </p>
+<h3 id="Invariant-Local-Features"><a href="#Invariant-Local-Features" class="headerlink" title="Invariant Local Features"></a>Invariant Local Features</h3><p> 点描述子需要有不变性和特殊性。我们将图片内容转换为局部特征坐标，这些坐标具有移动、旋转、放缩以及其他成像因素不变性，以达到点描述子的鲁棒性。</p>
+<p>局部不变特征有以下优点：</p>
+<ul>
+<li>局部性：特征描述部分，且对混乱和遮挡有鲁棒性。</li>
+<li>特殊性：特征可以从一个大型的物体数据库中识别出来。</li>
+<li>数量：即使物体很小，也能得到许多特征。</li>
+<li>效率：接近实时性能</li>
+<li>延展性：可以轻松地拓展至大量不同的特征类型，且每个拓展都提高了对改变的鲁棒性。</li>
+</ul>
+<h4 id="Scale-invariance"><a href="#Scale-invariance" class="headerlink" title="Scale invariance"></a>Scale invariance</h4><p>要求有一个可以重复的在空间和尺度上选择点的方法：</p>
+<ul>
+<li>唯一合理的尺度空间核是高斯核(Koenderink, 1984; Lindeberg, 1994)</li>
+<li>一个有效的方法是检测高斯差分金字塔的高峰(Burt &amp; Adelson,1983; Crowley &amp; Parker, 1984 - but examining more scales)</li>
+<li>有固定比例尺度缩小的高斯差分近似于Lindeberg的尺度归一化拉普拉斯算子（从热扩散方程中得到）</li>
+</ul>
+<h4 id="Rotation-invariance"><a href="#Rotation-invariance" class="headerlink" title="Rotation invariance"></a>Rotation invariance</h4><p>给定一个关键点以及它在高斯差分(DoG)中的尺度，我们需要选出最具有代表性的特征，并描述所有与该方向相关的特征：</p>
+<ol>
+<li>用与关键点尺度相关的光滑（模糊）过的图像</li>
+<li>在关键点邻居上得到图像梯度</li>
+<li>通过负关键点方向，旋转梯度方向和位置。换句话说，描述与方向相关的所有特征。</li>
+</ol>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.7.png"></p>
+<h4 id="SIFT-descriptor-formation"><a href="#SIFT-descriptor-formation" class="headerlink" title="SIFT descriptor formation"></a>SIFT descriptor formation</h4><p>用精确的梯度位置是很脆弱的，所以我们需要一个一般化的相似描述子。我们将创造一个方向直方图矩阵，并将梯度放入8个方向柱（”米”字形）的局部方向直方图中</p>
+<p>具体：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.8.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.9.png"></p>
+<ol>
+<li><p>创建方向直方图矩阵(4x4)</p>
+</li>
+<li><p>将旋转过的梯度放入局部方向直方图。</p>
+<ul>
+<li>一个梯度根据距离给附近的直方图贡献值。例如，如果它在两个直方图位置的中间，它给两个直方图一半的贡献。</li>
+<li>远离中心的梯度，贡献值将被缩小。</li>
+<li>SIFT作者发现8个方向盒子每直方图和一个4x4直方图矩阵将得到最好的结果（见下图）</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.5.png"></p>
+</li>
+<li><p>对比两张图的每个向量，找到匹配的关键点。一共有8x4x4&#x3D;128个向量（8方向，4x4直方图矩阵）</p>
+</li>
+<li><p>为了在高对比度的照片中加入对光照改变的鲁棒性，需要在对比前归一化向量。不可靠的3D光照效果（如炫光）会导致图像有很大的梯度，为了减少大梯度带来的影响，我们将向量中的值压缩至0.2以下，然后再次归一化。</p>
+</li>
+<li><p>个人总结：将图像分割为4x4，每个格子产生一个局部直方图，得到8个方向各自的向量。</p>
+</li>
+</ol>
+<h2 id="HoG-Another-image-region-descriptor"><a href="#HoG-Another-image-region-descriptor" class="headerlink" title="HoG: Another image region descriptor"></a>HoG: Another image region descriptor</h2><h3 id="Histogram-of-Oriented-Gradient-HoG"><a href="#Histogram-of-Oriented-Gradient-HoG" class="headerlink" title="Histogram of Oriented Gradient (HoG)"></a>Histogram of Oriented Gradient (HoG)</h3><p>HoG描述子在图片中找到一个可以被辨别、较为突出的物体。</p>
+<p>过程如下：</p>
+<ol>
+<li><p>将图像窗分割为小空间区域或单元格(cell)，cell可以是圆形或者矩形的。</p>
+</li>
+<li><p>对每个单元格，积累一个局部直方图。直方图柱（横坐标）是关于梯度方向的均匀间隔，把单元格内每个像素的梯度方向累积至直方图柱。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.10.png"></p>
+</li>
+<li><p>在一个更大的区域上将直方图归一化，称之为由一些单元格组成的一个块(block)。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.12.png"></p>
+</li>
+<li><p>为了更好的消除光照和阴影的遮挡，可以在使用局部响应之前，对局部相应进行对比标准化。并将标准化整个块内的所有单元格。</p>
+</li>
+</ol>
+<p>HoG有一些缺点：</p>
+<ol>
+<li>在检测时有大的变化和范围</li>
+<li>很慢</li>
+<li>当背景有不同光照时，不是很有条理。</li>
+</ol>
+<p>除去这些缺点，HoG是很有效的。下图是使用HoG后的效果。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.11.png"></p>
+<h3 id="Difference-between-HoG-and-SIFT"><a href="#Difference-between-HoG-and-SIFT" class="headerlink" title="Difference between HoG and SIFT"></a>Difference between HoG and SIFT</h3><ul>
+<li>HoG用于在整个图像上找到梯度，而SIFT用于关键点匹配。</li>
+<li>SIFT直方图方向朝向自然正梯度方向，而HoG不是。</li>
+<li>HoG梯度用邻柱标准化</li>
+<li>SIFT用不同的尺度计算多个描述子</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/%E8%AE%A1%E7%AE%97%E6%9C%BA%E8%A7%86%E8%A7%89/" rel="tag"># 计算机视觉</a>
+              <a href="/tags/CS131/" rel="tag"># CS131</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2018/07/13/Lecture%206-7%20Features%20and%20FittingFeature%20Descriptor/" rel="prev" title="CS131 Lecture 6-7 Features and Fitting/Feature Descriptor">
+      <i class="fa fa-chevron-left"></i> CS131 Lecture 6-7 Features and Fitting/Feature Descriptor
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2018/08/09/Lecture%209%20Image%20Resizing%20and%20Segmentation/" rel="next" title="CS131 Lecture 9 Image Resizing and Segmentation">
+      CS131 Lecture 9 Image Resizing and Segmentation <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#Lecture-8-Feature-Descriptors-and-Resizing"><span class="nav-number">1.</span> <span class="nav-text">Lecture 8 Feature Descriptors and Resizing</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#Scale-invariant-keypoint-detection"><span class="nav-number">1.1.</span> <span class="nav-text">Scale invariant keypoint detection</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Motivation"><span class="nav-number">1.1.1.</span> <span class="nav-text">Motivation</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#General-methodology"><span class="nav-number">1.1.2.</span> <span class="nav-text">General methodology</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Average-intensity"><span class="nav-number">1.1.2.1.</span> <span class="nav-text">Average intensity</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Difference-of-Gaussians-DoG"><span class="nav-number">1.1.2.2.</span> <span class="nav-text">Difference of Gaussians (DoG)</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Harris-Laplacian"><span class="nav-number">1.1.2.3.</span> <span class="nav-text">Harris-Laplacian</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#SIFT-an-image-region-descriptor"><span class="nav-number">1.2.</span> <span class="nav-text">SIFT: an image region descriptor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Invariant-Local-Features"><span class="nav-number">1.2.1.</span> <span class="nav-text">Invariant Local Features</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Scale-invariance"><span class="nav-number">1.2.1.1.</span> <span class="nav-text">Scale invariance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Rotation-invariance"><span class="nav-number">1.2.1.2.</span> <span class="nav-text">Rotation invariance</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#SIFT-descriptor-formation"><span class="nav-number">1.2.1.3.</span> <span class="nav-text">SIFT descriptor formation</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#HoG-Another-image-region-descriptor"><span class="nav-number">1.3.</span> <span class="nav-text">HoG: Another image region descriptor</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Histogram-of-Oriented-Gradient-HoG"><span class="nav-number">1.3.1.</span> <span class="nav-text">Histogram of Oriented Gradient (HoG)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Difference-between-HoG-and-SIFT"><span class="nav-number">1.3.2.</span> <span class="nav-text">Difference between HoG and SIFT</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="Liyao Xiong"
+      src="/images/avatar.png">
+  <p class="site-author-name" itemprop="name">Liyao Xiong</p>
+  <div class="site-description" itemprop="description">普普通通</div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">35</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+        <a href="https://github.com/lyxiong0" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;lyxiong0" rel="noopener" target="_blank"><i class="fab fa-github fa-fw"></i>GitHub</a>
+      </span>
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 2017 – 
+  <span itemprop="copyrightYear">2022</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Liyao Xiong</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://pisces.theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Pisces</a> 强力驱动
+  </div>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    <span class="post-meta-item" id="busuanzi_container_site_uv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv" style="display: none;">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+  
+<script src="/js/local-search.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
