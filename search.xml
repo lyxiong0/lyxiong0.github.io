@@ -339,134 +339,112 @@
       </tags>
   </entry>
   <entry>
-    <title>CS131 Lecture 12 Face Recognition &amp; Dimensionality Reduction</title>
-    <url>/2018/08/15/Lecture%2012%20Face%20Recognition%20&amp;%20Dimensionality%20Reduction/</url>
-    <content><![CDATA[<p>#Lecture 12 Face Recognition &amp; Dimensionality Reduction </p>
-<h2 id="Overview-and-Motivation"><a href="#Overview-and-Motivation" class="headerlink" title="Overview and Motivation"></a>Overview and Motivation</h2><h3 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h3><p>维度减少是用于减少特征数的一个过程，可以提高效率。主要有两种方法：奇异值分解(Singular Value Decomposition, SVD)和主成分分析(Principal Component Analysis, PCA)。</p>
-<h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><ol>
-<li>减少计算成本。减少不重要的特征，保留关键成分。</li>
-<li>减少“维度灾难”的影响。lecture 11中提及，维度增加，需要更多数据点，分析耗费的时间更多。因此，减少维度能够缓解维度灾难。</li>
-<li>压缩数据。极大的降低数据储存要求。</li>
-</ol>
-<h2 id="Singular-Value-Decomposition-SVD"><a href="#Singular-Value-Decomposition-SVD" class="headerlink" title="Singular Value Decomposition (SVD)"></a>Singular Value Decomposition (SVD)</h2><h3 id="Overview-1"><a href="#Overview-1" class="headerlink" title="Overview"></a>Overview</h3><p>直观地，SVD是允许将数据呈现在一个新子特征空间的程序，使得数据的大多数变化能被捕捉。这是通过原特征空间的旋转轴，形成与原轴&#x2F;原特征（例如：客户的年龄、收入···）线性组合的新轴。新轴可以基于每个方向对方差的贡献，系统地分解数据点的方差（数据的分散程度）。</p>
-<p>SVD的结果是一个关于特征空间的“方向”表，根据方差由高到低排序。有最高方差的方向称为“（数据方差的）主成份”。关注这些维度的数据分布，就可以捕捉到大多数信息。</p>
-<p>特征选择和维度减少有所不同，见下。</p>
-<h3 id="Technical-Details-of-Singular-Value-Decomposition"><a href="#Technical-Details-of-Singular-Value-Decomposition" class="headerlink" title="Technical Details of Singular Value Decomposition"></a>Technical Details of Singular Value Decomposition</h3><ul>
-<li><p>SVD代表矩阵$A&#x3D;U\Sigma V^T$，其中$U:m\times m$和$V:n\times n$是旋转矩阵，$\Sigma:m\times n$是对角尺度矩阵。例如：</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.1.png"></p>
-</li>
-<li><p>python代码：<code>[U, S, V] = numpy.linalg.svd(A)</code>。计算机计算SVD步骤如下：</p>
-<ol>
-<li>计算$AA^T$的特征向量。这些向量构成$U$的列。特征向量的平方根为奇异值(构成$\Sigma$)</li>
-<li>计算$A^TA$的特征向量。这些向量构成$V$的列。</li>
-</ol>
-</li>
-<li><p>因为SVD依赖于特征向量的计算，所以即使矩阵很大，计算也很快。</p>
-</li>
-<li><p>更详细的实现细节：<a href="http://www.ams.org/samplings/feature-column/fcarc-svd">http://www.ams.org/samplings/feature-column/fcarc-svd</a>.</p>
-</li>
+    <title>CS131 Lecture 13 Face Recognition and LDA</title>
+    <url>/2018/08/16/Lecture%2013%20Face%20Recognition%20and%20LDA/</url>
+    <content><![CDATA[<p>#Lecture 13 Face Recognition and LDA </p>
+<h2 id="Introduction-to-Facial-Recognition"><a href="#Introduction-to-Facial-Recognition" class="headerlink" title="Introduction to Facial Recognition"></a>Introduction to Facial Recognition</h2><h3 id="Applications"><a href="#Applications" class="headerlink" title="Applications"></a>Applications</h3><ul>
+<li>数字摄影：聚焦人脸</li>
+<li>监视器</li>
+<li>组织相册：将相同的人放在同一相册</li>
+<li>人物追踪</li>
+<li>动作和表情：构建基于心情互动的智能设备</li>
+<li>安全和战争：检测特殊人物、敌军</li>
+<li>电话会议：提供正在视频的人的信息</li>
 </ul>
-<h4 id="Eigenvector-definition"><a href="#Eigenvector-definition" class="headerlink" title="Eigenvector definition"></a>Eigenvector definition</h4><ul>
-<li>$Ax&#x3D;\lambda x$，$x$为特征向量，$\lambda$为放缩因子。</li>
-<li>换句话说，用$x$来转换$A$只会放缩但不会改变方向。</li>
+<h3 id="A-Key-Distinction-Detection-vs-Recognition"><a href="#A-Key-Distinction-Detection-vs-Recognition" class="headerlink" title="A Key Distinction: Detection vs. Recognition"></a>A Key Distinction: Detection vs. Recognition</h3><p><strong>Face Detection</strong>: 检测照片是否包含人脸和照片上人脸的位置</p>
+<p><strong>Face Recognition</strong>: 检测照片包含<em>谁</em>的脸</p>
+<h3 id="Space-of-Faces"><a href="#Space-of-Faces" class="headerlink" title="Space of Faces"></a>Space of Faces</h3><p>如果我们考虑一张大小为$m\times n$灰度图，这张图可以用一个在高维空间$R^{mn}$上的点表示。一张图不止包含脸，所以脸只占了相对小的子空间。我们的任务就是对脸的子空间建模。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.1.png"></p>
+<p>我们计算出K维子空间，这样数据点在子空间的投影在所有子空间中都有最大的方差。这个低维子空间捕捉了脸部关键样貌特点。    </p>
+<h2 id="The-Eigenfaces-Algorithm"><a href="#The-Eigenfaces-Algorithm" class="headerlink" title="The Eigenfaces Algorithm"></a>The Eigenfaces Algorithm</h2><h3 id="Key-Ideas-and-Assumptions"><a href="#Key-Ideas-and-Assumptions" class="headerlink" title="Key Ideas and Assumptions"></a>Key Ideas and Assumptions</h3><ul>
+<li>假设大多数脸部图像都位于低维子空间，由最大方差的前$k$个方向决定</li>
+<li>用PCA检测旋转子空间的向量或特征面</li>
+<li>将所有数据集中的脸部图像表现为特征面的线性组合，特征面被定义为SVD分解的主成份</li>
 </ul>
-<h3 id="Applications-of-Singular-Value-Decomposition"><a href="#Applications-of-Singular-Value-Decomposition" class="headerlink" title="Applications of Singular Value Decomposition"></a>Applications of Singular Value Decomposition</h3><ul>
-<li>计算逆转矩阵。如果任意矩阵$A$可以被分解为$A&#x3D;U\Sigma V^T$，那么$A$的逆可以定义为$A^+&#x3D;V^T\Sigma ^{-1}U$。即使这只是一个近似值，但它允许计算许多非平方矩阵的逆。</li>
-<li>SVD也可以用于计算矩阵的主成份。主成份大量用于数据分析和机器学习中，因此SVD是很多程序的核心。</li>
-</ul>
-<h2 id="Principal-Component-Analysis-PCA"><a href="#Principal-Component-Analysis-PCA" class="headerlink" title="Principal Component Analysis (PCA)"></a>Principal Component Analysis (PCA)</h2><h3 id="What-are-Principal-Component"><a href="#What-are-Principal-Component" class="headerlink" title="What are Principal Component"></a>What are Principal Component</h3><p>继续SVD的例子，注意$U$的第一列被$\Sigma$的第一个值缩放了。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.2.png"></p>
-<p>接着，$U\Sigma$被$V^T$的第一行缩放，对$A$的列产生了一个贡献$A_{partial}$。每个($U$的列$i$)*($\Sigma$的值$i$)*($V^T$的行$i$)都是$A$的一个成分。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.3.png"></p>
-<p>在这个过程中，我们把矩阵$A$作为$U$的行的线性组合，如上图。但是，现实中我们可以只有$U$的几列来构造出一个$A$的好的近似。这是由于$\Sigma$的性质。$\Sigma$是一个最大值位于左上角，其余值由左上往右下递减的对角矩阵。因此，$U$的前列对$A$的贡献最大。这前几列就称为主成分。</p>
-<p>我们通过分析协方差矩阵，移除贡献小的维度。协方差矩阵的值并没有那么重要，但是值的符号很重要，正号代表正相关，负号代表负相关，0代表相互独立。</p>
-<h4 id="Covariance"><a href="#Covariance" class="headerlink" title="Covariance"></a>Covariance</h4><p>方差和协方差是一组点在质量中心（均值）的“扩散”的度量。方差：衡量一个维度上的点的偏差的度量，例如高度。协方差：衡量每个维度之间的差异的一种度量。在两个维度之间测量协方差，看看两个维度之间是否有关系，例如研究的小时数和获得的分数。一个维度和自身之间的协方差是方差。<br>$$<br>COV(x,y)&#x3D;\frac{\sum^n_{i&#x3D;1}(\overline x_i-x)(\overline y_i-y)}{n-1}<br>$$</p>
-<h3 id="Performing-PCA"><a href="#Performing-PCA" class="headerlink" title="Performing PCA"></a>Performing PCA</h3><p>PCA可以用sklearn package实现：<code>sklearn.decomposition.PCA</code>。非正式方法实现步骤如下：</p>
-<ol>
-<li><p>将数据转化为$m\times n$格式，$m$代表样本数，$n$表示特征数</p>
+<h4 id="What-are-eigenfaces"><a href="#What-are-eigenfaces" class="headerlink" title="What are eigenfaces?"></a>What are eigenfaces?</h4><p>特征面是最大方差方向的特征向量的视觉呈现。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.6.png"></p>
+<h3 id="Training-Algorithm"><a href="#Training-Algorithm" class="headerlink" title="Training Algorithm"></a>Training Algorithm</h3><ol>
+<li><p>排列训练图像：$x_1,…,x_n$</p>
 </li>
-<li><p>使$X$置中<br>$$<br>\frac{X-平均值}{每行标准差}<br>$$</p>
+<li><p>计算平均脸：<br>$$<br>\mu&#x3D;\frac1N \sum x_i<br>$$</p>
 </li>
-<li><p>通过SVD对角化$X$：$X&#x3D;U\Sigma V^T$</p>
+<li><p>计算协方差矩阵：<br>$$<br>\Sigma&#x3D;\frac1N X_cX_c^T<br>$$</p>
 </li>
-<li><p>特征向量是主要方向，这些轴上的阴影是组成成分。这意味着最终我们要计算$XV$</p>
+<li><p>用PCA计算协方差矩阵$\Sigma$的特征向量</p>
 </li>
-<li><p>因为$V$包含特征向量，所以是标准正交的，$XV&#x3D;U\Sigma V^TV&#x3D;US$</p>
+<li><p>计算每个训练图像$x_i$的投影<br>$$<br>x_i\rightarrow (x_i^c·\phi_1,x_i^c·\phi_2,…,x_i^c·\phi_k)\equiv(a_1,a_2,…,a_k)<br>$$<br>其中$\phi_i$是第$i$个特征向量。</p>
 </li>
-<li><p>步骤5说明我们只需要$US$的列，均由SVD产生。</p>
+<li><p>重构的脸$x_i\approx \mu+a_1·\phi_1+…+a_k·\phi_k$</p>
 </li>
 </ol>
-<h3 id="Applications-of-Principal-Component"><a href="#Applications-of-Principal-Component" class="headerlink" title="Applications of Principal Component"></a>Applications of Principal Component</h3><ul>
-<li><p>图像压缩。图像矩阵中的大多数信息都可以被低阶矩阵提取。所以在质量没有明显损失下，可以使用PCA压缩图像。如图：</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.4.png"></p>
-<p>只用16个主成份，原图像就能被很好的重现。相对误差如下：</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.5.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.7.png"></p>
+<h4 id="Why-can-we-do-this"><a href="#Why-can-we-do-this" class="headerlink" title="Why can we do this?"></a>Why can we do this?</h4><p>因为特征值（特征向量的方差）随着主成份数目的增加迅速下降</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.8.png"></p>
+<h4 id="Reconstruction-and-Error"><a href="#Reconstruction-and-Error" class="headerlink" title="Reconstruction and Error"></a>Reconstruction and Error</h4><p>我们只需要前$k$个特征面用于减少维度。特征面越少损失越多，脸部越不明显。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.9.png"></p>
+<h3 id="Testing-Algorithm"><a href="#Testing-Algorithm" class="headerlink" title="Testing Algorithm"></a>Testing Algorithm</h3><ol>
+<li><p>取查询图像$t$</p>
 </li>
-<li><p>用于搜索引擎。搜索空间中有许多都与搜索关键词无关，所以搜索引擎常用PCA缩小搜索空间。这对即使搜索十分重要，也体现了SVD的能力。</p>
+<li><p>映射至特征向量：<br>$$<br>t\rightarrow((t-\mu)·\phi_1,(t-\mu)·\phi_2,…,(t-\mu)·\phi_k)\equiv(w_1,w_2,..,w_k)<br>$$</p>
 </li>
-</ul>
-<p>实际上，PCA代表了样本作为不同成分的权重 – 允许用一个成分代表样本间的差异。这大大减少了数据冗余，使得算法更加高效有用。</p>
-]]></content>
-      <categories>
-        <category>计算机视觉</category>
-      </categories>
-      <tags>
-        <tag>计算机视觉</tag>
-        <tag>CS131</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CS131 Lecture 14 Visual Bag of Words</title>
-    <url>/2018/08/19/Lecture%2014%20Visual%20Bag%20of%20Words/</url>
-    <content><![CDATA[<h1 id="Lecture-14-Visual-Bag-of-Words"><a href="#Lecture-14-Visual-Bag-of-Words" class="headerlink" title="Lecture 14 Visual Bag of Words"></a>Lecture 14 Visual Bag of Words</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>首先我们要将图像表现为特征向量形式。接下来创建图像图像的空间形式，观察在低维的图像值。然后将每个图像转换成一组系数，并投影到PCA空间。转换后的数据用分类器分类，例如：K-means、HAC。</p>
-<h3 id="Idea-of-Bag-of-Words"><a href="#Idea-of-Bag-of-Words" class="headerlink" title="Idea of Bag of Words"></a>Idea of Bag of Words</h3><p>词袋模型是一个简化目标表示的方式，将其作为它们子部分的集合，以便于分类之类的操作。例如：一个段落里的单词列表和单词的频率就可以构成一个词袋，我们用词袋来表现段落以便于后续分析。</p>
-<p>在计算机视觉领域，我们将图像考虑为图像特征的集合。同样，结合特征的频率，我们也可以运用词袋模型来进行预测任务，例如：分类、脸部检测。</p>
-<p>词袋模型主要分为两步：</p>
-<ol>
-<li><p>从多张图片上构造特征“字典”或者“单词表”——图像中存在什么通用特征？例如：房间的色系、脸的部分。</p>
+<li><p>比较投影$w$和所有$N$个训练投影。用欧几里德距离和KNN算法输出标签。</p>
+</li>
+</ol>
+<h3 id="Advantages-and-Disadvantages"><a href="#Advantages-and-Disadvantages" class="headerlink" title="Advantages and Disadvantages"></a>Advantages and Disadvantages</h3><p><strong>Advantages</strong></p>
 <ul>
-<li><p>提取特征</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.8.png"></p>
+<li>这个方法不需要预先知道脸部、表情信息</li>
+<li>快速、全局最优</li>
+</ul>
+<p><strong>Disadvantages</strong></p>
+<ul>
+<li>要求小心控制的数据<ol>
+<li>所有脸部必须集中在框架。否则结果噪音大</li>
+<li>图像必须大小相同</li>
+<li>对脸的角度敏感</li>
+</ol>
 </li>
-<li><p>学习视觉词典</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.9.png"></p>
+<li>方法不需要预先知识<ol>
+<li>脸的类别之间没有差别</li>
+<li>PCA不考虑与脸相关的标签。因此它可能将不同的脸对应到相同的子空间，使得分类器难以区别这些脸。</li>
+</ol>
 </li>
-<li><p>用视觉词典量化特征</p>
+<li>PCA投影在从低维重构上可能是最优的，但在在辨别方面不是最优的。</li>
+</ul>
+<h3 id="Beyond-Facial-Recognition-Expressions-and-Emotions"><a href="#Beyond-Facial-Recognition-Expressions-and-Emotions" class="headerlink" title="Beyond Facial Recognition: Expressions and Emotions"></a>Beyond Facial Recognition: Expressions and Emotions</h3><p>这项技术也可以用于检测表达和情绪，且算法不改变。</p>
+<p>高兴↓</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.10.png"></p>
+<p>厌恶↓</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.11.png"></p>
+<h2 id="Linear-Discriminant-Analysis-LDA"><a href="#Linear-Discriminant-Analysis-LDA" class="headerlink" title="Linear Discriminant Analysis (LDA)"></a>Linear Discriminant Analysis (LDA)</h2><h3 id="PCA-vs-LDA"><a href="#PCA-vs-LDA" class="headerlink" title="PCA vs. LDA"></a>PCA vs. LDA</h3><p>PCA与LDA都能减少样本的维度。但是，PCA偏重于重建物体，LDA偏重于分类。LDA会将不同的类相互远离。</p>
+<ul>
+<li>PCA保持最大方差</li>
+<li>LDA找到能够在类之间最大化散射和在类中最小化散射的投影。</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.2.png"></p>
+<p>如图，PCA保持了最大方差，并将所有类的点都映射在正斜率方向上，因此难以判别类别。但是，LDA将点映射到负斜率，导致点被映射到接近同类点，与非同类点相反的位置。</p>
+<h3 id="General-Idea"><a href="#General-Idea" class="headerlink" title="General Idea"></a>General Idea</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.6.png"></p>
+<p>LDA用两个值运行：类间散度、类内散度。类间散度指不同类之间的距离，类内散度指类内点之间的距离。LDA最大化类间散度，最小化类内散度。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.3.png"></p>
+<h3 id="Mathematical-Formulation-of-LDA-with-2-Variables"><a href="#Mathematical-Formulation-of-LDA-with-2-Variables" class="headerlink" title="Mathematical Formulation of LDA with 2 Variables"></a>Mathematical Formulation of LDA with 2 Variables</h3><p>我们想要找到一个投影$w$在$x\in R^n$空间中映射出0和1的点到一个新的空间$z\in R^m$，例如$z&#x3D;w^Tx$。其中，$m&lt;n$，且投影必须最大化以下公式：<br>$$<br>J(w)&#x3D;\frac{S_B\space when\space projected\space onto\space w}{S_W\space when\space projected\space onto\space w}<br>$$<br>公式中，$S_B$代表类间散度，$S_W$代表类内散度。接下来定义一个代表类内点的平均的变量$\mu_i$：<br>$$<br>\mu_i&#x3D;E_{X|Y}[X|Y&#x3D;i]<br>$$<br>定义变量$\Sigma_i$代表类的协方差矩阵：<br>$$<br>\Sigma_i&#x3D;E_{X|Y}[(X-\mu_i)(X-\mu_i)^T|Y&#x3D;i]<br>$$<br>用以上变量，可以定义$S_B$和$S_W$：<br>$$<br>S_B&#x3D;(\mu_1-\mu_0)^2&#x3D;(\mu_1-\mu_0)(\mu_1-\mu_0)^T\<br>S_W&#x3D;(\Sigma_1+\Sigma_0)<br>$$<br>将变量放回原式$J(w)$可得：<br>$$<br>J(w)&#x3D;\frac{w^T(\mu_1-\mu_0)(\mu_1-\mu_0)^Tw}{w^T(\Sigma_1+\Sigma_0)w}<br>$$<br>我们要最大化$J(w)$，即最大化分子，保持分母为常数：<br>$$<br>\max_{w^T(\Sigma_1+\Sigma_0)w&#x3D;K}w^T(\mu_1-\mu_0)(\mu_1-\mu_0)^Tw<br>$$<br>用拉格朗日乘数法，我们定义拉格朗日算子为：<br>$$<br>L&#x3D;w^TS_Bw-\lambda(w^TS_Ww-K)&#x3D;w^T(S_B-\lambda S_W)w+K<br>$$<br>我们必须最大化$L$对$\lambda$和$w$的值。我们可以通过用其关于$w$的梯度和找到关键点的位置：<br>$$<br>\nabla_wL&#x3D;2(S_B-\lambda S_W)w&#x3D;0<br>$$<br>用这个公式，我们可以得到关键点位置：<br>$$<br>S_Bw&#x3D;\lambda S_Ww<br>$$<br>这是一个广义的特征向量问题。在$S_W^{-1}&#x3D;(\Sigma_1+\Sigma_0)^{-1}$存在的情况下，我们得到：<br>$$<br>S_W^{-1}S_Bw&#x3D;\lambda w<br>$$<br>代入$S_B$得：<br>$$<br>S_W^{-1}(\mu_1-\mu_0)&#x3D;\frac\lambda\alpha w<br>$$<br>$w$的大小并不重要，所以我们可以得到映射$w$：<br>$$<br>w*&#x3D;S_W^{-1}(\mu_1-\mu_0)&#x3D;(\Sigma_1-\Sigma_0)^{-1}(\mu_1-\mu_0)<br>$$</p>
+<h3 id="LDA-with-N-Variables-and-C-Classes"><a href="#LDA-with-N-Variables-and-C-Classes" class="headerlink" title="LDA with N Variables and C Classes"></a>LDA with N Variables and C Classes</h3><h4 id="Preliminaries"><a href="#Preliminaries" class="headerlink" title="Preliminaries"></a>Preliminaries</h4><p><strong>Variables:</strong></p>
+<ul>
+<li><p>N个样本：${x_1,…,x_N}$</p>
+</li>
+<li><p>C个类:${Y_1,Y_2,…,Y_C}$。每一类都有N个样本。</p>
+</li>
+<li><p>每个类的平均：类$i$的平均为<br>$$<br>\mu_i&#x3D;\frac 1{N_i}\sum_{x_k\in Y_i}x_k<br>$$</p>
+</li>
+<li><p>所有数据的平均：<br>$$<br>\mu&#x3D;\frac 1N\sum_{k&#x3D;1}^N x_k<br>$$</p>
 </li>
 </ul>
-</li>
-<li><p>给定一张新图像，将它们转换为我们收集过的特征直方图——我们在1中构建的特征频率。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.10.png"></p>
-</li>
-</ol>
-<h3 id="Origins"><a href="#Origins" class="headerlink" title="Origins"></a>Origins</h3><p>词袋可以看作一个体现在一系列图像或者文档上建立的字典的频率——新数据可以建立这个模型并用于后续预测任务。</p>
-<h2 id="Algorithm-Summary"><a href="#Algorithm-Summary" class="headerlink" title="Algorithm Summary"></a>Algorithm Summary</h2><h3 id="Extracting-Interesting-Features"><a href="#Extracting-Interesting-Features" class="headerlink" title="Extracting Interesting Features"></a>Extracting Interesting Features</h3><p>我们可以选择我们想要的任何特征。例如：简单的将图片分割，用子图片作为特征（如下图）。后者我们可以用SIFT特征的角检测。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.1.png"></p>
-<h3 id="Learning-Visual-Vocabulary"><a href="#Learning-Visual-Vocabulary" class="headerlink" title="Learning Visual Vocabulary"></a>Learning Visual Vocabulary</h3><p>一旦我们找到特征，我们必须将大特征集转换为一套小“主题”。“主题”等于在自然语言分析中的“单词”，也等于计算机视觉中的纹理基元(texton)。</p>
-<p>我们可以用任何聚类技术（通常为K-means，Mean Shift或者HAC也可用）来聚类特征。接下来用每个集群的中心作为纹理基元。纹理集被称作视觉词典，如下图。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.2.png"></p>
-<h3 id="Quantize-Features"><a href="#Quantize-Features" class="headerlink" title="Quantize Features"></a>Quantize Features</h3><p>码矢量(codevector)是纹理基元在这种情况下的同义词，码矢量集构成码本(codebook)。我们用码本量化特征：用相同的方法从新图像中提取特征，接下来用码本将特征向量映射到相近的码矢量标签。</p>
-<p>码本的大小（等于集群的个数）是很重要的超参数。太小会导致码矢量没有代表性；太大会导致码本过拟合。</p>
-<h3 id="Represent-Images-by-Frequencies"><a href="#Represent-Images-by-Frequencies" class="headerlink" title="Represent Images by Frequencies"></a>Represent Images by Frequencies</h3><p>首先，我们可以将数据集中的每张图表现为码矢量频率的直方图（如下图），我们通过特征量化完成。接着，我们有两个选择，取决于问题类型。如果是监督学习，可以基于直方图训练一个分类器。因为这个分类器是在纹理基元上训练的，所以对类之间的区分是很稳定的。如果是非监督学习，我们可以对直方图进一步聚类来找到数据集中的视觉集合。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.3.png"></p>
-<h3 id="Large-Scale-Image-Search"><a href="#Large-Scale-Image-Search" class="headerlink" title="Large-Scale Image Search"></a>Large-Scale Image Search</h3><p>词袋模型在大规模图像检索上十分有效。词袋模型可以帮助构造一个有效检索的数据集。首先，从数据中提取特征。接着用k-means（通常k&#x3D;100000）构造一个词典。接下来我们为每个词计算一个权重。赋予权重可以帮助我们降低特定词的重要性。例如：把”is”, “are”之类的词降低权重。在图像中就是把无用特征赋予低权重。</p>
-<p>词频逆文档频率(Term Frequency Inverse Document Frequency, TF-IDF)通过单词在文件中的频率赋予权重。</p>
-<p>一个单词$j$的逆文档频率(IDF)为：<br>$$<br>IDF&#x3D;log(\frac{Num\space Docs}{Num\space Docs_{j\space appears}})<br>$$<br>图像中bin $j$的值表示为：<br>$$<br>Bin_j&#x3D;frequency_{j\space in\space I}*IDF<br>$$<br>我们可以对文档构造一个词映射的逆文档，以便于快速寻找新图像和数据集中所有图像的相似性。我们只考虑bins和新图像重叠的图像。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.11.png"></p>
-<p>大规模数据检索的缺点在于算法的表现随着数据集的增大而削弱。因为量化误差和不完美的特征检测，词袋模型有时会产生噪声图像相似度。</p>
-<h2 id="Spatial-Pyramid-Matching"><a href="#Spatial-Pyramid-Matching" class="headerlink" title="Spatial Pyramid Matching"></a>Spatial Pyramid Matching</h2><h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><p>空间金字塔匹配(Spatial Pyramid Matching)可以将空间信息结合到模型中。</p>
-<h3 id="Pyramids"><a href="#Pyramids" class="headerlink" title="Pyramids"></a>Pyramids</h3><p>一个金字塔通过多张源图像的拷贝构建。每层金字塔大小是上一层的$1&#x2F;4$。层数越低，分辨率越高。从几何角度看，整个多尺度表现看起来像一个金字塔， 原始图像位于最底部，每个周期导致更小的图像叠加在另外一个图像上。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.4.png"></p>
-<h3 id="Bags-of-Words-BoW-Pyramids"><a href="#Bags-of-Words-BoW-Pyramids" class="headerlink" title="Bags of Words(BoW) + Pyramids"></a>Bags of Words(BoW) + Pyramids</h3><p>空间金字塔匹配将图像分割为越来越细的子区域(sub-region)，并允许我们计算每个子区域的局部特征直方图(BoW)。</p>
-<p>如下图，如果金字塔上方的BoW包含天空特征，中部包含植被和山特征，底层包含山特征，那么整张图很可能被分类为山。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.5.png"></p>
-<h3 id="Some-results"><a href="#Some-results" class="headerlink" title="Some results"></a>Some results</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.6.png"></p>
-<h2 id="Naive-Bayes"><a href="#Naive-Bayes" class="headerlink" title="Naïve Bayes"></a>Naïve Bayes</h2><h3 id="Basic-Idea"><a href="#Basic-Idea" class="headerlink" title="Basic Idea"></a>Basic Idea</h3><p>一旦我们产生了一个视觉词直方图，我们可以用朴素贝叶斯(Naïve Bayes)来对直方图进行分类。我们简单的衡量一个给定的视觉词是否存在，然后假定一个视觉词的存在&#x2F;缺失和给定类的每个视觉词条件独立。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.7.png"></p>
-<p>如上图，考虑一些视觉词直方图$X$，$x_i$是视觉词$i$在直方图中的总和。我们只在意视觉词$i$是否存在，即$x_i\in {0,1}$</p>
-<h3 id="Prior"><a href="#Prior" class="headerlink" title="Prior"></a>Prior</h3><p>$P(c)$是在所有类中出现类$c$的概率。所以对总共$m$个物体类，我们有<br>$$<br>\sum_{i&#x3D;1}^m P(c)&#x3D;1<br>$$<br>对于一个用直方图$x$表现的图像和一些物体类$c$，我们可以计算<br>$$<br>P(x|c)&#x3D;\prod_{i&#x3D;1}^m P(x_i|c)<br>$$</p>
-<h3 id="Posterior"><a href="#Posterior" class="headerlink" title="Posterior"></a>Posterior</h3><p>现在我们可以用贝叶斯理论(Bayes Theorem)来计算图像$x$属于类$c_j$的概率：<br>$$<br>P(c|x)&#x3D;\frac{P(c)P(x|c)}{\sum_{c’} P(c’)P(x|c’)}<br>$$<br>$c’$表示所有类。拓展分子和分母，我们可以重写方程：<br>$$<br>P(c|x)&#x3D;\frac{P(c)\prod_{i&#x3D;1}^m P(x_i|c)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$</p>
-<h3 id="Classification"><a href="#Classification" class="headerlink" title="Classification"></a>Classification</h3><p>为了将用直方图$x$表现的图像分类，我们简单的找到能够最大化方程(6)的类$c^*$：<br>$$<br>c^*&#x3D;\arg\max_c P(c|x)<br>$$<br>因为公式中含有大量的小概率累乘，所以可能会产生一个接近于0的不稳定值。因此，我们改用logs计算概率：<br>$$<br>c^*&#x3D;\arg\max_clogP(c|x)<br>$$<br>现在我们考虑两个类$c_1$和$c_2$：<br>$$<br>P(c_1|x)&#x3D;\frac{P(c_1)\prod_{i&#x3D;1}^m P(x_i|c_1)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$<br>和<br>$$<br>P(c_2|x)&#x3D;\frac{P(c_2)\prod_{i&#x3D;1}^m P(x_i|c_2)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$<br>因为分母是固定的，所以我们计算最大值时可以忽视分母。即($\propto$是正比于的意思)<br>$$<br>P(c_1|x)\propto P(c_1)\prod_{i&#x3D;1}^m P(x_i|c_1)<br>$$<br>和<br>$$<br>P(c_2|x)\propto P(c_2)\prod_{i&#x3D;1}^m P(x_i|c_2)<br>$$<br>对于类$c$<br>$$<br>P(c|x)\propto P(c)\prod_{i&#x3D;1}^m P(x_i|c)<br>$$<br>用上logs：<br>$$<br>logP(c|x)\propto logP(c)+\sum_{i&#x3D;1}^m logP(x_i|c)<br>$$<br>现在，分类任务变成<br>$$<br>\begin{align*}<br>c^*&amp;&#x3D;\arg\max_c P(c|x) \<br>&amp;&#x3D;\arg\max_c logP(c|x)\<br>&amp;&#x3D;\arg\max_c logP(c) +\sum_{i&#x3D;1}^m logP(x_i|c)<br>\end{align*}<br>$$</p>
+<p><strong>Scatter Matrices:</strong></p>
+<ul>
+<li>类$i$散度：$S_i&#x3D;\sum_{x_k\in Y_i}(x_k-\mu_i)(x_k-\mu_i)^T$</li>
+<li>类内散度：$S_w&#x3D;\sum^{c}_{i&#x3D;1}S_i$</li>
+<li>类间散度：$S_b&#x3D;\sum_{i&#x3D;1}^cN_i(\mu_i-\mu)(\mu_i-\mu)^T$</li>
+</ul>
+<h4 id="Mathematical-Formulation"><a href="#Mathematical-Formulation" class="headerlink" title="Mathematical Formulation"></a>Mathematical Formulation</h4><p>我们需要一个将所有点从$x\in R^m$映射到$z\in R^n$的投影：<br>$$<br>z&#x3D;w^Tx,x\in R^m,z\in R^n<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.5.png"></p>
+<h3 id="Results-Eigenface-PCA-vs-Fisherface-LDA"><a href="#Results-Eigenface-PCA-vs-Fisherface-LDA" class="headerlink" title="Results: Eigenface(PCA) vs. Fisherface(LDA)"></a>Results: Eigenface(PCA) vs. Fisherface(LDA)</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.4.png"></p>
 ]]></content>
       <categories>
         <category>计算机视觉</category>
@@ -600,239 +578,73 @@
       </tags>
   </entry>
   <entry>
-    <title>CS131 Lecture 17 Motion</title>
-    <url>/2018/08/25/Lecture%2017%20Motion/</url>
-    <content><![CDATA[<h1 id="Lecture-17-Motion"><a href="#Lecture-17-Motion" class="headerlink" title="Lecture 17 Motion"></a>Lecture 17 Motion</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>本节课我们会将之前的技术与新方法结合，追踪多张图片下像素的移动，应用方面有自动驾驶汽车、机器人、安全系统等</p>
-<h2 id="Optical-Flow-and-Key-Assumptions"><a href="#Optical-Flow-and-Key-Assumptions" class="headerlink" title="Optical Flow and Key Assumptions"></a>Optical Flow and Key Assumptions</h2><h3 id="Optical-Flow"><a href="#Optical-Flow" class="headerlink" title="Optical Flow"></a>Optical Flow</h3><p>光流即像素随时间的运动。光流的目的是通过观察两张图片$I_0$和$I_1$，对每个在时间$t_0$到$t_1$之间的每个像素产生一个运动矢量。但是，光流只能呈现图像模式的<strong>明显</strong>运动，这在下一节Assumptions and Limitations有解释，</p>
-<h3 id="Assumptions-and-Limitations"><a href="#Assumptions-and-Limitations" class="headerlink" title="Assumptions and Limitations"></a>Assumptions and Limitations</h3><h4 id="Apparent-Motion"><a href="#Apparent-Motion" class="headerlink" title="Apparent Motion"></a>Apparent Motion</h4><p>在二维图像中，光流只能呈现亮度模式的明显运动，意味着移动矢量是由各种行动产生的。例如：变化的光照可以使得静止的物体产生强运动矢量，但进入或者移出屏幕的运动无法被2D光流的运动矢量捕捉。光流处理问题的一个例子是孔径问题。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.1.png"></p>
-<p>孔径问题指光流无法代表边缘运动的结果，可能导致移动测量错误。例如图中线条实际上是向左下移动，但是由于孔径，看起来像是向右移动。</p>
-<h4 id="Brightness-Consistency"><a href="#Brightness-Consistency" class="headerlink" title="Brightness Consistency"></a>Brightness Consistency</h4><p>光流只能呈现明显的运动，为了正确的检测图中点的运动，我们必须假设这些点在帧之间的亮度相等。亮度一致性(Brightness Consistency)方程如下：<br>$$<br>I(x,y,t-1)&#x3D;I(x+u(x,y),y+v(x,y),t)<br>$$<br>其中$u(x,y)$表示点的水平运动，$v(x,y)$表示点的垂直运动。</p>
-<h4 id="Small-Motion"><a href="#Small-Motion" class="headerlink" title="Small Motion"></a>Small Motion</h4><p>光流假设点在连续的图像之间不会移动太多。因为帧之间的时间极短，所以假设基本成立。但是在物体距离摄像机过远或过近的时候，这个假设不再成立。接下来我们用亮度一致性方程来证明假设的必要性。首先用泰勒展开式线性化等式右侧：<br>$$<br>I(x+u(x,y),y+v(x,y),t)\approx I(x,y,t-1) +I_x·u(x,y)+I_y·v(x,y)+I_t<br>$$<br>线性化允许我们解得运动向量$u$和$v$，但在这种情况下我们只包含泰勒展开式的第一项。当帧之间的运动幅度较大时，式子无法步骤整个运动情况，导致不精确的$u$和$v$，因此假设有必要。</p>
-<h4 id="Spatial-Coherence"><a href="#Spatial-Coherence" class="headerlink" title="Spatial Coherence"></a>Spatial Coherence</h4><p>空间相干性是一个关于相同物体内邻近的像素会移动到一起的假设。其必要性证明如下：<br>$$<br>\begin{align}<br>I(x+u(x,y),y+v(x,y),t)\approx I(x,y,t-1) +I_x·u(x,y)+I_y·v(x,y)+I_t \<br>I(x+u(x,y),y+v(x,y),t)- I(x,y,t-1) &#x3D;I_x·u(x,y)+I_y·v(x,y)+I_t<br>\end{align}<br>$$<br>可得到<br>$$<br>\begin{align}<br>I_x·u+I_y·v+I_t\approx 0\<br>\nabla I·[u\space v]^T +I_t &#x3D;0<br>\end{align}<br>$$<br>现在我们有足够的方程解每个单像素中的$u$和$v$。假设像素可以移动到一起允许我们用有相同的$[u\space v]$的多个公式，使得我们能够解出邻居像素的移动。</p>
-<h2 id="Lucas-Kanade"><a href="#Lucas-Kanade" class="headerlink" title="Lucas-Kanade"></a>Lucas-Kanade</h2><p>从上式中得到图像的移动，至少每个像素需要两个方程。Lucas-Kanade技术依赖于一个附加约束–空间相干性来完成图像追踪。</p>
-<p>通过一个大小为$k\times k$的窗来对像素应用空间相干性约束。假设窗内的邻居像素有相同的$(u,v)$。例如，在$5\times5$窗内应用以下式子：</p>
-<p>![17.2](D:\Machine Learning\cs131\Lecture16_17\17.2.png)</p>
-<p>这产生了一个$Ad&#x3D;b$形式的线性方程的过约束系统。用最小二乘法解过拟合系统，我们减少了解$(A^TA)d&#x3D;A^Tb$中的$d$的复杂度。更准确的说，需要求解的系统系统被简化至</p>
-<p>![17.3](D:\Machine Learning\cs131\Lecture16_17\17.3.png)</p>
-<h3 id="Condition-for-an-Existing-Solution"><a href="#Condition-for-an-Existing-Solution" class="headerlink" title="Condition for an Existing Solution"></a>Condition for an Existing Solution</h3><p>为了能解这个系统，需要满足以下条件：</p>
-<ul>
-<li><p>$A^TA$要求可逆</p>
+    <title>CS131 Lecture 12 Face Recognition &amp; Dimensionality Reduction</title>
+    <url>/2018/08/15/Lecture%2012%20Face%20Recognition%20&amp;%20Dimensionality%20Reduction/</url>
+    <content><![CDATA[<p>#Lecture 12 Face Recognition &amp; Dimensionality Reduction </p>
+<h2 id="Overview-and-Motivation"><a href="#Overview-and-Motivation" class="headerlink" title="Overview and Motivation"></a>Overview and Motivation</h2><h3 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h3><p>维度减少是用于减少特征数的一个过程，可以提高效率。主要有两种方法：奇异值分解(Singular Value Decomposition, SVD)和主成分分析(Principal Component Analysis, PCA)。</p>
+<h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><ol>
+<li>减少计算成本。减少不重要的特征，保留关键成分。</li>
+<li>减少“维度灾难”的影响。lecture 11中提及，维度增加，需要更多数据点，分析耗费的时间更多。因此，减少维度能够缓解维度灾难。</li>
+<li>压缩数据。极大的降低数据储存要求。</li>
+</ol>
+<h2 id="Singular-Value-Decomposition-SVD"><a href="#Singular-Value-Decomposition-SVD" class="headerlink" title="Singular Value Decomposition (SVD)"></a>Singular Value Decomposition (SVD)</h2><h3 id="Overview-1"><a href="#Overview-1" class="headerlink" title="Overview"></a>Overview</h3><p>直观地，SVD是允许将数据呈现在一个新子特征空间的程序，使得数据的大多数变化能被捕捉。这是通过原特征空间的旋转轴，形成与原轴&#x2F;原特征（例如：客户的年龄、收入···）线性组合的新轴。新轴可以基于每个方向对方差的贡献，系统地分解数据点的方差（数据的分散程度）。</p>
+<p>SVD的结果是一个关于特征空间的“方向”表，根据方差由高到低排序。有最高方差的方向称为“（数据方差的）主成份”。关注这些维度的数据分布，就可以捕捉到大多数信息。</p>
+<p>特征选择和维度减少有所不同，见下。</p>
+<h3 id="Technical-Details-of-Singular-Value-Decomposition"><a href="#Technical-Details-of-Singular-Value-Decomposition" class="headerlink" title="Technical Details of Singular Value Decomposition"></a>Technical Details of Singular Value Decomposition</h3><ul>
+<li><p>SVD代表矩阵$A&#x3D;U\Sigma V^T$，其中$U:m\times m$和$V:n\times n$是旋转矩阵，$\Sigma:m\times n$是对角尺度矩阵。例如：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.1.png"></p>
 </li>
-<li><p>$A^TA$不能太小以至于引起噪音。</p>
-<p>$A^TA$的特征向量$\lambda_1$和$\lambda_2$不能过小</p>
-</li>
-<li><p>$A^TA$应该适中</p>
-<p>例如：$A^TA$的特征向量$\lambda_1$和$\lambda_2$不能过大</p>
-</li>
-</ul>
-<h3 id="Geometric-Interpretation"><a href="#Geometric-Interpretation" class="headerlink" title="Geometric Interpretation"></a>Geometric Interpretation</h3><p>很明显，之前的最小二乘方程组产生了一个二阶矩阵$M&#x3D;A^TA$。事实上，这是角探测的哈里斯矩阵。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.4.png"></p>
-<p>我们可以把上面的条件联系起来，以解出运动场$[u\space v]$来追踪哈里斯矩阵$M$检测到的角。$M&#x3D;A^TA$的特征向量和一个区域可能的边缘特征值合方向、大小联系。</p>
-<p>综上，很明显Lucas-Kanade的光流估计的最理想区域是一个角。若两个$\lambda$均过小，则这个区域过于平坦。若一个$\lambda$远大于另一个，则会产生孔径问题，无法得到正确的光流。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.5.png"></p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.6.png"></p>
-<p>以上树的三张图从左到右分别代表：$\lambda_1$大而$\lambda_2$小、两个$\lambda$都小（低语义区）、两个$\lambda$都大（高语义区）</p>
-<h3 id="Error-in-Lucas-Kanade"><a href="#Error-in-Lucas-Kanade" class="headerlink" title="Error in Lucas-Kanade"></a>Error in Lucas-Kanade</h3><p>Lucas-Kanade受限于光流假设。假设$A^TA$可逆且图中没有太多噪音，错误仍然在以下情况产生：</p>
-<ul>
-<li>亮度一致性不满足，意味着随着时间改变像素的强度可能改变</li>
-<li>移动量过大或者随着时间不会逐渐改变</li>
-<li>未满足空间相干性，意味着相邻像素没有随之改变。这个可能是由不合适大小的窗造成的（即选择了不好的$k$）。</li>
-</ul>
-<h3 id="Improving-Accuracy"><a href="#Improving-Accuracy" class="headerlink" title="Improving Accuracy"></a>Improving Accuracy</h3><p>从上面所做的许多假设中，Lucas-Kanade可以通过包含之前在亮度一致方程的泰勒展开近似中得到的更高阶项来提高其准确性。这个放松了之前的假设。现在，待解决的问题是：<br>$$<br>I(x+u,y+v)&#x3D;I(x,y)+I_xu+I_yv+higher\space order\space terms-I_{t-1}<br>$$<br>这是一个找多项式根的问题，可以用牛顿迭代方法解决。</p>
-<p>总的来说，精确的迭代Lucas-Kanade算法可以被应用：</p>
+<li><p>python代码：<code>[U, S, V] = numpy.linalg.svd(A)</code>。计算机计算SVD步骤如下：</p>
 <ol>
-<li>解Lucas-Kanade方程，估计每个像素的速度</li>
-<li>用被估计的光流区域和图像变形技术，将$I(t-1)$变化到$I(t)$</li>
-<li>重复至收敛</li>
+<li>计算$AA^T$的特征向量。这些向量构成$U$的列。特征向量的平方根为奇异值(构成$\Sigma$)</li>
+<li>计算$A^TA$的特征向量。这些向量构成$V$的列。</li>
 </ol>
-<h2 id="Horn-Schunk"><a href="#Horn-Schunk" class="headerlink" title="Horn-Schunk"></a>Horn-Schunk</h2><h3 id="Horn-Schunk-Method-for-Optical-Flow"><a href="#Horn-Schunk-Method-for-Optical-Flow" class="headerlink" title="Horn-Schunk Method for Optical Flow"></a>Horn-Schunk Method for Optical Flow</h3><p>Horn-Schunk方法将光流公式化为以下全局能量函数，并尽量最小化$u(x,y)$和$v(x,y)$。<br>$$<br>E&#x3D;\iint[(I_xu+I_yv+I_t)^2+\alpha^2(||\nabla u||^2+||\nabla v||^2)]dxdy<br>$$<br>上式第一项反应了光照恒定假设，根据假设$I_xu+I_yv+I_t$应该等于0。这项存在于式子中是为了保证这个值尽可能接近于0。</p>
-<p>第二项反应了小移动假设。这项存在于式子中为了鼓励在位置改变较小的情况下，更加光滑的流。$\alpha$是正规化常数，用于控制光滑度，值越大流越光滑。</p>
-<p>为了最小化能量函数，我们对$u$和$v$求导并等于0。得到以下两个等式<br>$$<br>\begin{align}<br>I_x(I_xu+I_yv+I_t)+\alpha^2\Delta u&#x3D;0\<br>I_y(I_xu+I_yv+I_t)+\alpha^2\Delta v&#x3D;0<br>\end{align}\<br>\Delta&#x3D;\frac{\partial}{\partial x^2}+\frac{\partial}{\partial y^2}<br>$$<br>其中$\Delta$为拉格朗日算子，在实际计算中为<br>$$<br>\Delta u(x,y)&#x3D;\overline u(x,y)-u(x,y)<br>$$<br>其中$\overline u(x,y)$是$u$在$(x,y)$附近的加权平均。用(11)式带入得到：<br>$$<br>\begin{align}<br>(I_x^2+\alpha^2)u+I_xI_yv&#x3D;\alpha^2\overline u-I_xI_t\<br>(I_y^2+\alpha^2)u+I_xI_yu&#x3D;\alpha^2\overline v-I_yI_t<br>\end{align}\<br>$$<br>是一个关于$u$和$v$的线性方程。</p>
-<h3 id="Iterative-Horn-Schunk"><a href="#Iterative-Horn-Schunk" class="headerlink" title="Iterative Horn-Schunk"></a>Iterative Horn-Schunk</h3><p>因为$u$和$v$的值取决于$(x,y)$邻近的光流值，所以我们需要在每次邻居更新后，重新计算$u$和$v$：<br>$$<br>\begin{align}<br>u^{k+1}&#x3D;\overline u^k-\frac{I_x(I_x\overline u^k+I_y\overline v^k+I_t)}{\alpha^2+I_x^2+I_y^2}\<br>v^{k+1}&#x3D;\overline v^k-\frac{I_y(I_x\overline u^k+I_y\overline v^k+I_t)}{\alpha^2+I_x^2+I_y^2}<br>\end{align}\<br>$$<br>其中上标$k$代表迭代次数</p>
-<h3 id="Smoothness-Regularization"><a href="#Smoothness-Regularization" class="headerlink" title="Smoothness Regularization"></a>Smoothness Regularization</h3><p>光滑度正规化项$||\nabla u||^2+||\nabla v||^2$推进最小化邻近点之间的光流变化。这样在边缘区域，点会流向最临近的点，解决孔径问题。</p>
-<h3 id="Dense-Optical-Flow-with-Michael-Black’s-Method"><a href="#Dense-Optical-Flow-with-Michael-Black’s-Method" class="headerlink" title="Dense Optical Flow with Michael Black’s Method"></a>Dense Optical Flow with Michael Black’s Method</h3><p>Michael Black拓展了Horn-Schunk方法。原来的正规化项$||\nabla u||^2+||\nabla v||^2$如下图，是一个二次函数。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.7.png"></p>
-<p>现在用以下函数替代</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.8.png"></p>
-<h2 id="Pyramids-for-Large-Motion"><a href="#Pyramids-for-Large-Motion" class="headerlink" title="Pyramids for Large Motion"></a>Pyramids for Large Motion</h2><p>返回之前的假设，我们要求在帧之间像素只能有小位移。所以当位移较大时，算法可能会崩溃。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.9.png"></p>
-<p>注意上图，Lucas-Kanade无法找到树干流的一致向量。为了解决这个问题，我们可以和之前的滑动窗特征检测器一样，建立一个图像尺度逐渐下降的金字塔。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.10.png"></p>
-<p>现在，当我们想找到流向量，可以采用帧之间位移更小的低分辨率采样版本。以下是使用了金字塔后的树干流向量：</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.11.png"></p>
-<p>注意现在流向量大多数都指向同一方向，即树干整体移动方向一致。</p>
-<h2 id="Common-Fate"><a href="#Common-Fate" class="headerlink" title="Common Fate"></a>Common Fate</h2><p>我们可以通过图像中部分的共同性来获得更多信息，共同性即在图像给定的切割中，这部分像素移动方式都相似。我们的目标就是找出有共同性的分割或层。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.12.png"></p>
-<h3 id="Identify-Layers"><a href="#Identify-Layers" class="headerlink" title="Identify Layers"></a>Identify Layers</h3><p>我们通过将图像分割至块，并基于块之间放射运动因子的相似性，将块组合来计算图像的层。对于每个块，找到一个$\alpha$，对于所有在块中的像素$(x,y)$，能够最小化下式：<br>$$<br>Err(\alpha)&#x3D;\sum[I_x(\alpha_1+\alpha_2x+\alpha_3y)+I_x(\alpha_4+\alpha_5x+\alpha_6y)+I_t]^2<br>$$<br>上面的方程由两部分推导而出：</p>
+</li>
+<li><p>因为SVD依赖于特征向量的计算，所以即使矩阵很大，计算也很快。</p>
+</li>
+<li><p>更详细的实现细节：<a href="http://www.ams.org/samplings/feature-column/fcarc-svd">http://www.ams.org/samplings/feature-column/fcarc-svd</a>.</p>
+</li>
+</ul>
+<h4 id="Eigenvector-definition"><a href="#Eigenvector-definition" class="headerlink" title="Eigenvector definition"></a>Eigenvector definition</h4><ul>
+<li>$Ax&#x3D;\lambda x$，$x$为特征向量，$\lambda$为放缩因子。</li>
+<li>换句话说，用$x$来转换$A$只会放缩但不会改变方向。</li>
+</ul>
+<h3 id="Applications-of-Singular-Value-Decomposition"><a href="#Applications-of-Singular-Value-Decomposition" class="headerlink" title="Applications of Singular Value Decomposition"></a>Applications of Singular Value Decomposition</h3><ul>
+<li>计算逆转矩阵。如果任意矩阵$A$可以被分解为$A&#x3D;U\Sigma V^T$，那么$A$的逆可以定义为$A^+&#x3D;V^T\Sigma ^{-1}U$。即使这只是一个近似值，但它允许计算许多非平方矩阵的逆。</li>
+<li>SVD也可以用于计算矩阵的主成份。主成份大量用于数据分析和机器学习中，因此SVD是很多程序的核心。</li>
+</ul>
+<h2 id="Principal-Component-Analysis-PCA"><a href="#Principal-Component-Analysis-PCA" class="headerlink" title="Principal Component Analysis (PCA)"></a>Principal Component Analysis (PCA)</h2><h3 id="What-are-Principal-Component"><a href="#What-are-Principal-Component" class="headerlink" title="What are Principal Component"></a>What are Principal Component</h3><p>继续SVD的例子，注意$U$的第一列被$\Sigma$的第一个值缩放了。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.2.png"></p>
+<p>接着，$U\Sigma$被$V^T$的第一行缩放，对$A$的列产生了一个贡献$A_{partial}$。每个($U$的列$i$)*($\Sigma$的值$i$)*($V^T$的行$i$)都是$A$的一个成分。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.3.png"></p>
+<p>在这个过程中，我们把矩阵$A$作为$U$的行的线性组合，如上图。但是，现实中我们可以只有$U$的几列来构造出一个$A$的好的近似。这是由于$\Sigma$的性质。$\Sigma$是一个最大值位于左上角，其余值由左上往右下递减的对角矩阵。因此，$U$的前列对$A$的贡献最大。这前几列就称为主成分。</p>
+<p>我们通过分析协方差矩阵，移除贡献小的维度。协方差矩阵的值并没有那么重要，但是值的符号很重要，正号代表正相关，负号代表负相关，0代表相互独立。</p>
+<h4 id="Covariance"><a href="#Covariance" class="headerlink" title="Covariance"></a>Covariance</h4><p>方差和协方差是一组点在质量中心（均值）的“扩散”的度量。方差：衡量一个维度上的点的偏差的度量，例如高度。协方差：衡量每个维度之间的差异的一种度量。在两个维度之间测量协方差，看看两个维度之间是否有关系，例如研究的小时数和获得的分数。一个维度和自身之间的协方差是方差。<br>$$<br>COV(x,y)&#x3D;\frac{\sum^n_{i&#x3D;1}(\overline x_i-x)(\overline y_i-y)}{n-1}<br>$$</p>
+<h3 id="Performing-PCA"><a href="#Performing-PCA" class="headerlink" title="Performing PCA"></a>Performing PCA</h3><p>PCA可以用sklearn package实现：<code>sklearn.decomposition.PCA</code>。非正式方法实现步骤如下：</p>
 <ol>
-<li><p>亮度一致方程<br>$$<br>I(x,y,t-1)&#x3D;I(x+u(x,y),y+v(x,y),t)<br>$$</p>
+<li><p>将数据转化为$m\times n$格式，$m$代表样本数，$n$表示特征数</p>
 </li>
-<li><p>仿射运动成分<br>$$<br>I_xu(x,y)+I_xv(x,y)+I_t\approx0<br>$$<br>$I_x,I_y,I_t$是图像关于两个方向和实践的梯度。$u(x,y),v(x,y)$是仿射运动在两个方向上的成分<br>$$<br>\begin{align}<br>u(x,y)&#x3D;\alpha_1+\alpha_2x+\alpha_3y\<br>v(x,y)&#x3D;\alpha_4+\alpha_5x+\alpha_6y<br>\end{align}<br>$$</p>
+<li><p>使$X$置中<br>$$<br>\frac{X-平均值}{每行标准差}<br>$$</p>
 </li>
-</ol>
-<p>从此，我们将因子向量$\alpha_i$映射到运动因子空间，并对仿射运动因子向量采用k-means聚类。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.13.png"></p>
-<p>最后k-means聚类的中心是因子$\alpha_1,…,\alpha_6​$，它们最小化了上述错误方程（$Err(\alpha)​$），且代表了元图像块应该聚类为一个层。</p>
-]]></content>
-      <categories>
-        <category>计算机视觉</category>
-      </categories>
-      <tags>
-        <tag>计算机视觉</tag>
-        <tag>CS131</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CS131 Lecture 13 Face Recognition and LDA</title>
-    <url>/2018/08/16/Lecture%2013%20Face%20Recognition%20and%20LDA/</url>
-    <content><![CDATA[<p>#Lecture 13 Face Recognition and LDA </p>
-<h2 id="Introduction-to-Facial-Recognition"><a href="#Introduction-to-Facial-Recognition" class="headerlink" title="Introduction to Facial Recognition"></a>Introduction to Facial Recognition</h2><h3 id="Applications"><a href="#Applications" class="headerlink" title="Applications"></a>Applications</h3><ul>
-<li>数字摄影：聚焦人脸</li>
-<li>监视器</li>
-<li>组织相册：将相同的人放在同一相册</li>
-<li>人物追踪</li>
-<li>动作和表情：构建基于心情互动的智能设备</li>
-<li>安全和战争：检测特殊人物、敌军</li>
-<li>电话会议：提供正在视频的人的信息</li>
-</ul>
-<h3 id="A-Key-Distinction-Detection-vs-Recognition"><a href="#A-Key-Distinction-Detection-vs-Recognition" class="headerlink" title="A Key Distinction: Detection vs. Recognition"></a>A Key Distinction: Detection vs. Recognition</h3><p><strong>Face Detection</strong>: 检测照片是否包含人脸和照片上人脸的位置</p>
-<p><strong>Face Recognition</strong>: 检测照片包含<em>谁</em>的脸</p>
-<h3 id="Space-of-Faces"><a href="#Space-of-Faces" class="headerlink" title="Space of Faces"></a>Space of Faces</h3><p>如果我们考虑一张大小为$m\times n$灰度图，这张图可以用一个在高维空间$R^{mn}$上的点表示。一张图不止包含脸，所以脸只占了相对小的子空间。我们的任务就是对脸的子空间建模。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.1.png"></p>
-<p>我们计算出K维子空间，这样数据点在子空间的投影在所有子空间中都有最大的方差。这个低维子空间捕捉了脸部关键样貌特点。    </p>
-<h2 id="The-Eigenfaces-Algorithm"><a href="#The-Eigenfaces-Algorithm" class="headerlink" title="The Eigenfaces Algorithm"></a>The Eigenfaces Algorithm</h2><h3 id="Key-Ideas-and-Assumptions"><a href="#Key-Ideas-and-Assumptions" class="headerlink" title="Key Ideas and Assumptions"></a>Key Ideas and Assumptions</h3><ul>
-<li>假设大多数脸部图像都位于低维子空间，由最大方差的前$k$个方向决定</li>
-<li>用PCA检测旋转子空间的向量或特征面</li>
-<li>将所有数据集中的脸部图像表现为特征面的线性组合，特征面被定义为SVD分解的主成份</li>
-</ul>
-<h4 id="What-are-eigenfaces"><a href="#What-are-eigenfaces" class="headerlink" title="What are eigenfaces?"></a>What are eigenfaces?</h4><p>特征面是最大方差方向的特征向量的视觉呈现。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.6.png"></p>
-<h3 id="Training-Algorithm"><a href="#Training-Algorithm" class="headerlink" title="Training Algorithm"></a>Training Algorithm</h3><ol>
-<li><p>排列训练图像：$x_1,…,x_n$</p>
+<li><p>通过SVD对角化$X$：$X&#x3D;U\Sigma V^T$</p>
 </li>
-<li><p>计算平均脸：<br>$$<br>\mu&#x3D;\frac1N \sum x_i<br>$$</p>
+<li><p>特征向量是主要方向，这些轴上的阴影是组成成分。这意味着最终我们要计算$XV$</p>
 </li>
-<li><p>计算协方差矩阵：<br>$$<br>\Sigma&#x3D;\frac1N X_cX_c^T<br>$$</p>
+<li><p>因为$V$包含特征向量，所以是标准正交的，$XV&#x3D;U\Sigma V^TV&#x3D;US$</p>
 </li>
-<li><p>用PCA计算协方差矩阵$\Sigma$的特征向量</p>
-</li>
-<li><p>计算每个训练图像$x_i$的投影<br>$$<br>x_i\rightarrow (x_i^c·\phi_1,x_i^c·\phi_2,…,x_i^c·\phi_k)\equiv(a_1,a_2,…,a_k)<br>$$<br>其中$\phi_i$是第$i$个特征向量。</p>
-</li>
-<li><p>重构的脸$x_i\approx \mu+a_1·\phi_1+…+a_k·\phi_k$</p>
+<li><p>步骤5说明我们只需要$US$的列，均由SVD产生。</p>
 </li>
 </ol>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.7.png"></p>
-<h4 id="Why-can-we-do-this"><a href="#Why-can-we-do-this" class="headerlink" title="Why can we do this?"></a>Why can we do this?</h4><p>因为特征值（特征向量的方差）随着主成份数目的增加迅速下降</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.8.png"></p>
-<h4 id="Reconstruction-and-Error"><a href="#Reconstruction-and-Error" class="headerlink" title="Reconstruction and Error"></a>Reconstruction and Error</h4><p>我们只需要前$k$个特征面用于减少维度。特征面越少损失越多，脸部越不明显。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.9.png"></p>
-<h3 id="Testing-Algorithm"><a href="#Testing-Algorithm" class="headerlink" title="Testing Algorithm"></a>Testing Algorithm</h3><ol>
-<li><p>取查询图像$t$</p>
+<h3 id="Applications-of-Principal-Component"><a href="#Applications-of-Principal-Component" class="headerlink" title="Applications of Principal Component"></a>Applications of Principal Component</h3><ul>
+<li><p>图像压缩。图像矩阵中的大多数信息都可以被低阶矩阵提取。所以在质量没有明显损失下，可以使用PCA压缩图像。如图：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.4.png"></p>
+<p>只用16个主成份，原图像就能被很好的重现。相对误差如下：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.5.png"></p>
 </li>
-<li><p>映射至特征向量：<br>$$<br>t\rightarrow((t-\mu)·\phi_1,(t-\mu)·\phi_2,…,(t-\mu)·\phi_k)\equiv(w_1,w_2,..,w_k)<br>$$</p>
-</li>
-<li><p>比较投影$w$和所有$N$个训练投影。用欧几里德距离和KNN算法输出标签。</p>
-</li>
-</ol>
-<h3 id="Advantages-and-Disadvantages"><a href="#Advantages-and-Disadvantages" class="headerlink" title="Advantages and Disadvantages"></a>Advantages and Disadvantages</h3><p><strong>Advantages</strong></p>
-<ul>
-<li>这个方法不需要预先知道脸部、表情信息</li>
-<li>快速、全局最优</li>
-</ul>
-<p><strong>Disadvantages</strong></p>
-<ul>
-<li>要求小心控制的数据<ol>
-<li>所有脸部必须集中在框架。否则结果噪音大</li>
-<li>图像必须大小相同</li>
-<li>对脸的角度敏感</li>
-</ol>
-</li>
-<li>方法不需要预先知识<ol>
-<li>脸的类别之间没有差别</li>
-<li>PCA不考虑与脸相关的标签。因此它可能将不同的脸对应到相同的子空间，使得分类器难以区别这些脸。</li>
-</ol>
-</li>
-<li>PCA投影在从低维重构上可能是最优的，但在在辨别方面不是最优的。</li>
-</ul>
-<h3 id="Beyond-Facial-Recognition-Expressions-and-Emotions"><a href="#Beyond-Facial-Recognition-Expressions-and-Emotions" class="headerlink" title="Beyond Facial Recognition: Expressions and Emotions"></a>Beyond Facial Recognition: Expressions and Emotions</h3><p>这项技术也可以用于检测表达和情绪，且算法不改变。</p>
-<p>高兴↓</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.10.png"></p>
-<p>厌恶↓</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/12.11.png"></p>
-<h2 id="Linear-Discriminant-Analysis-LDA"><a href="#Linear-Discriminant-Analysis-LDA" class="headerlink" title="Linear Discriminant Analysis (LDA)"></a>Linear Discriminant Analysis (LDA)</h2><h3 id="PCA-vs-LDA"><a href="#PCA-vs-LDA" class="headerlink" title="PCA vs. LDA"></a>PCA vs. LDA</h3><p>PCA与LDA都能减少样本的维度。但是，PCA偏重于重建物体，LDA偏重于分类。LDA会将不同的类相互远离。</p>
-<ul>
-<li>PCA保持最大方差</li>
-<li>LDA找到能够在类之间最大化散射和在类中最小化散射的投影。</li>
-</ul>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.2.png"></p>
-<p>如图，PCA保持了最大方差，并将所有类的点都映射在正斜率方向上，因此难以判别类别。但是，LDA将点映射到负斜率，导致点被映射到接近同类点，与非同类点相反的位置。</p>
-<h3 id="General-Idea"><a href="#General-Idea" class="headerlink" title="General Idea"></a>General Idea</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.6.png"></p>
-<p>LDA用两个值运行：类间散度、类内散度。类间散度指不同类之间的距离，类内散度指类内点之间的距离。LDA最大化类间散度，最小化类内散度。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.3.png"></p>
-<h3 id="Mathematical-Formulation-of-LDA-with-2-Variables"><a href="#Mathematical-Formulation-of-LDA-with-2-Variables" class="headerlink" title="Mathematical Formulation of LDA with 2 Variables"></a>Mathematical Formulation of LDA with 2 Variables</h3><p>我们想要找到一个投影$w$在$x\in R^n$空间中映射出0和1的点到一个新的空间$z\in R^m$，例如$z&#x3D;w^Tx$。其中，$m&lt;n$，且投影必须最大化以下公式：<br>$$<br>J(w)&#x3D;\frac{S_B\space when\space projected\space onto\space w}{S_W\space when\space projected\space onto\space w}<br>$$<br>公式中，$S_B$代表类间散度，$S_W$代表类内散度。接下来定义一个代表类内点的平均的变量$\mu_i$：<br>$$<br>\mu_i&#x3D;E_{X|Y}[X|Y&#x3D;i]<br>$$<br>定义变量$\Sigma_i$代表类的协方差矩阵：<br>$$<br>\Sigma_i&#x3D;E_{X|Y}[(X-\mu_i)(X-\mu_i)^T|Y&#x3D;i]<br>$$<br>用以上变量，可以定义$S_B$和$S_W$：<br>$$<br>S_B&#x3D;(\mu_1-\mu_0)^2&#x3D;(\mu_1-\mu_0)(\mu_1-\mu_0)^T\<br>S_W&#x3D;(\Sigma_1+\Sigma_0)<br>$$<br>将变量放回原式$J(w)$可得：<br>$$<br>J(w)&#x3D;\frac{w^T(\mu_1-\mu_0)(\mu_1-\mu_0)^Tw}{w^T(\Sigma_1+\Sigma_0)w}<br>$$<br>我们要最大化$J(w)$，即最大化分子，保持分母为常数：<br>$$<br>\max_{w^T(\Sigma_1+\Sigma_0)w&#x3D;K}w^T(\mu_1-\mu_0)(\mu_1-\mu_0)^Tw<br>$$<br>用拉格朗日乘数法，我们定义拉格朗日算子为：<br>$$<br>L&#x3D;w^TS_Bw-\lambda(w^TS_Ww-K)&#x3D;w^T(S_B-\lambda S_W)w+K<br>$$<br>我们必须最大化$L$对$\lambda$和$w$的值。我们可以通过用其关于$w$的梯度和找到关键点的位置：<br>$$<br>\nabla_wL&#x3D;2(S_B-\lambda S_W)w&#x3D;0<br>$$<br>用这个公式，我们可以得到关键点位置：<br>$$<br>S_Bw&#x3D;\lambda S_Ww<br>$$<br>这是一个广义的特征向量问题。在$S_W^{-1}&#x3D;(\Sigma_1+\Sigma_0)^{-1}$存在的情况下，我们得到：<br>$$<br>S_W^{-1}S_Bw&#x3D;\lambda w<br>$$<br>代入$S_B$得：<br>$$<br>S_W^{-1}(\mu_1-\mu_0)&#x3D;\frac\lambda\alpha w<br>$$<br>$w$的大小并不重要，所以我们可以得到映射$w$：<br>$$<br>w*&#x3D;S_W^{-1}(\mu_1-\mu_0)&#x3D;(\Sigma_1-\Sigma_0)^{-1}(\mu_1-\mu_0)<br>$$</p>
-<h3 id="LDA-with-N-Variables-and-C-Classes"><a href="#LDA-with-N-Variables-and-C-Classes" class="headerlink" title="LDA with N Variables and C Classes"></a>LDA with N Variables and C Classes</h3><h4 id="Preliminaries"><a href="#Preliminaries" class="headerlink" title="Preliminaries"></a>Preliminaries</h4><p><strong>Variables:</strong></p>
-<ul>
-<li><p>N个样本：${x_1,…,x_N}$</p>
-</li>
-<li><p>C个类:${Y_1,Y_2,…,Y_C}$。每一类都有N个样本。</p>
-</li>
-<li><p>每个类的平均：类$i$的平均为<br>$$<br>\mu_i&#x3D;\frac 1{N_i}\sum_{x_k\in Y_i}x_k<br>$$</p>
-</li>
-<li><p>所有数据的平均：<br>$$<br>\mu&#x3D;\frac 1N\sum_{k&#x3D;1}^N x_k<br>$$</p>
+<li><p>用于搜索引擎。搜索空间中有许多都与搜索关键词无关，所以搜索引擎常用PCA缩小搜索空间。这对即使搜索十分重要，也体现了SVD的能力。</p>
 </li>
 </ul>
-<p><strong>Scatter Matrices:</strong></p>
-<ul>
-<li>类$i$散度：$S_i&#x3D;\sum_{x_k\in Y_i}(x_k-\mu_i)(x_k-\mu_i)^T$</li>
-<li>类内散度：$S_w&#x3D;\sum^{c}_{i&#x3D;1}S_i$</li>
-<li>类间散度：$S_b&#x3D;\sum_{i&#x3D;1}^cN_i(\mu_i-\mu)(\mu_i-\mu)^T$</li>
-</ul>
-<h4 id="Mathematical-Formulation"><a href="#Mathematical-Formulation" class="headerlink" title="Mathematical Formulation"></a>Mathematical Formulation</h4><p>我们需要一个将所有点从$x\in R^m$映射到$z\in R^n$的投影：<br>$$<br>z&#x3D;w^Tx,x\in R^m,z\in R^n<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.5.png"></p>
-<h3 id="Results-Eigenface-PCA-vs-Fisherface-LDA"><a href="#Results-Eigenface-PCA-vs-Fisherface-LDA" class="headerlink" title="Results: Eigenface(PCA) vs. Fisherface(LDA)"></a>Results: Eigenface(PCA) vs. Fisherface(LDA)</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/13.4.png"></p>
-]]></content>
-      <categories>
-        <category>计算机视觉</category>
-      </categories>
-      <tags>
-        <tag>计算机视觉</tag>
-        <tag>CS131</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CS131 Lecture 16 Recognizing Objects by Parts</title>
-    <url>/2018/08/22/Lecture%2016%20Recognizing%20Objects%20by%20Parts/</url>
-    <content><![CDATA[<h1 id="Lecture-16-Recognizing-Objects-by-Parts"><a href="#Lecture-16-Recognizing-Objects-by-Parts" class="headerlink" title="Lecture 16 Recognizing Objects by Parts"></a>Lecture 16 Recognizing Objects by Parts</h1><h2 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h2><p>计算机视觉不止检测物体的分类，还要检测物体的相关信息。例如：</p>
-<ul>
-<li>淘宝以图搜购买链接</li>
-<li>某种蘑菇能不能吃</li>
-<li>…</li>
-</ul>
-<p>通常，计算机视觉需要能够提供物体基本特征之外的信息。</p>
-<h2 id="What-can-computer-recognize-today"><a href="#What-can-computer-recognize-today" class="headerlink" title="What can computer recognize today?"></a>What can computer recognize today?</h2><p>找到特定类别的物体（品牌、地标、书本…），不过只能精确匹配。对于当今的系统来说，找到一个通用的对象要困难得多。</p>
-<h2 id="What’s-next-to-work-on"><a href="#What’s-next-to-work-on" class="headerlink" title="What’s next to work on?"></a>What’s next to work on?</h2><p>计算机视觉尚未达到的主要目标是通用类别识别。即能识别图中所有物体类别。例如：对于一个橘色杯子，我们想要找到咖啡杯，但图像搜索只能找到有橘色物体在同一位置的图片。</p>
-<p>现在的系统无法识别训练集之外的任意物体，而现在有太多的物体类别，很难决定专注于哪个物体。</p>
-<h2 id="Big-Data-from-the-Internet"><a href="#Big-Data-from-the-Internet" class="headerlink" title="Big Data from the Internet"></a>Big Data from the Internet</h2><p>现在互联网上86%的数据都是可视数据，而可视数据不能被自动分析。很多识别问题对机器来说较难，但对于人类来说很简单。当人类找不到答案时也可以简单的求助于他人寻找答案，而机器无法做到，所以当今互联网提供了一个将人类帮助和机器识别结合的环境。</p>
-<h2 id="ImageNet-and-Confusion-Matrices"><a href="#ImageNet-and-Confusion-Matrices" class="headerlink" title="ImageNet and Confusion Matrices"></a>ImageNet and Confusion Matrices</h2><p>既然模型受限于训练集中类的数目，一个可行的方法是拓展训练集中的类的数目。比较有名的数据集有：ImageNet(13M images, 22000 categories), Caltech101(9K images, 101 categories), LabelMe (30k images), SUN (131K images)。</p>
-<p>Deng从PASCAL VOC到ImageNet应用了四种分类模型，发现随着类别数目的提升，精度也随之大幅下降。他将结果画成以下的混淆矩阵(confusion matrix)：</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.1.png"></p>
-<p>混淆矩阵在xy轴上画出类别，并衡量类中物体正确分类与否的程度。主要看对角线上格子颜色，颜色越浅，分类器效果越好。</p>
-<p>从图中我们可以看出，分类器需要区分的类越“细”（或越相似），分类错误就越多。例如：区分狗与鸟的错误率比区分鸟的种类要低。</p>
-<h2 id="Challenges-and-Solutions"><a href="#Challenges-and-Solutions" class="headerlink" title="Challenges and Solutions"></a>Challenges and Solutions</h2><h2 id="Semantic-Hierarchy"><a href="#Semantic-Hierarchy" class="headerlink" title="Semantic Hierarchy"></a>Semantic Hierarchy</h2><p>一个解决正确区分相似类的方法是语义层次(semantic hierarchy)。下图即为一个例子。我们创建了一个树结构，它的每个孩子都是父亲的子类。系统将尝试尽量识别到树的深处，即更精确的类。当类更精确时，不确定度也会增加。这个概念称作”hedging”——系统试图识别不确定树中的位置，根据位置做出猜测以得到足够信息，减少错误。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.2.png"></p>
-<p>为了正式定义这个问题，我们假设训练和测试集有同样的数据分布。另外，我们假设我们可以得到一个给出层次结构的后验概率的基本类$g$。接下来，定义一个奖励函数$R(f)$，它给在树更深处的类（更精确的类）更高的分数。再定义一个预计精度函数$A(f)$，它随着我们沿书向下移动（不确定性增加）而降低。我们的问题定义为<br>$$<br>\max_{A(f)\geq 1-\epsilon} R(f)<br>$$<br>其中$\epsilon$是预先设置的常数，表示对所有例子而言，分类器所允许误差。</p>
-<p>为了保证最后方案是最优方案，我们定义一个全局的，固定的，标量参数$\lambda\geq 0$。对每个节点，我们将$\lambda$加入奖励值，然后正规化后验分布。流程如下：</p>
-<ol>
-<li>选择一个$\lambda$</li>
-<li>找到与$\lambda$相关的决策规则$f$</li>
-<li>在验证集上衡量表现</li>
-<li>检查是否$A\approx 1-\epsilon$。不是则重复</li>
-</ol>
-<p>我们可以用二分搜索快速找到$\lambda $</p>
-<h3 id="Fine-grained-Classes"><a href="#Fine-grained-Classes" class="headerlink" title="Fine-grained Classes"></a>Fine-grained Classes</h3><p>现有的方法从图中所有可能的位置选择特征，但是它可能找不到正确的特征。例如：两种相似的鸟区别在于尾巴，但是计算机可能无法找到这是个辨别特征。解决方案是众包(crowd-sourcing)。</p>
-<p>那么，什么是最好的方法来询问一个人群：哪些特征可以区分图像的类别？</p>
-<p><strong>Crowd-sourced bubble games</strong>： 用泡沫来代表特征，利用游戏特性来吸引大量人群为图像标记出主要特征，因为有奖惩系统，所以标记质量也较高。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.3.png"></p>
+<p>实际上，PCA代表了样本作为不同成分的权重 – 允许用一个成分代表样本间的差异。这大大减少了数据冗余，使得算法更加高效有用。</p>
 ]]></content>
       <categories>
         <category>计算机视觉</category>
@@ -931,6 +743,110 @@
       </tags>
   </entry>
   <entry>
+    <title>CS131 Lecture 14 Visual Bag of Words</title>
+    <url>/2018/08/19/Lecture%2014%20Visual%20Bag%20of%20Words/</url>
+    <content><![CDATA[<h1 id="Lecture-14-Visual-Bag-of-Words"><a href="#Lecture-14-Visual-Bag-of-Words" class="headerlink" title="Lecture 14 Visual Bag of Words"></a>Lecture 14 Visual Bag of Words</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>首先我们要将图像表现为特征向量形式。接下来创建图像图像的空间形式，观察在低维的图像值。然后将每个图像转换成一组系数，并投影到PCA空间。转换后的数据用分类器分类，例如：K-means、HAC。</p>
+<h3 id="Idea-of-Bag-of-Words"><a href="#Idea-of-Bag-of-Words" class="headerlink" title="Idea of Bag of Words"></a>Idea of Bag of Words</h3><p>词袋模型是一个简化目标表示的方式，将其作为它们子部分的集合，以便于分类之类的操作。例如：一个段落里的单词列表和单词的频率就可以构成一个词袋，我们用词袋来表现段落以便于后续分析。</p>
+<p>在计算机视觉领域，我们将图像考虑为图像特征的集合。同样，结合特征的频率，我们也可以运用词袋模型来进行预测任务，例如：分类、脸部检测。</p>
+<p>词袋模型主要分为两步：</p>
+<ol>
+<li><p>从多张图片上构造特征“字典”或者“单词表”——图像中存在什么通用特征？例如：房间的色系、脸的部分。</p>
+<ul>
+<li><p>提取特征</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.8.png"></p>
+</li>
+<li><p>学习视觉词典</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.9.png"></p>
+</li>
+<li><p>用视觉词典量化特征</p>
+</li>
+</ul>
+</li>
+<li><p>给定一张新图像，将它们转换为我们收集过的特征直方图——我们在1中构建的特征频率。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.10.png"></p>
+</li>
+</ol>
+<h3 id="Origins"><a href="#Origins" class="headerlink" title="Origins"></a>Origins</h3><p>词袋可以看作一个体现在一系列图像或者文档上建立的字典的频率——新数据可以建立这个模型并用于后续预测任务。</p>
+<h2 id="Algorithm-Summary"><a href="#Algorithm-Summary" class="headerlink" title="Algorithm Summary"></a>Algorithm Summary</h2><h3 id="Extracting-Interesting-Features"><a href="#Extracting-Interesting-Features" class="headerlink" title="Extracting Interesting Features"></a>Extracting Interesting Features</h3><p>我们可以选择我们想要的任何特征。例如：简单的将图片分割，用子图片作为特征（如下图）。后者我们可以用SIFT特征的角检测。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.1.png"></p>
+<h3 id="Learning-Visual-Vocabulary"><a href="#Learning-Visual-Vocabulary" class="headerlink" title="Learning Visual Vocabulary"></a>Learning Visual Vocabulary</h3><p>一旦我们找到特征，我们必须将大特征集转换为一套小“主题”。“主题”等于在自然语言分析中的“单词”，也等于计算机视觉中的纹理基元(texton)。</p>
+<p>我们可以用任何聚类技术（通常为K-means，Mean Shift或者HAC也可用）来聚类特征。接下来用每个集群的中心作为纹理基元。纹理集被称作视觉词典，如下图。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.2.png"></p>
+<h3 id="Quantize-Features"><a href="#Quantize-Features" class="headerlink" title="Quantize Features"></a>Quantize Features</h3><p>码矢量(codevector)是纹理基元在这种情况下的同义词，码矢量集构成码本(codebook)。我们用码本量化特征：用相同的方法从新图像中提取特征，接下来用码本将特征向量映射到相近的码矢量标签。</p>
+<p>码本的大小（等于集群的个数）是很重要的超参数。太小会导致码矢量没有代表性；太大会导致码本过拟合。</p>
+<h3 id="Represent-Images-by-Frequencies"><a href="#Represent-Images-by-Frequencies" class="headerlink" title="Represent Images by Frequencies"></a>Represent Images by Frequencies</h3><p>首先，我们可以将数据集中的每张图表现为码矢量频率的直方图（如下图），我们通过特征量化完成。接着，我们有两个选择，取决于问题类型。如果是监督学习，可以基于直方图训练一个分类器。因为这个分类器是在纹理基元上训练的，所以对类之间的区分是很稳定的。如果是非监督学习，我们可以对直方图进一步聚类来找到数据集中的视觉集合。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.3.png"></p>
+<h3 id="Large-Scale-Image-Search"><a href="#Large-Scale-Image-Search" class="headerlink" title="Large-Scale Image Search"></a>Large-Scale Image Search</h3><p>词袋模型在大规模图像检索上十分有效。词袋模型可以帮助构造一个有效检索的数据集。首先，从数据中提取特征。接着用k-means（通常k&#x3D;100000）构造一个词典。接下来我们为每个词计算一个权重。赋予权重可以帮助我们降低特定词的重要性。例如：把”is”, “are”之类的词降低权重。在图像中就是把无用特征赋予低权重。</p>
+<p>词频逆文档频率(Term Frequency Inverse Document Frequency, TF-IDF)通过单词在文件中的频率赋予权重。</p>
+<p>一个单词$j$的逆文档频率(IDF)为：<br>$$<br>IDF&#x3D;log(\frac{Num\space Docs}{Num\space Docs_{j\space appears}})<br>$$<br>图像中bin $j$的值表示为：<br>$$<br>Bin_j&#x3D;frequency_{j\space in\space I}*IDF<br>$$<br>我们可以对文档构造一个词映射的逆文档，以便于快速寻找新图像和数据集中所有图像的相似性。我们只考虑bins和新图像重叠的图像。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.11.png"></p>
+<p>大规模数据检索的缺点在于算法的表现随着数据集的增大而削弱。因为量化误差和不完美的特征检测，词袋模型有时会产生噪声图像相似度。</p>
+<h2 id="Spatial-Pyramid-Matching"><a href="#Spatial-Pyramid-Matching" class="headerlink" title="Spatial Pyramid Matching"></a>Spatial Pyramid Matching</h2><h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><p>空间金字塔匹配(Spatial Pyramid Matching)可以将空间信息结合到模型中。</p>
+<h3 id="Pyramids"><a href="#Pyramids" class="headerlink" title="Pyramids"></a>Pyramids</h3><p>一个金字塔通过多张源图像的拷贝构建。每层金字塔大小是上一层的$1&#x2F;4$。层数越低，分辨率越高。从几何角度看，整个多尺度表现看起来像一个金字塔， 原始图像位于最底部，每个周期导致更小的图像叠加在另外一个图像上。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.4.png"></p>
+<h3 id="Bags-of-Words-BoW-Pyramids"><a href="#Bags-of-Words-BoW-Pyramids" class="headerlink" title="Bags of Words(BoW) + Pyramids"></a>Bags of Words(BoW) + Pyramids</h3><p>空间金字塔匹配将图像分割为越来越细的子区域(sub-region)，并允许我们计算每个子区域的局部特征直方图(BoW)。</p>
+<p>如下图，如果金字塔上方的BoW包含天空特征，中部包含植被和山特征，底层包含山特征，那么整张图很可能被分类为山。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.5.png"></p>
+<h3 id="Some-results"><a href="#Some-results" class="headerlink" title="Some results"></a>Some results</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.6.png"></p>
+<h2 id="Naive-Bayes"><a href="#Naive-Bayes" class="headerlink" title="Naïve Bayes"></a>Naïve Bayes</h2><h3 id="Basic-Idea"><a href="#Basic-Idea" class="headerlink" title="Basic Idea"></a>Basic Idea</h3><p>一旦我们产生了一个视觉词直方图，我们可以用朴素贝叶斯(Naïve Bayes)来对直方图进行分类。我们简单的衡量一个给定的视觉词是否存在，然后假定一个视觉词的存在&#x2F;缺失和给定类的每个视觉词条件独立。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/14.7.png"></p>
+<p>如上图，考虑一些视觉词直方图$X$，$x_i$是视觉词$i$在直方图中的总和。我们只在意视觉词$i$是否存在，即$x_i\in {0,1}$</p>
+<h3 id="Prior"><a href="#Prior" class="headerlink" title="Prior"></a>Prior</h3><p>$P(c)$是在所有类中出现类$c$的概率。所以对总共$m$个物体类，我们有<br>$$<br>\sum_{i&#x3D;1}^m P(c)&#x3D;1<br>$$<br>对于一个用直方图$x$表现的图像和一些物体类$c$，我们可以计算<br>$$<br>P(x|c)&#x3D;\prod_{i&#x3D;1}^m P(x_i|c)<br>$$</p>
+<h3 id="Posterior"><a href="#Posterior" class="headerlink" title="Posterior"></a>Posterior</h3><p>现在我们可以用贝叶斯理论(Bayes Theorem)来计算图像$x$属于类$c_j$的概率：<br>$$<br>P(c|x)&#x3D;\frac{P(c)P(x|c)}{\sum_{c’} P(c’)P(x|c’)}<br>$$<br>$c’$表示所有类。拓展分子和分母，我们可以重写方程：<br>$$<br>P(c|x)&#x3D;\frac{P(c)\prod_{i&#x3D;1}^m P(x_i|c)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$</p>
+<h3 id="Classification"><a href="#Classification" class="headerlink" title="Classification"></a>Classification</h3><p>为了将用直方图$x$表现的图像分类，我们简单的找到能够最大化方程(6)的类$c^*$：<br>$$<br>c^*&#x3D;\arg\max_c P(c|x)<br>$$<br>因为公式中含有大量的小概率累乘，所以可能会产生一个接近于0的不稳定值。因此，我们改用logs计算概率：<br>$$<br>c^*&#x3D;\arg\max_clogP(c|x)<br>$$<br>现在我们考虑两个类$c_1$和$c_2$：<br>$$<br>P(c_1|x)&#x3D;\frac{P(c_1)\prod_{i&#x3D;1}^m P(x_i|c_1)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$<br>和<br>$$<br>P(c_2|x)&#x3D;\frac{P(c_2)\prod_{i&#x3D;1}^m P(x_i|c_2)}{\sum_{c’} P(c’)\prod_{i&#x3D;1}^m P(x_i|c’)}<br>$$<br>因为分母是固定的，所以我们计算最大值时可以忽视分母。即($\propto$是正比于的意思)<br>$$<br>P(c_1|x)\propto P(c_1)\prod_{i&#x3D;1}^m P(x_i|c_1)<br>$$<br>和<br>$$<br>P(c_2|x)\propto P(c_2)\prod_{i&#x3D;1}^m P(x_i|c_2)<br>$$<br>对于类$c$<br>$$<br>P(c|x)\propto P(c)\prod_{i&#x3D;1}^m P(x_i|c)<br>$$<br>用上logs：<br>$$<br>logP(c|x)\propto logP(c)+\sum_{i&#x3D;1}^m logP(x_i|c)<br>$$<br>现在，分类任务变成<br>$$<br>\begin{align*}<br>c^*&amp;&#x3D;\arg\max_c P(c|x) \<br>&amp;&#x3D;\arg\max_c logP(c|x)\<br>&amp;&#x3D;\arg\max_c logP(c) +\sum_{i&#x3D;1}^m logP(x_i|c)<br>\end{align*}<br>$$</p>
+]]></content>
+      <categories>
+        <category>计算机视觉</category>
+      </categories>
+      <tags>
+        <tag>计算机视觉</tag>
+        <tag>CS131</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS131 Lecture 16 Recognizing Objects by Parts</title>
+    <url>/2018/08/22/Lecture%2016%20Recognizing%20Objects%20by%20Parts/</url>
+    <content><![CDATA[<h1 id="Lecture-16-Recognizing-Objects-by-Parts"><a href="#Lecture-16-Recognizing-Objects-by-Parts" class="headerlink" title="Lecture 16 Recognizing Objects by Parts"></a>Lecture 16 Recognizing Objects by Parts</h1><h2 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h2><p>计算机视觉不止检测物体的分类，还要检测物体的相关信息。例如：</p>
+<ul>
+<li>淘宝以图搜购买链接</li>
+<li>某种蘑菇能不能吃</li>
+<li>…</li>
+</ul>
+<p>通常，计算机视觉需要能够提供物体基本特征之外的信息。</p>
+<h2 id="What-can-computer-recognize-today"><a href="#What-can-computer-recognize-today" class="headerlink" title="What can computer recognize today?"></a>What can computer recognize today?</h2><p>找到特定类别的物体（品牌、地标、书本…），不过只能精确匹配。对于当今的系统来说，找到一个通用的对象要困难得多。</p>
+<h2 id="What’s-next-to-work-on"><a href="#What’s-next-to-work-on" class="headerlink" title="What’s next to work on?"></a>What’s next to work on?</h2><p>计算机视觉尚未达到的主要目标是通用类别识别。即能识别图中所有物体类别。例如：对于一个橘色杯子，我们想要找到咖啡杯，但图像搜索只能找到有橘色物体在同一位置的图片。</p>
+<p>现在的系统无法识别训练集之外的任意物体，而现在有太多的物体类别，很难决定专注于哪个物体。</p>
+<h2 id="Big-Data-from-the-Internet"><a href="#Big-Data-from-the-Internet" class="headerlink" title="Big Data from the Internet"></a>Big Data from the Internet</h2><p>现在互联网上86%的数据都是可视数据，而可视数据不能被自动分析。很多识别问题对机器来说较难，但对于人类来说很简单。当人类找不到答案时也可以简单的求助于他人寻找答案，而机器无法做到，所以当今互联网提供了一个将人类帮助和机器识别结合的环境。</p>
+<h2 id="ImageNet-and-Confusion-Matrices"><a href="#ImageNet-and-Confusion-Matrices" class="headerlink" title="ImageNet and Confusion Matrices"></a>ImageNet and Confusion Matrices</h2><p>既然模型受限于训练集中类的数目，一个可行的方法是拓展训练集中的类的数目。比较有名的数据集有：ImageNet(13M images, 22000 categories), Caltech101(9K images, 101 categories), LabelMe (30k images), SUN (131K images)。</p>
+<p>Deng从PASCAL VOC到ImageNet应用了四种分类模型，发现随着类别数目的提升，精度也随之大幅下降。他将结果画成以下的混淆矩阵(confusion matrix)：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.1.png"></p>
+<p>混淆矩阵在xy轴上画出类别，并衡量类中物体正确分类与否的程度。主要看对角线上格子颜色，颜色越浅，分类器效果越好。</p>
+<p>从图中我们可以看出，分类器需要区分的类越“细”（或越相似），分类错误就越多。例如：区分狗与鸟的错误率比区分鸟的种类要低。</p>
+<h2 id="Challenges-and-Solutions"><a href="#Challenges-and-Solutions" class="headerlink" title="Challenges and Solutions"></a>Challenges and Solutions</h2><h2 id="Semantic-Hierarchy"><a href="#Semantic-Hierarchy" class="headerlink" title="Semantic Hierarchy"></a>Semantic Hierarchy</h2><p>一个解决正确区分相似类的方法是语义层次(semantic hierarchy)。下图即为一个例子。我们创建了一个树结构，它的每个孩子都是父亲的子类。系统将尝试尽量识别到树的深处，即更精确的类。当类更精确时，不确定度也会增加。这个概念称作”hedging”——系统试图识别不确定树中的位置，根据位置做出猜测以得到足够信息，减少错误。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.2.png"></p>
+<p>为了正式定义这个问题，我们假设训练和测试集有同样的数据分布。另外，我们假设我们可以得到一个给出层次结构的后验概率的基本类$g$。接下来，定义一个奖励函数$R(f)$，它给在树更深处的类（更精确的类）更高的分数。再定义一个预计精度函数$A(f)$，它随着我们沿书向下移动（不确定性增加）而降低。我们的问题定义为<br>$$<br>\max_{A(f)\geq 1-\epsilon} R(f)<br>$$<br>其中$\epsilon$是预先设置的常数，表示对所有例子而言，分类器所允许误差。</p>
+<p>为了保证最后方案是最优方案，我们定义一个全局的，固定的，标量参数$\lambda\geq 0$。对每个节点，我们将$\lambda$加入奖励值，然后正规化后验分布。流程如下：</p>
+<ol>
+<li>选择一个$\lambda$</li>
+<li>找到与$\lambda$相关的决策规则$f$</li>
+<li>在验证集上衡量表现</li>
+<li>检查是否$A\approx 1-\epsilon$。不是则重复</li>
+</ol>
+<p>我们可以用二分搜索快速找到$\lambda $</p>
+<h3 id="Fine-grained-Classes"><a href="#Fine-grained-Classes" class="headerlink" title="Fine-grained Classes"></a>Fine-grained Classes</h3><p>现有的方法从图中所有可能的位置选择特征，但是它可能找不到正确的特征。例如：两种相似的鸟区别在于尾巴，但是计算机可能无法找到这是个辨别特征。解决方案是众包(crowd-sourcing)。</p>
+<p>那么，什么是最好的方法来询问一个人群：哪些特征可以区分图像的类别？</p>
+<p><strong>Crowd-sourced bubble games</strong>： 用泡沫来代表特征，利用游戏特性来吸引大量人群为图像标记出主要特征，因为有奖惩系统，所以标记质量也较高。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.3.png"></p>
+]]></content>
+      <categories>
+        <category>计算机视觉</category>
+      </categories>
+      <tags>
+        <tag>计算机视觉</tag>
+        <tag>CS131</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CS131 Lecture 19 Introduction to Deep Learning</title>
     <url>/2018/09/03/Lecture%2019%20Introduction%20to%20Deep%20Learning/</url>
     <content><![CDATA[<h1 id="Lecture-19-Introduction-to-Deep-Learning"><a href="#Lecture-19-Introduction-to-Deep-Learning" class="headerlink" title="Lecture 19 Introduction to Deep Learning"></a>Lecture 19 Introduction to Deep Learning</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>目前为止，本课程已经包含了一系列经典的计算机视觉技术，包括边缘检测(edge detection)、聚类(clustering)方法、分类器(classifiers)、特征检测器&#x2F;描述子(feature detectors&#x2F;descriptors)。然而这些方法都有一个主要缺点：它们依赖于人类手动设计特征并选择表现良好的分类器。结果是，用于解决一个问题的计算机视觉方法往往无法很好的解决另一个问题，构建一个合理且精确的视觉流程需要大量人力和实验。甚至最佳的流程也受限于它能取得的最高精度，因为他们是由人类设计的，所以只能选取人类首先选取的模式。</p>
@@ -991,101 +907,80 @@
       </tags>
   </entry>
   <entry>
-    <title>CS131 Lecture 2 Color and Linear Algebra</title>
-    <url>/2018/07/07/Lecture%202%20Color%20and%20Linear%20Algebra/</url>
-    <content><![CDATA[<h1 id="Lecture-2-Color-and-Linear-Algebra"><a href="#Lecture-2-Color-and-Linear-Algebra" class="headerlink" title="Lecture 2 Color and Linear Algebra"></a>Lecture 2 Color and Linear Algebra</h1><h2 id="颜色物理学"><a href="#颜色物理学" class="headerlink" title="颜色物理学"></a>颜色物理学</h2><h3 id="什么是颜色？"><a href="#什么是颜色？" class="headerlink" title="什么是颜色？"></a>什么是颜色？</h3><p>颜色是环境中的物理光和我们视觉系统交互的结果。它是一种我们在看物品和光时的视觉体验的心理性质，而不是这些物品和光的物理性质。</p>
-<h3 id="颜色和光"><a href="#颜色和光" class="headerlink" title="颜色和光"></a>颜色和光</h3><p>白光由几乎平均能量的可视光谱的波长组成</p>
-<h3 id="电磁光谱"><a href="#电磁光谱" class="headerlink" title="电磁光谱"></a>电磁光谱</h3><p>光由不同波长的波组成，可视光谱范围从400nm到700nm，人类对可视光谱中间部分最敏感。人类只能看到可视光谱的原因的太阳发射黄光最多，而且温度较高。</p>
-<h3 id="可视光"><a href="#可视光" class="headerlink" title="可视光"></a>可视光</h3><p>Plank’s Law基于星球的表面温度测量电磁辐射发出的波长。</p>
-<h3 id="物理光"><a href="#物理光" class="headerlink" title="物理光"></a>物理光</h3><p>任何光都可以用它的光谱描述（每秒钟发射的波长在400-700nm之间的能量）。物品反射的光时常集中于可视光谱的特定部分，因此物品呈现出不同颜色，例如：香蕉的黄色、番茄的红色。</p>
-<h3 id="光和表面的交互"><a href="#光和表面的交互" class="headerlink" title="光和表面的交互"></a>光和表面的交互</h3><p>反射的颜色是光源范围和物品表面反射交互的结果。通常，单位和定义是 per unit wavelengths，关系是光谱而不是单独的波长。光照度被量化为：光照度*反射度&#x3D;颜色信号</p>
-<h2 id="人类对颜色的编码"><a href="#人类对颜色的编码" class="headerlink" title="人类对颜色的编码"></a>人类对颜色的编码</h2><h3 id="Rods-and-Cones"><a href="#Rods-and-Cones" class="headerlink" title="Rods and Cones"></a>Rods and Cones</h3><p>视网膜上主要包含两种光敏感细胞：rods and cones。Rods数量更多且更敏感，用于低光环境下的物品检测。而cones则相反，数量少且不敏感，用于高光环境下的检测。这两种细胞帮助我们通过一种机制感知颜色。</p>
-<h3 id="Cones和颜色"><a href="#Cones和颜色" class="headerlink" title="Cones和颜色"></a>Cones和颜色</h3><p>rods和cones的主要不同处在于cones以三种不同形式出现，每种以一个独特的对光不同波长的反应曲线为特征。每个反应曲线高峰位于440（蓝）, 530（绿）, 560nm（红）。然而，rods和cones运作方式像过滤器，输出的结果是光谱上所有波长的整合，所以一些信息会丢失。这意味着一些光谱的子集会被错误的整合成一样的，这种光谱称称为metamers</p>
-<h3 id="颜色匹配"><a href="#颜色匹配" class="headerlink" title="颜色匹配"></a>颜色匹配</h3><p>因为我们要设计一个对所有人都提供一致视觉体验的系统，所以理解可以创造所有可感知颜色的最小数量的颜色很有帮助。通过一系列研究，红黄蓝是最充分的编码颜色。</p>
-<h2 id="色彩空间"><a href="#色彩空间" class="headerlink" title="色彩空间"></a>色彩空间</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>色彩空间是一个抽象的数学模型，它用数字元组描述了一些列颜色，例如RGB。一个颜色空间可以是任意的或者有数学结构的，几乎所有颜色模型都能匹配到一个绝对的和全球的颜色解释理解系统。</p>
-<h3 id="线性颜色空间"><a href="#线性颜色空间" class="headerlink" title="线性颜色空间"></a>线性颜色空间</h3><p>由三原色定义，其数值代表某种原色的权重。因为两种原色只能在直线上表示颜色，但三种原色可以在空间上表示颜色。</p>
+    <title>CS131 Lecture 17 Motion</title>
+    <url>/2018/08/25/Lecture%2017%20Motion/</url>
+    <content><![CDATA[<h1 id="Lecture-17-Motion"><a href="#Lecture-17-Motion" class="headerlink" title="Lecture 17 Motion"></a>Lecture 17 Motion</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>本节课我们会将之前的技术与新方法结合，追踪多张图片下像素的移动，应用方面有自动驾驶汽车、机器人、安全系统等</p>
+<h2 id="Optical-Flow-and-Key-Assumptions"><a href="#Optical-Flow-and-Key-Assumptions" class="headerlink" title="Optical Flow and Key Assumptions"></a>Optical Flow and Key Assumptions</h2><h3 id="Optical-Flow"><a href="#Optical-Flow" class="headerlink" title="Optical Flow"></a>Optical Flow</h3><p>光流即像素随时间的运动。光流的目的是通过观察两张图片$I_0$和$I_1$，对每个在时间$t_0$到$t_1$之间的每个像素产生一个运动矢量。但是，光流只能呈现图像模式的<strong>明显</strong>运动，这在下一节Assumptions and Limitations有解释，</p>
+<h3 id="Assumptions-and-Limitations"><a href="#Assumptions-and-Limitations" class="headerlink" title="Assumptions and Limitations"></a>Assumptions and Limitations</h3><h4 id="Apparent-Motion"><a href="#Apparent-Motion" class="headerlink" title="Apparent Motion"></a>Apparent Motion</h4><p>在二维图像中，光流只能呈现亮度模式的明显运动，意味着移动矢量是由各种行动产生的。例如：变化的光照可以使得静止的物体产生强运动矢量，但进入或者移出屏幕的运动无法被2D光流的运动矢量捕捉。光流处理问题的一个例子是孔径问题。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.1.png"></p>
+<p>孔径问题指光流无法代表边缘运动的结果，可能导致移动测量错误。例如图中线条实际上是向左下移动，但是由于孔径，看起来像是向右移动。</p>
+<h4 id="Brightness-Consistency"><a href="#Brightness-Consistency" class="headerlink" title="Brightness Consistency"></a>Brightness Consistency</h4><p>光流只能呈现明显的运动，为了正确的检测图中点的运动，我们必须假设这些点在帧之间的亮度相等。亮度一致性(Brightness Consistency)方程如下：<br>$$<br>I(x,y,t-1)&#x3D;I(x+u(x,y),y+v(x,y),t)<br>$$<br>其中$u(x,y)$表示点的水平运动，$v(x,y)$表示点的垂直运动。</p>
+<h4 id="Small-Motion"><a href="#Small-Motion" class="headerlink" title="Small Motion"></a>Small Motion</h4><p>光流假设点在连续的图像之间不会移动太多。因为帧之间的时间极短，所以假设基本成立。但是在物体距离摄像机过远或过近的时候，这个假设不再成立。接下来我们用亮度一致性方程来证明假设的必要性。首先用泰勒展开式线性化等式右侧：<br>$$<br>I(x+u(x,y),y+v(x,y),t)\approx I(x,y,t-1) +I_x·u(x,y)+I_y·v(x,y)+I_t<br>$$<br>线性化允许我们解得运动向量$u$和$v$，但在这种情况下我们只包含泰勒展开式的第一项。当帧之间的运动幅度较大时，式子无法步骤整个运动情况，导致不精确的$u$和$v$，因此假设有必要。</p>
+<h4 id="Spatial-Coherence"><a href="#Spatial-Coherence" class="headerlink" title="Spatial Coherence"></a>Spatial Coherence</h4><p>空间相干性是一个关于相同物体内邻近的像素会移动到一起的假设。其必要性证明如下：<br>$$<br>\begin{align}<br>I(x+u(x,y),y+v(x,y),t)\approx I(x,y,t-1) +I_x·u(x,y)+I_y·v(x,y)+I_t \<br>I(x+u(x,y),y+v(x,y),t)- I(x,y,t-1) &#x3D;I_x·u(x,y)+I_y·v(x,y)+I_t<br>\end{align}<br>$$<br>可得到<br>$$<br>\begin{align}<br>I_x·u+I_y·v+I_t\approx 0\<br>\nabla I·[u\space v]^T +I_t &#x3D;0<br>\end{align}<br>$$<br>现在我们有足够的方程解每个单像素中的$u$和$v$。假设像素可以移动到一起允许我们用有相同的$[u\space v]$的多个公式，使得我们能够解出邻居像素的移动。</p>
+<h2 id="Lucas-Kanade"><a href="#Lucas-Kanade" class="headerlink" title="Lucas-Kanade"></a>Lucas-Kanade</h2><p>从上式中得到图像的移动，至少每个像素需要两个方程。Lucas-Kanade技术依赖于一个附加约束–空间相干性来完成图像追踪。</p>
+<p>通过一个大小为$k\times k$的窗来对像素应用空间相干性约束。假设窗内的邻居像素有相同的$(u,v)$。例如，在$5\times5$窗内应用以下式子：</p>
+<p>![17.2](D:\Machine Learning\cs131\Lecture16_17\17.2.png)</p>
+<p>这产生了一个$Ad&#x3D;b$形式的线性方程的过约束系统。用最小二乘法解过拟合系统，我们减少了解$(A^TA)d&#x3D;A^Tb$中的$d$的复杂度。更准确的说，需要求解的系统系统被简化至</p>
+<p>![17.3](D:\Machine Learning\cs131\Lecture16_17\17.3.png)</p>
+<h3 id="Condition-for-an-Existing-Solution"><a href="#Condition-for-an-Existing-Solution" class="headerlink" title="Condition for an Existing Solution"></a>Condition for an Existing Solution</h3><p>为了能解这个系统，需要满足以下条件：</p>
 <ul>
-<li><p>RGB Space</p>
+<li><p>$A^TA$要求可逆</p>
+</li>
+<li><p>$A^TA$不能太小以至于引起噪音。</p>
+<p>$A^TA$的特征向量$\lambda_1$和$\lambda_2$不能过小</p>
+</li>
+<li><p>$A^TA$应该适中</p>
+<p>例如：$A^TA$的特征向量$\lambda_1$和$\lambda_2$不能过大</p>
+</li>
+</ul>
+<h3 id="Geometric-Interpretation"><a href="#Geometric-Interpretation" class="headerlink" title="Geometric Interpretation"></a>Geometric Interpretation</h3><p>很明显，之前的最小二乘方程组产生了一个二阶矩阵$M&#x3D;A^TA$。事实上，这是角探测的哈里斯矩阵。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.4.png"></p>
+<p>我们可以把上面的条件联系起来，以解出运动场$[u\space v]$来追踪哈里斯矩阵$M$检测到的角。$M&#x3D;A^TA$的特征向量和一个区域可能的边缘特征值合方向、大小联系。</p>
+<p>综上，很明显Lucas-Kanade的光流估计的最理想区域是一个角。若两个$\lambda$均过小，则这个区域过于平坦。若一个$\lambda$远大于另一个，则会产生孔径问题，无法得到正确的光流。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.5.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.6.png"></p>
+<p>以上树的三张图从左到右分别代表：$\lambda_1$大而$\lambda_2$小、两个$\lambda$都小（低语义区）、两个$\lambda$都大（高语义区）</p>
+<h3 id="Error-in-Lucas-Kanade"><a href="#Error-in-Lucas-Kanade" class="headerlink" title="Error in Lucas-Kanade"></a>Error in Lucas-Kanade</h3><p>Lucas-Kanade受限于光流假设。假设$A^TA$可逆且图中没有太多噪音，错误仍然在以下情况产生：</p>
 <ul>
-<li>原色是单色（对于监视器，它们对应三种不同的磷光体）</li>
-<li>减法匹配需要光的特定波长</li>
-<li>下图RGB的原色和匹配函数。匹配函数表示在水平尺度上显示的波长的单色测试颜色所需的原色数量。</li>
+<li>亮度一致性不满足，意味着随着时间改变像素的强度可能改变</li>
+<li>移动量过大或者随着时间不会逐渐改变</li>
+<li>未满足空间相干性，意味着相邻像素没有随之改变。这个可能是由不合适大小的窗造成的（即选择了不好的$k$）。</li>
 </ul>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.1.png"></p>
-</li>
-<li><p>CIE XYZ Color Space</p>
-<ul>
-<li>原色是虚构的，但匹配方程处处为正</li>
-<li>Y向量对应一个颜色的亮度</li>
-<li>通过线性转化和RGB Space相关联，在Grassmann’s Law之上</li>
-</ul>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.2.png"></p>
-</li>
-</ul>
-<h3 id="非线性颜色空间：HSV"><a href="#非线性颜色空间：HSV" class="headerlink" title="非线性颜色空间：HSV"></a>非线性颜色空间：HSV</h3><ul>
-<li><p>用于反射更多传统和直觉色彩混合模型（例如：颜料混合）</p>
-</li>
-<li><p>基于颜色如何在人的视觉中组织和概念化。</p>
-</li>
-<li><p>维度：色彩、饱和度、强度</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.3.png"></p>
-</li>
-</ul>
-<h2 id="白平衡"><a href="#白平衡" class="headerlink" title="白平衡"></a>白平衡</h2><h3 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h3><p>白平衡是将传感器接收到的图片数据调整至合适的呈现中性的颜色（灰、白等等）的过程。</p>
-<h3 id="白平衡的重要性"><a href="#白平衡的重要性" class="headerlink" title="白平衡的重要性"></a>白平衡的重要性</h3><ol>
-<li>相机的传感器和人眼感受不同</li>
-<li>不同的显示媒体渲染图像的方式不同</li>
-<li>照片被拍下时的观察条件和照片的观察条件不同</li>
-</ol>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.4.png"></p>
-<h3 id="Von-Kries-Method"><a href="#Von-Kries-Method" class="headerlink" title="Von Kries Method"></a>Von Kries Method</h3><p>按增益系数将每个通道缩放至匹配灰度中性物品的外观。通过Gray Card Method（灰卡方法）实现：假设一个卡的中性值为$r_{w},g_{w},b_{w}$，那么我们将每个通道通过$1&#x2F;r_{w},1&#x2F;g_{w},1&#x2F;b_{w}$缩放。</p>
-<h3 id="其他方法"><a href="#其他方法" class="headerlink" title="其他方法"></a>其他方法</h3><p>如果不用灰卡方法，我们需要猜测哪个像素对应白色物体。</p>
-<ul>
-<li><p>Gray World Assumption</p>
-<p>假设平均像素值为灰值$r_{ave},g_{ave},b_{ave}$，那么我们将每个通道通过$1&#x2F;r_{ave},1&#x2F;g_{ave},1&#x2F;b_{ave}$缩放。</p>
-</li>
-<li><p>Brightest Pixel Assumption</p>
-<p>适用于不饱和图像，对每个通道依据最亮的像素以反比例加权。</p>
-</li>
-<li><p>Gamut Mapping </p>
-<p>Gamut是图像上所有像素颜色的一个集合，也是所有颜色可能结合的子集。接下来我们可以将图片的gamut映射到标准白光下的gamut</p>
-</li>
-</ul>
-<h3 id="颜色在计算机视觉中的其他应用"><a href="#颜色在计算机视觉中的其他应用" class="headerlink" title="颜色在计算机视觉中的其他应用"></a>颜色在计算机视觉中的其他应用</h3><p>皮肤检测、图像分割</p>
-<h2 id="线性代数引入：向量与矩阵"><a href="#线性代数引入：向量与矩阵" class="headerlink" title="线性代数引入：向量与矩阵"></a>线性代数引入：向量与矩阵</h2><h3 id="向量"><a href="#向量" class="headerlink" title="向量"></a>向量</h3><p>列向量(column vector)$v$, 行向量(row vector)$v^{T}$ ，CS131默认使用列向量。</p>
-<h3 id="矩阵"><a href="#矩阵" class="headerlink" title="矩阵"></a>矩阵</h3><p><strong>matrix</strong> m行n列，若m&#x3D;n则为square</p>
-<p><strong>image</strong> 在python中表现为一个像素亮度矩阵，左上角表示为[y,x]。</p>
-<p><strong>Grayscale images</strong> 储存于$mxn$矩阵中</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.5.png"></p>
-<p><strong>Color images</strong> 储存于$mxnx3$矩阵中，多了一个维度表示RGB三个值</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.6.png"></p>
-<h3 id="基本矩阵运算"><a href="#基本矩阵运算" class="headerlink" title="基本矩阵运算"></a>基本矩阵运算</h3><p><strong>Norm</strong> $||x||<em>{2}&#x3D;\sqrt{\sum\limits</em>{i&#x3D;1}^{n}x^{2}_{i}}$</p>
-<p>更广泛来讲，norm是任何满足以下条件的函数：</p>
+<h3 id="Improving-Accuracy"><a href="#Improving-Accuracy" class="headerlink" title="Improving Accuracy"></a>Improving Accuracy</h3><p>从上面所做的许多假设中，Lucas-Kanade可以通过包含之前在亮度一致方程的泰勒展开近似中得到的更高阶项来提高其准确性。这个放松了之前的假设。现在，待解决的问题是：<br>$$<br>I(x+u,y+v)&#x3D;I(x,y)+I_xu+I_yv+higher\space order\space terms-I_{t-1}<br>$$<br>这是一个找多项式根的问题，可以用牛顿迭代方法解决。</p>
+<p>总的来说，精确的迭代Lucas-Kanade算法可以被应用：</p>
 <ol>
-<li>非负性</li>
-<li>当且仅当$x&#x3D;0$时，$f(x)&#x3D;0$</li>
-<li>$f(tx)&#x3D;|t|f(x)$</li>
-<li>$f(x+y)\leq f(x)+f(y)$</li>
+<li>解Lucas-Kanade方程，估计每个像素的速度</li>
+<li>用被估计的光流区域和图像变形技术，将$I(t-1)$变化到$I(t)$</li>
+<li>重复至收敛</li>
 </ol>
-<p>例如：</p>
-<p><strong>One Norm</strong> $||x||<em>{1}&#x3D;\sum\limits</em>{i&#x3D;1}^{n}|x_{i}|$</p>
-<p><strong>Infinity Norm</strong> $||x||<em>{inf}&#x3D;max</em>{i}|x_{i}|$</p>
-<p><strong>General P Norm</strong> $||x||<em>{p}&#x3D;(\sum\limits</em>{i&#x3D;1}^{n}x_{i}^{p})^{1&#x2F;p}$</p>
-<p><strong>Matrix Norm</strong>  $||A||<em>{F}&#x3D;\sqrt{\sum\limits</em>{i&#x3D;1}^{n}\sum\limits_{j&#x3D;1}^{n}A^{2}_{ij}}&#x3D;\sqrt{tr(A^{T}A)}$</p>
-<p><strong>Inner or Dot Product</strong> 内积或点乘，返回 <strong>Projection</strong>。如果B是一个单位向量，则A·B返回A在B方向上的长度</p>
-<p><strong>Determinant</strong> $det(A)$返回一个标量，$A&#x3D;\left [ \begin{matrix} a &amp; b \ c &amp; d \end{matrix} \right ]  $ 则$det(A)&#x3D;ad-bc$</p>
-<p>性质：</p>
-<ul>
-<li>$det(A^{-1})&#x3D;1&#x2F;det(A)$</li>
-<li>$det(A^{T})&#x3D;det(A)$</li>
-</ul>
-<p><strong>Trace</strong> $tr(A)$为对角线上元素和</p>
-<p>性质：$tr(A+B)&#x3D;tr(A)+tr(B)$</p>
-<p><strong>Transpose</strong> 转置矩阵，表示为$A^{T}$，且$(ABC)^{T}&#x3D;C^{T}B^{T}A^{T}$</p>
-<p><strong>Identity Matrix</strong> 缩写为$I​$ ，表示单位矩阵</p>
-<p><strong>Diagonal Matrix</strong> 和单位矩阵区别在于对角线上不一定是1，可以为其他数字</p>
-<p><strong>Symmetric Matrix</strong> 对称矩阵$A^{T}&#x3D;A$</p>
-<p><strong>Skew-symmetric Matrix</strong> $A^{T}&#x3D;-A$</p>
+<h2 id="Horn-Schunk"><a href="#Horn-Schunk" class="headerlink" title="Horn-Schunk"></a>Horn-Schunk</h2><h3 id="Horn-Schunk-Method-for-Optical-Flow"><a href="#Horn-Schunk-Method-for-Optical-Flow" class="headerlink" title="Horn-Schunk Method for Optical Flow"></a>Horn-Schunk Method for Optical Flow</h3><p>Horn-Schunk方法将光流公式化为以下全局能量函数，并尽量最小化$u(x,y)$和$v(x,y)$。<br>$$<br>E&#x3D;\iint[(I_xu+I_yv+I_t)^2+\alpha^2(||\nabla u||^2+||\nabla v||^2)]dxdy<br>$$<br>上式第一项反应了光照恒定假设，根据假设$I_xu+I_yv+I_t$应该等于0。这项存在于式子中是为了保证这个值尽可能接近于0。</p>
+<p>第二项反应了小移动假设。这项存在于式子中为了鼓励在位置改变较小的情况下，更加光滑的流。$\alpha$是正规化常数，用于控制光滑度，值越大流越光滑。</p>
+<p>为了最小化能量函数，我们对$u$和$v$求导并等于0。得到以下两个等式<br>$$<br>\begin{align}<br>I_x(I_xu+I_yv+I_t)+\alpha^2\Delta u&#x3D;0\<br>I_y(I_xu+I_yv+I_t)+\alpha^2\Delta v&#x3D;0<br>\end{align}\<br>\Delta&#x3D;\frac{\partial}{\partial x^2}+\frac{\partial}{\partial y^2}<br>$$<br>其中$\Delta$为拉格朗日算子，在实际计算中为<br>$$<br>\Delta u(x,y)&#x3D;\overline u(x,y)-u(x,y)<br>$$<br>其中$\overline u(x,y)$是$u$在$(x,y)$附近的加权平均。用(11)式带入得到：<br>$$<br>\begin{align}<br>(I_x^2+\alpha^2)u+I_xI_yv&#x3D;\alpha^2\overline u-I_xI_t\<br>(I_y^2+\alpha^2)u+I_xI_yu&#x3D;\alpha^2\overline v-I_yI_t<br>\end{align}\<br>$$<br>是一个关于$u$和$v$的线性方程。</p>
+<h3 id="Iterative-Horn-Schunk"><a href="#Iterative-Horn-Schunk" class="headerlink" title="Iterative Horn-Schunk"></a>Iterative Horn-Schunk</h3><p>因为$u$和$v$的值取决于$(x,y)$邻近的光流值，所以我们需要在每次邻居更新后，重新计算$u$和$v$：<br>$$<br>\begin{align}<br>u^{k+1}&#x3D;\overline u^k-\frac{I_x(I_x\overline u^k+I_y\overline v^k+I_t)}{\alpha^2+I_x^2+I_y^2}\<br>v^{k+1}&#x3D;\overline v^k-\frac{I_y(I_x\overline u^k+I_y\overline v^k+I_t)}{\alpha^2+I_x^2+I_y^2}<br>\end{align}\<br>$$<br>其中上标$k$代表迭代次数</p>
+<h3 id="Smoothness-Regularization"><a href="#Smoothness-Regularization" class="headerlink" title="Smoothness Regularization"></a>Smoothness Regularization</h3><p>光滑度正规化项$||\nabla u||^2+||\nabla v||^2$推进最小化邻近点之间的光流变化。这样在边缘区域，点会流向最临近的点，解决孔径问题。</p>
+<h3 id="Dense-Optical-Flow-with-Michael-Black’s-Method"><a href="#Dense-Optical-Flow-with-Michael-Black’s-Method" class="headerlink" title="Dense Optical Flow with Michael Black’s Method"></a>Dense Optical Flow with Michael Black’s Method</h3><p>Michael Black拓展了Horn-Schunk方法。原来的正规化项$||\nabla u||^2+||\nabla v||^2$如下图，是一个二次函数。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.7.png"></p>
+<p>现在用以下函数替代</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.8.png"></p>
+<h2 id="Pyramids-for-Large-Motion"><a href="#Pyramids-for-Large-Motion" class="headerlink" title="Pyramids for Large Motion"></a>Pyramids for Large Motion</h2><p>返回之前的假设，我们要求在帧之间像素只能有小位移。所以当位移较大时，算法可能会崩溃。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.9.png"></p>
+<p>注意上图，Lucas-Kanade无法找到树干流的一致向量。为了解决这个问题，我们可以和之前的滑动窗特征检测器一样，建立一个图像尺度逐渐下降的金字塔。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.10.png"></p>
+<p>现在，当我们想找到流向量，可以采用帧之间位移更小的低分辨率采样版本。以下是使用了金字塔后的树干流向量：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.11.png"></p>
+<p>注意现在流向量大多数都指向同一方向，即树干整体移动方向一致。</p>
+<h2 id="Common-Fate"><a href="#Common-Fate" class="headerlink" title="Common Fate"></a>Common Fate</h2><p>我们可以通过图像中部分的共同性来获得更多信息，共同性即在图像给定的切割中，这部分像素移动方式都相似。我们的目标就是找出有共同性的分割或层。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.12.png"></p>
+<h3 id="Identify-Layers"><a href="#Identify-Layers" class="headerlink" title="Identify Layers"></a>Identify Layers</h3><p>我们通过将图像分割至块，并基于块之间放射运动因子的相似性，将块组合来计算图像的层。对于每个块，找到一个$\alpha$，对于所有在块中的像素$(x,y)$，能够最小化下式：<br>$$<br>Err(\alpha)&#x3D;\sum[I_x(\alpha_1+\alpha_2x+\alpha_3y)+I_x(\alpha_4+\alpha_5x+\alpha_6y)+I_t]^2<br>$$<br>上面的方程由两部分推导而出：</p>
+<ol>
+<li><p>亮度一致方程<br>$$<br>I(x,y,t-1)&#x3D;I(x+u(x,y),y+v(x,y),t)<br>$$</p>
+</li>
+<li><p>仿射运动成分<br>$$<br>I_xu(x,y)+I_xv(x,y)+I_t\approx0<br>$$<br>$I_x,I_y,I_t$是图像关于两个方向和实践的梯度。$u(x,y),v(x,y)$是仿射运动在两个方向上的成分<br>$$<br>\begin{align}<br>u(x,y)&#x3D;\alpha_1+\alpha_2x+\alpha_3y\<br>v(x,y)&#x3D;\alpha_4+\alpha_5x+\alpha_6y<br>\end{align}<br>$$</p>
+</li>
+</ol>
+<p>从此，我们将因子向量$\alpha_i$映射到运动因子空间，并对仿射运动因子向量采用k-means聚类。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/17.13.png"></p>
+<p>最后k-means聚类的中心是因子$\alpha_1,…,\alpha_6​$，它们最小化了上述错误方程（$Err(\alpha)​$），且代表了元图像块应该聚类为一个层。</p>
 ]]></content>
       <categories>
         <category>计算机视觉</category>
@@ -1158,6 +1053,66 @@
 </ul>
 <h3 id="矩阵计算例子"><a href="#矩阵计算例子" class="headerlink" title="矩阵计算例子"></a>矩阵计算例子</h3><h4 id="梯度例子"><a href="#梯度例子" class="headerlink" title="梯度例子"></a>梯度例子</h4><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.5.png"></p>
 <h4 id="Hessian例子"><a href="#Hessian例子" class="headerlink" title="Hessian例子"></a>Hessian例子</h4><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.6.png"></p>
+]]></content>
+      <categories>
+        <category>计算机视觉</category>
+      </categories>
+      <tags>
+        <tag>计算机视觉</tag>
+        <tag>CS131</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS131 Lecture 5 Edge Detection</title>
+    <url>/2018/07/10/Lecture%205%20Edge%20detection/</url>
+    <content><![CDATA[<h1 id="Lecture-5-Edge-Detection"><a href="#Lecture-5-Edge-Detection" class="headerlink" title="Lecture 5 Edge Detection"></a>Lecture 5 Edge Detection</h1><h2 id="Edge-Detection-in-Mammals"><a href="#Edge-Detection-in-Mammals" class="headerlink" title="Edge Detection in Mammals"></a>Edge Detection in Mammals</h2><h3 id="Hubel-amp-Wiesel"><a href="#Hubel-amp-Wiesel" class="headerlink" title="Hubel &amp; Wiesel"></a>Hubel &amp; Wiesel</h3><p>两个人的实验表明，猫的视觉神经在碰到特定方向的边缘时，会产生反应。</p>
+<h3 id="Biederman"><a href="#Biederman" class="headerlink" title="Biederman"></a>Biederman</h3><p>Biederman的实验表明，人们在只看到物品一半的轮廓时，仍能识别物体且速度不受影响。这给计算机视觉提供了一个想法：即使只展现图像的一部分，一个系统理论上应该能够识别整个物品。</p>
+<h3 id="Walther-Chai-Caddigan-Beck-amp-Fei-Fei"><a href="#Walther-Chai-Caddigan-Beck-amp-Fei-Fei" class="headerlink" title="Walther, Chai, Caddigan, Beck &amp; Fei-Fei"></a>Walther, Chai, Caddigan, Beck &amp; Fei-Fei</h3><p>一群研究者发现大脑的低层次在识别轮廓方面更强，而高层次对颜色识别能力更强。</p>
+<h2 id="Edge-Detection-for-Computer-Vision"><a href="#Edge-Detection-for-Computer-Vision" class="headerlink" title="Edge Detection for Computer Vision"></a>Edge Detection for Computer Vision</h2><p>边缘检测的目的是检测图像中的不连续部分。直观来讲，图像的大部分语义学和形状信息可以在图像边缘被编码。边缘可以帮助我们提取信息、识别物体、恢复几何和视角。</p>
+<h3 id="Types-of-Discrete-Derivative-离散导数-in-1D"><a href="#Types-of-Discrete-Derivative-离散导数-in-1D" class="headerlink" title="Types of Discrete Derivative(离散导数) in 1D"></a>Types of Discrete Derivative(离散导数) in 1D</h3><p>主要有三类，它们的公式和对应的滤波器为：</p>
+<ul>
+<li><p>Backward<br>$$<br>\dfrac{df}{dx}&#x3D;f(x)-f(x-1)&#x3D;f’(x) \<br>[0,1,-1]<br>$$</p>
+</li>
+<li><p>Forward<br>$$<br>\dfrac{df}{dx}&#x3D;f(x)-f(x+1)&#x3D;f’(x)\<br>[-1,1,0]<br>$$</p>
+</li>
+<li><p>Central<br>$$<br>\dfrac{df}{dx}&#x3D;f(x+1)-f(x-1)&#x3D;f’(x)\<br>[1,0,-1]<br>$$</p>
+</li>
+</ul>
+<h3 id="Discrete-Derivative-in-2D"><a href="#Discrete-Derivative-in-2D" class="headerlink" title="Discrete Derivative in 2D"></a>Discrete Derivative in 2D</h3><ul>
+<li><p>Gradient vector<br>$$<br>\nabla f(x,y)&#x3D; \left[<br> \begin{matrix}<br>  f_{x}\<br>   f_{y}<br>  \end{matrix}<br>  \right]<br>$$</p>
+</li>
+<li><p>Gradient magnitude<br>$$<br>|\nabla f(x,y)|&#x3D;\sqrt{f_{x}^{2}+f_{y}^{2}}<br>$$</p>
+</li>
+<li><p>Gradient direction<br>$$<br>\theta&#x3D;tan^{-1}(\frac{\frac{df}{dy}}{\frac{df}{dx}})<br>$$</p>
+</li>
+</ul>
+<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p>矩阵的梯度可以近似为用基于中心离散倒数方程的相邻像素拓展到2D。一个水平滤波器如下：<br>$$<br>\frac{1}{3}<br>\left[<br> \begin{matrix}<br>  -1&amp;0&amp;1\<br>   -1&amp;0&amp;1\<br>   -1&amp;0&amp;1<br>  \end{matrix}<br>  \right]<br>$$<br>当这个滤波器覆盖在像素$x[m,n]$上，可以产生一个输出。这个输出近似于于像素$(m,n)$在水平方向上的梯度，这个滤波器检测水平边缘，同样需要一个单独的内核检测垂直边缘。</p>
+<h2 id="Simple-Edge-Detectors"><a href="#Simple-Edge-Detectors" class="headerlink" title="Simple Edge Detectors"></a>Simple Edge Detectors</h2><h3 id="Characterizing-Edges"><a href="#Characterizing-Edges" class="headerlink" title="Characterizing Edges"></a>Characterizing Edges</h3><p>描述边缘是检测边缘的第一步，是为了边缘可以被识别。首先，定义边缘为图片的强度函数快速变化的位置，也是导数较大的位置。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.1.png"></p>
+<h3 id="Image-Gradient"><a href="#Image-Gradient" class="headerlink" title="Image Gradient"></a>Image Gradient</h3><p>图片的梯度可以被定义为<br>$$<br>\nabla f(x,y)&#x3D;[\frac{\partial f}{\partial x},\frac{\partial f}{\partial y}]<br>$$<br>同时，方向与边缘强度可以被定义为<br>$$<br>\theta&#x3D;tan^{-1}(\frac{\partial f}{\partial y}&#x2F;\frac{\partial f}{\partial x})\<br>||\nabla f(x,y)||&#x3D;\sqrt{(\frac{\partial f}{\partial y})^{2}+(\frac{\partial f}{\partial y})^{2}}<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.2.png"></p>
+<p>梯度向量的方向指向强度变化最快的方向，如上图所示。下图为将梯度应用于图像后的结果。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.3.png"></p>
+<h3 id="Effects-of-Noise"><a href="#Effects-of-Noise" class="headerlink" title="Effects of Noise"></a>Effects of Noise</h3><p>如果边缘噪音过多，偏导数可能无法很好的检测边缘，如下图。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.4.png"></p>
+<p>为了减少噪音影响，图片首先要光滑化。光滑化是重新计算像素值，使得该像素值和周围像素更相似的过程。光滑化是通过将滤波器和图像卷积来实现的（例如：高斯核）。</p>
+<p>当然，光滑化也有损失：模糊了边缘；较大的滤波器会导致边缘损失和图片有用的细节损失。</p>
+<p>总而言之，合适的光滑化可以促进边缘检测。在光滑化$f$后，就可以计算$f*\frac{d}{dx}g$，顶峰处为边缘。</p>
+<h3 id="Gaussian-Blur"><a href="#Gaussian-Blur" class="headerlink" title="Gaussian Blur"></a>Gaussian Blur</h3><p>高斯模糊是用高斯函数减少图片噪音的结果。它是一个低通滤波器，用于降低高频率信号。</p>
+<p>一维<br>$$<br>G(x)&#x3D;\frac{1}{\sqrt{2\pi\sigma}}e^{-\frac{x^{2}}{2\sigma^{2}}}<br>$$<br>二维<br>$$<br>G(x,y)&#x3D;\frac{1}{2\pi\sigma}e^{-\frac{x^{2}+y^{2}}{2\sigma^{2}}}<br>$$</p>
+<h2 id="Designing-a-Good-Edge-Detector"><a href="#Designing-a-Good-Edge-Detector" class="headerlink" title="Designing a Good Edge Detector"></a>Designing a Good Edge Detector</h2><p>一个可行的边缘检测器必须有以下性质：</p>
+<ol>
+<li><p>检测效果好</p>
+<p>必须最小化检测为误报（false positives,由噪音导致的假性边缘）和漏报率（false negatives，漏掉真的边缘）的可能性。</p>
+</li>
+<li><p>定位好</p>
+<p>检测的边缘位置必须与原图实际边缘吻合。检测器还必须在检测哪些像素位于边缘上保持一致。</p>
+</li>
+<li><p>Silent response</p>
+<p>检测器必须最小化真正边缘附近的局部极大值，即每个真正的边缘点只返回一个点。它应该要告知这里有一个特定的边缘，而不是将一个边缘分散为数个边缘。换句话说，只有真正的边缘会被捕捉到。</p>
+<p>下图是正确的边缘；1稳健性差；2定位差；3过多响应</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.5.png"></p>
+</li>
+</ol>
 ]]></content>
       <categories>
         <category>计算机视觉</category>
@@ -1274,6 +1229,111 @@
       </tags>
   </entry>
   <entry>
+    <title>CS131 Lecture 2 Color and Linear Algebra</title>
+    <url>/2018/07/07/Lecture%202%20Color%20and%20Linear%20Algebra/</url>
+    <content><![CDATA[<h1 id="Lecture-2-Color-and-Linear-Algebra"><a href="#Lecture-2-Color-and-Linear-Algebra" class="headerlink" title="Lecture 2 Color and Linear Algebra"></a>Lecture 2 Color and Linear Algebra</h1><h2 id="颜色物理学"><a href="#颜色物理学" class="headerlink" title="颜色物理学"></a>颜色物理学</h2><h3 id="什么是颜色？"><a href="#什么是颜色？" class="headerlink" title="什么是颜色？"></a>什么是颜色？</h3><p>颜色是环境中的物理光和我们视觉系统交互的结果。它是一种我们在看物品和光时的视觉体验的心理性质，而不是这些物品和光的物理性质。</p>
+<h3 id="颜色和光"><a href="#颜色和光" class="headerlink" title="颜色和光"></a>颜色和光</h3><p>白光由几乎平均能量的可视光谱的波长组成</p>
+<h3 id="电磁光谱"><a href="#电磁光谱" class="headerlink" title="电磁光谱"></a>电磁光谱</h3><p>光由不同波长的波组成，可视光谱范围从400nm到700nm，人类对可视光谱中间部分最敏感。人类只能看到可视光谱的原因的太阳发射黄光最多，而且温度较高。</p>
+<h3 id="可视光"><a href="#可视光" class="headerlink" title="可视光"></a>可视光</h3><p>Plank’s Law基于星球的表面温度测量电磁辐射发出的波长。</p>
+<h3 id="物理光"><a href="#物理光" class="headerlink" title="物理光"></a>物理光</h3><p>任何光都可以用它的光谱描述（每秒钟发射的波长在400-700nm之间的能量）。物品反射的光时常集中于可视光谱的特定部分，因此物品呈现出不同颜色，例如：香蕉的黄色、番茄的红色。</p>
+<h3 id="光和表面的交互"><a href="#光和表面的交互" class="headerlink" title="光和表面的交互"></a>光和表面的交互</h3><p>反射的颜色是光源范围和物品表面反射交互的结果。通常，单位和定义是 per unit wavelengths，关系是光谱而不是单独的波长。光照度被量化为：光照度*反射度&#x3D;颜色信号</p>
+<h2 id="人类对颜色的编码"><a href="#人类对颜色的编码" class="headerlink" title="人类对颜色的编码"></a>人类对颜色的编码</h2><h3 id="Rods-and-Cones"><a href="#Rods-and-Cones" class="headerlink" title="Rods and Cones"></a>Rods and Cones</h3><p>视网膜上主要包含两种光敏感细胞：rods and cones。Rods数量更多且更敏感，用于低光环境下的物品检测。而cones则相反，数量少且不敏感，用于高光环境下的检测。这两种细胞帮助我们通过一种机制感知颜色。</p>
+<h3 id="Cones和颜色"><a href="#Cones和颜色" class="headerlink" title="Cones和颜色"></a>Cones和颜色</h3><p>rods和cones的主要不同处在于cones以三种不同形式出现，每种以一个独特的对光不同波长的反应曲线为特征。每个反应曲线高峰位于440（蓝）, 530（绿）, 560nm（红）。然而，rods和cones运作方式像过滤器，输出的结果是光谱上所有波长的整合，所以一些信息会丢失。这意味着一些光谱的子集会被错误的整合成一样的，这种光谱称称为metamers</p>
+<h3 id="颜色匹配"><a href="#颜色匹配" class="headerlink" title="颜色匹配"></a>颜色匹配</h3><p>因为我们要设计一个对所有人都提供一致视觉体验的系统，所以理解可以创造所有可感知颜色的最小数量的颜色很有帮助。通过一系列研究，红黄蓝是最充分的编码颜色。</p>
+<h2 id="色彩空间"><a href="#色彩空间" class="headerlink" title="色彩空间"></a>色彩空间</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>色彩空间是一个抽象的数学模型，它用数字元组描述了一些列颜色，例如RGB。一个颜色空间可以是任意的或者有数学结构的，几乎所有颜色模型都能匹配到一个绝对的和全球的颜色解释理解系统。</p>
+<h3 id="线性颜色空间"><a href="#线性颜色空间" class="headerlink" title="线性颜色空间"></a>线性颜色空间</h3><p>由三原色定义，其数值代表某种原色的权重。因为两种原色只能在直线上表示颜色，但三种原色可以在空间上表示颜色。</p>
+<ul>
+<li><p>RGB Space</p>
+<ul>
+<li>原色是单色（对于监视器，它们对应三种不同的磷光体）</li>
+<li>减法匹配需要光的特定波长</li>
+<li>下图RGB的原色和匹配函数。匹配函数表示在水平尺度上显示的波长的单色测试颜色所需的原色数量。</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.1.png"></p>
+</li>
+<li><p>CIE XYZ Color Space</p>
+<ul>
+<li>原色是虚构的，但匹配方程处处为正</li>
+<li>Y向量对应一个颜色的亮度</li>
+<li>通过线性转化和RGB Space相关联，在Grassmann’s Law之上</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.2.png"></p>
+</li>
+</ul>
+<h3 id="非线性颜色空间：HSV"><a href="#非线性颜色空间：HSV" class="headerlink" title="非线性颜色空间：HSV"></a>非线性颜色空间：HSV</h3><ul>
+<li><p>用于反射更多传统和直觉色彩混合模型（例如：颜料混合）</p>
+</li>
+<li><p>基于颜色如何在人的视觉中组织和概念化。</p>
+</li>
+<li><p>维度：色彩、饱和度、强度</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.3.png"></p>
+</li>
+</ul>
+<h2 id="白平衡"><a href="#白平衡" class="headerlink" title="白平衡"></a>白平衡</h2><h3 id="定义-1"><a href="#定义-1" class="headerlink" title="定义"></a>定义</h3><p>白平衡是将传感器接收到的图片数据调整至合适的呈现中性的颜色（灰、白等等）的过程。</p>
+<h3 id="白平衡的重要性"><a href="#白平衡的重要性" class="headerlink" title="白平衡的重要性"></a>白平衡的重要性</h3><ol>
+<li>相机的传感器和人眼感受不同</li>
+<li>不同的显示媒体渲染图像的方式不同</li>
+<li>照片被拍下时的观察条件和照片的观察条件不同</li>
+</ol>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.4.png"></p>
+<h3 id="Von-Kries-Method"><a href="#Von-Kries-Method" class="headerlink" title="Von Kries Method"></a>Von Kries Method</h3><p>按增益系数将每个通道缩放至匹配灰度中性物品的外观。通过Gray Card Method（灰卡方法）实现：假设一个卡的中性值为$r_{w},g_{w},b_{w}$，那么我们将每个通道通过$1&#x2F;r_{w},1&#x2F;g_{w},1&#x2F;b_{w}$缩放。</p>
+<h3 id="其他方法"><a href="#其他方法" class="headerlink" title="其他方法"></a>其他方法</h3><p>如果不用灰卡方法，我们需要猜测哪个像素对应白色物体。</p>
+<ul>
+<li><p>Gray World Assumption</p>
+<p>假设平均像素值为灰值$r_{ave},g_{ave},b_{ave}$，那么我们将每个通道通过$1&#x2F;r_{ave},1&#x2F;g_{ave},1&#x2F;b_{ave}$缩放。</p>
+</li>
+<li><p>Brightest Pixel Assumption</p>
+<p>适用于不饱和图像，对每个通道依据最亮的像素以反比例加权。</p>
+</li>
+<li><p>Gamut Mapping </p>
+<p>Gamut是图像上所有像素颜色的一个集合，也是所有颜色可能结合的子集。接下来我们可以将图片的gamut映射到标准白光下的gamut</p>
+</li>
+</ul>
+<h3 id="颜色在计算机视觉中的其他应用"><a href="#颜色在计算机视觉中的其他应用" class="headerlink" title="颜色在计算机视觉中的其他应用"></a>颜色在计算机视觉中的其他应用</h3><p>皮肤检测、图像分割</p>
+<h2 id="线性代数引入：向量与矩阵"><a href="#线性代数引入：向量与矩阵" class="headerlink" title="线性代数引入：向量与矩阵"></a>线性代数引入：向量与矩阵</h2><h3 id="向量"><a href="#向量" class="headerlink" title="向量"></a>向量</h3><p>列向量(column vector)$v$, 行向量(row vector)$v^{T}$ ，CS131默认使用列向量。</p>
+<h3 id="矩阵"><a href="#矩阵" class="headerlink" title="矩阵"></a>矩阵</h3><p><strong>matrix</strong> m行n列，若m&#x3D;n则为square</p>
+<p><strong>image</strong> 在python中表现为一个像素亮度矩阵，左上角表示为[y,x]。</p>
+<p><strong>Grayscale images</strong> 储存于$mxn$矩阵中</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.5.png"></p>
+<p><strong>Color images</strong> 储存于$mxnx3$矩阵中，多了一个维度表示RGB三个值</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/2.6.png"></p>
+<h3 id="基本矩阵运算"><a href="#基本矩阵运算" class="headerlink" title="基本矩阵运算"></a>基本矩阵运算</h3><p><strong>Norm</strong> $||x||<em>{2}&#x3D;\sqrt{\sum\limits</em>{i&#x3D;1}^{n}x^{2}_{i}}$</p>
+<p>更广泛来讲，norm是任何满足以下条件的函数：</p>
+<ol>
+<li>非负性</li>
+<li>当且仅当$x&#x3D;0$时，$f(x)&#x3D;0$</li>
+<li>$f(tx)&#x3D;|t|f(x)$</li>
+<li>$f(x+y)\leq f(x)+f(y)$</li>
+</ol>
+<p>例如：</p>
+<p><strong>One Norm</strong> $||x||<em>{1}&#x3D;\sum\limits</em>{i&#x3D;1}^{n}|x_{i}|$</p>
+<p><strong>Infinity Norm</strong> $||x||<em>{inf}&#x3D;max</em>{i}|x_{i}|$</p>
+<p><strong>General P Norm</strong> $||x||<em>{p}&#x3D;(\sum\limits</em>{i&#x3D;1}^{n}x_{i}^{p})^{1&#x2F;p}$</p>
+<p><strong>Matrix Norm</strong>  $||A||<em>{F}&#x3D;\sqrt{\sum\limits</em>{i&#x3D;1}^{n}\sum\limits_{j&#x3D;1}^{n}A^{2}_{ij}}&#x3D;\sqrt{tr(A^{T}A)}$</p>
+<p><strong>Inner or Dot Product</strong> 内积或点乘，返回 <strong>Projection</strong>。如果B是一个单位向量，则A·B返回A在B方向上的长度</p>
+<p><strong>Determinant</strong> $det(A)$返回一个标量，$A&#x3D;\left [ \begin{matrix} a &amp; b \ c &amp; d \end{matrix} \right ]  $ 则$det(A)&#x3D;ad-bc$</p>
+<p>性质：</p>
+<ul>
+<li>$det(A^{-1})&#x3D;1&#x2F;det(A)$</li>
+<li>$det(A^{T})&#x3D;det(A)$</li>
+</ul>
+<p><strong>Trace</strong> $tr(A)$为对角线上元素和</p>
+<p>性质：$tr(A+B)&#x3D;tr(A)+tr(B)$</p>
+<p><strong>Transpose</strong> 转置矩阵，表示为$A^{T}$，且$(ABC)^{T}&#x3D;C^{T}B^{T}A^{T}$</p>
+<p><strong>Identity Matrix</strong> 缩写为$I​$ ，表示单位矩阵</p>
+<p><strong>Diagonal Matrix</strong> 和单位矩阵区别在于对角线上不一定是1，可以为其他数字</p>
+<p><strong>Symmetric Matrix</strong> 对称矩阵$A^{T}&#x3D;A$</p>
+<p><strong>Skew-symmetric Matrix</strong> $A^{T}&#x3D;-A$</p>
+]]></content>
+      <categories>
+        <category>计算机视觉</category>
+      </categories>
+      <tags>
+        <tag>计算机视觉</tag>
+        <tag>CS131</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CS131 Lecture 6-7 Features and Fitting/Feature Descriptor</title>
     <url>/2018/07/13/Lecture%206-7%20Features%20and%20FittingFeature%20Descriptor/</url>
     <content><![CDATA[<h1 id="Lecture-6-7-Features-and-Fitting-x2F-Feature-Descriptor"><a href="#Lecture-6-7-Features-and-Fitting-x2F-Feature-Descriptor" class="headerlink" title="Lecture 6-7 Features and Fitting&#x2F;Feature Descriptor"></a>Lecture 6-7 Features and Fitting&#x2F;Feature Descriptor</h1><h2 id="Local-Invariant-局部不变-Features"><a href="#Local-Invariant-局部不变-Features" class="headerlink" title="Local Invariant(局部不变) Features"></a>Local Invariant(局部不变) Features</h2><h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><p>使用局部不变的特征的目的出于它在广泛环境下的有用性，之前讨论的方法在这些环境下均产生问题，例如：交叉相关。这个方法通过找到图像中局部、独特的结构，并用周围区域来作为小块，而不是使用全局作为代表来找到相对应的结构。这样做可以得到一个强健性更高的图片检测策略，该策略对物体旋转、视角改变、尺度变换等具有不变性。</p>
@@ -1335,56 +1395,97 @@
       </tags>
   </entry>
   <entry>
-    <title>CS131 Lecture 5 Edge Detection</title>
-    <url>/2018/07/10/Lecture%205%20Edge%20detection/</url>
-    <content><![CDATA[<h1 id="Lecture-5-Edge-Detection"><a href="#Lecture-5-Edge-Detection" class="headerlink" title="Lecture 5 Edge Detection"></a>Lecture 5 Edge Detection</h1><h2 id="Edge-Detection-in-Mammals"><a href="#Edge-Detection-in-Mammals" class="headerlink" title="Edge Detection in Mammals"></a>Edge Detection in Mammals</h2><h3 id="Hubel-amp-Wiesel"><a href="#Hubel-amp-Wiesel" class="headerlink" title="Hubel &amp; Wiesel"></a>Hubel &amp; Wiesel</h3><p>两个人的实验表明，猫的视觉神经在碰到特定方向的边缘时，会产生反应。</p>
-<h3 id="Biederman"><a href="#Biederman" class="headerlink" title="Biederman"></a>Biederman</h3><p>Biederman的实验表明，人们在只看到物品一半的轮廓时，仍能识别物体且速度不受影响。这给计算机视觉提供了一个想法：即使只展现图像的一部分，一个系统理论上应该能够识别整个物品。</p>
-<h3 id="Walther-Chai-Caddigan-Beck-amp-Fei-Fei"><a href="#Walther-Chai-Caddigan-Beck-amp-Fei-Fei" class="headerlink" title="Walther, Chai, Caddigan, Beck &amp; Fei-Fei"></a>Walther, Chai, Caddigan, Beck &amp; Fei-Fei</h3><p>一群研究者发现大脑的低层次在识别轮廓方面更强，而高层次对颜色识别能力更强。</p>
-<h2 id="Edge-Detection-for-Computer-Vision"><a href="#Edge-Detection-for-Computer-Vision" class="headerlink" title="Edge Detection for Computer Vision"></a>Edge Detection for Computer Vision</h2><p>边缘检测的目的是检测图像中的不连续部分。直观来讲，图像的大部分语义学和形状信息可以在图像边缘被编码。边缘可以帮助我们提取信息、识别物体、恢复几何和视角。</p>
-<h3 id="Types-of-Discrete-Derivative-离散导数-in-1D"><a href="#Types-of-Discrete-Derivative-离散导数-in-1D" class="headerlink" title="Types of Discrete Derivative(离散导数) in 1D"></a>Types of Discrete Derivative(离散导数) in 1D</h3><p>主要有三类，它们的公式和对应的滤波器为：</p>
+    <title>CS131 Lecture 8 Feature Descriptors and Resizing</title>
+    <url>/2018/08/07/Lecture%208%20Feature%20Descriptors%20and%20Resizing/</url>
+    <content><![CDATA[<h1 id="Lecture-8-Feature-Descriptors-and-Resizing"><a href="#Lecture-8-Feature-Descriptors-and-Resizing" class="headerlink" title="Lecture 8 Feature Descriptors and Resizing"></a>Lecture 8 Feature Descriptors and Resizing</h1><h2 id="Scale-invariant-keypoint-detection"><a href="#Scale-invariant-keypoint-detection" class="headerlink" title="Scale invariant keypoint detection"></a>Scale invariant keypoint detection</h2><h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><p>给定有较大尺度差别的两张相同情景下的图片，目标是独立的检测每张图中相同关键点。解决方案是寻找再空间和尺度上合适函数的极大值。</p>
+<h3 id="General-methodology"><a href="#General-methodology" class="headerlink" title="General methodology"></a>General methodology</h3><p>通过合理放缩窗口，我们可以捕捉到相同的内容。如下图，右侧的窗要放大至左侧窗才能获得相同信息。  </p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.1.png"></p>
+<p>从尺度不变角度上，我们需要找到一个描述什么是“捕捉相同内容”的方法。这里我们考虑一个以区域内容作为输入，对该区域的所有尺度范围相同值作为输出的函数$f(window)$</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.2.png"></p>
+<p>在每两张图中，我们可以独立的检测区域极值作为关键点。对应区域极值的窗大小（上图$s_1$和$s_2$）反映了两张图片之间的尺度不同。</p>
+<h4 id="Average-intensity"><a href="#Average-intensity" class="headerlink" title="Average intensity"></a>Average intensity</h4><p>第一种方法，用窗内像素的平均强度作为$f(window)$，因为平均强度不随尺度变化而变化。但是，平均强度不能很好的捕捉窗内的对比度改变。要捕捉对比度，我们需要加入导数。</p>
+<h4 id="Difference-of-Gaussians-DoG"><a href="#Difference-of-Gaussians-DoG" class="headerlink" title="Difference of Gaussians (DoG)"></a>Difference of Gaussians (DoG)</h4><p>第二种方法，用高斯差分。</p>
+<p>考虑一个图片$I$。首先，我们将$I$与有不同$\sigma$的高斯滤波器卷积。接下来，我们用尺度收缩的$I$重复第一步的卷积工作。至此我们得到了有不同的$\sigma$和图片尺度的高斯金字塔（如图三左），接着将临近的高斯卷积图像相减得到高斯差分(Difference of Gaussians)，如图三右：<br>$$<br>DOG(\sigma)&#x3D;(G(k\sigma)-G(\sigma))*I<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.3.png"></p>
+<p>直观来讲，高斯差分捕捉了$I$在不同尺度下的细节，也即保留了$\sigma_1$和$\sigma_2$之间不同的细节。$\sigma$越大，高斯差分捕捉到的细节越粗糙。如下图</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.6.png"></p>
+<p>有了x-y尺度空间上的高斯差分金字塔， 现在我们可以在3D空间上检测局部极值以检测关键点和相关尺度。为了检测局部极值，我们将一个坐标和它的26个邻居（3D空间上，见下图），若该坐标大于或者小于26个邻居，则为局部极值。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.4.png"></p>
+<h4 id="Harris-Laplacian"><a href="#Harris-Laplacian" class="headerlink" title="Harris-Laplacian"></a>Harris-Laplacian</h4><p>第三种方法用哈里斯-拉普拉斯算子方法。相比于高斯差分，这种方法更高效，但是计算量也更大。</p>
+<p>首先，对不同尺度的$I$运行哈里斯检测器，局部化每个尺度上的关键点。接下来，选择在所有尺度中可以最大化拉普拉斯算子的关键点。</p>
+<p><strong>转变为尺度不变检测器：</strong>现在我们有多种方法检测不同尺度上的固定关键点，我们可以继续研究在一个尺度不变方式上描述这些关键点的方法，以便匹配关键点。</p>
+<h2 id="SIFT-an-image-region-descriptor"><a href="#SIFT-an-image-region-descriptor" class="headerlink" title="SIFT: an image region descriptor"></a>SIFT: an image region descriptor</h2><p>尺度不变特征转换 (Scale-invariant feature transform, SIFT)  </p>
+<h3 id="Invariant-Local-Features"><a href="#Invariant-Local-Features" class="headerlink" title="Invariant Local Features"></a>Invariant Local Features</h3><p> 点描述子需要有不变性和特殊性。我们将图片内容转换为局部特征坐标，这些坐标具有移动、旋转、放缩以及其他成像因素不变性，以达到点描述子的鲁棒性。</p>
+<p>局部不变特征有以下优点：</p>
 <ul>
-<li><p>Backward<br>$$<br>\dfrac{df}{dx}&#x3D;f(x)-f(x-1)&#x3D;f’(x) \<br>[0,1,-1]<br>$$</p>
-</li>
-<li><p>Forward<br>$$<br>\dfrac{df}{dx}&#x3D;f(x)-f(x+1)&#x3D;f’(x)\<br>[-1,1,0]<br>$$</p>
-</li>
-<li><p>Central<br>$$<br>\dfrac{df}{dx}&#x3D;f(x+1)-f(x-1)&#x3D;f’(x)\<br>[1,0,-1]<br>$$</p>
-</li>
+<li>局部性：特征描述部分，且对混乱和遮挡有鲁棒性。</li>
+<li>特殊性：特征可以从一个大型的物体数据库中识别出来。</li>
+<li>数量：即使物体很小，也能得到许多特征。</li>
+<li>效率：接近实时性能</li>
+<li>延展性：可以轻松地拓展至大量不同的特征类型，且每个拓展都提高了对改变的鲁棒性。</li>
 </ul>
-<h3 id="Discrete-Derivative-in-2D"><a href="#Discrete-Derivative-in-2D" class="headerlink" title="Discrete Derivative in 2D"></a>Discrete Derivative in 2D</h3><ul>
-<li><p>Gradient vector<br>$$<br>\nabla f(x,y)&#x3D; \left[<br> \begin{matrix}<br>  f_{x}\<br>   f_{y}<br>  \end{matrix}<br>  \right]<br>$$</p>
-</li>
-<li><p>Gradient magnitude<br>$$<br>|\nabla f(x,y)|&#x3D;\sqrt{f_{x}^{2}+f_{y}^{2}}<br>$$</p>
-</li>
-<li><p>Gradient direction<br>$$<br>\theta&#x3D;tan^{-1}(\frac{\frac{df}{dy}}{\frac{df}{dx}})<br>$$</p>
-</li>
+<h4 id="Scale-invariance"><a href="#Scale-invariance" class="headerlink" title="Scale invariance"></a>Scale invariance</h4><p>要求有一个可以重复的在空间和尺度上选择点的方法：</p>
+<ul>
+<li>唯一合理的尺度空间核是高斯核(Koenderink, 1984; Lindeberg, 1994)</li>
+<li>一个有效的方法是检测高斯差分金字塔的高峰(Burt &amp; Adelson,1983; Crowley &amp; Parker, 1984 - but examining more scales)</li>
+<li>有固定比例尺度缩小的高斯差分近似于Lindeberg的尺度归一化拉普拉斯算子（从热扩散方程中得到）</li>
 </ul>
-<h3 id="Example"><a href="#Example" class="headerlink" title="Example"></a>Example</h3><p>矩阵的梯度可以近似为用基于中心离散倒数方程的相邻像素拓展到2D。一个水平滤波器如下：<br>$$<br>\frac{1}{3}<br>\left[<br> \begin{matrix}<br>  -1&amp;0&amp;1\<br>   -1&amp;0&amp;1\<br>   -1&amp;0&amp;1<br>  \end{matrix}<br>  \right]<br>$$<br>当这个滤波器覆盖在像素$x[m,n]$上，可以产生一个输出。这个输出近似于于像素$(m,n)$在水平方向上的梯度，这个滤波器检测水平边缘，同样需要一个单独的内核检测垂直边缘。</p>
-<h2 id="Simple-Edge-Detectors"><a href="#Simple-Edge-Detectors" class="headerlink" title="Simple Edge Detectors"></a>Simple Edge Detectors</h2><h3 id="Characterizing-Edges"><a href="#Characterizing-Edges" class="headerlink" title="Characterizing Edges"></a>Characterizing Edges</h3><p>描述边缘是检测边缘的第一步，是为了边缘可以被识别。首先，定义边缘为图片的强度函数快速变化的位置，也是导数较大的位置。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.1.png"></p>
-<h3 id="Image-Gradient"><a href="#Image-Gradient" class="headerlink" title="Image Gradient"></a>Image Gradient</h3><p>图片的梯度可以被定义为<br>$$<br>\nabla f(x,y)&#x3D;[\frac{\partial f}{\partial x},\frac{\partial f}{\partial y}]<br>$$<br>同时，方向与边缘强度可以被定义为<br>$$<br>\theta&#x3D;tan^{-1}(\frac{\partial f}{\partial y}&#x2F;\frac{\partial f}{\partial x})\<br>||\nabla f(x,y)||&#x3D;\sqrt{(\frac{\partial f}{\partial y})^{2}+(\frac{\partial f}{\partial y})^{2}}<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.2.png"></p>
-<p>梯度向量的方向指向强度变化最快的方向，如上图所示。下图为将梯度应用于图像后的结果。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.3.png"></p>
-<h3 id="Effects-of-Noise"><a href="#Effects-of-Noise" class="headerlink" title="Effects of Noise"></a>Effects of Noise</h3><p>如果边缘噪音过多，偏导数可能无法很好的检测边缘，如下图。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.4.png"></p>
-<p>为了减少噪音影响，图片首先要光滑化。光滑化是重新计算像素值，使得该像素值和周围像素更相似的过程。光滑化是通过将滤波器和图像卷积来实现的（例如：高斯核）。</p>
-<p>当然，光滑化也有损失：模糊了边缘；较大的滤波器会导致边缘损失和图片有用的细节损失。</p>
-<p>总而言之，合适的光滑化可以促进边缘检测。在光滑化$f$后，就可以计算$f*\frac{d}{dx}g$，顶峰处为边缘。</p>
-<h3 id="Gaussian-Blur"><a href="#Gaussian-Blur" class="headerlink" title="Gaussian Blur"></a>Gaussian Blur</h3><p>高斯模糊是用高斯函数减少图片噪音的结果。它是一个低通滤波器，用于降低高频率信号。</p>
-<p>一维<br>$$<br>G(x)&#x3D;\frac{1}{\sqrt{2\pi\sigma}}e^{-\frac{x^{2}}{2\sigma^{2}}}<br>$$<br>二维<br>$$<br>G(x,y)&#x3D;\frac{1}{2\pi\sigma}e^{-\frac{x^{2}+y^{2}}{2\sigma^{2}}}<br>$$</p>
-<h2 id="Designing-a-Good-Edge-Detector"><a href="#Designing-a-Good-Edge-Detector" class="headerlink" title="Designing a Good Edge Detector"></a>Designing a Good Edge Detector</h2><p>一个可行的边缘检测器必须有以下性质：</p>
+<h4 id="Rotation-invariance"><a href="#Rotation-invariance" class="headerlink" title="Rotation invariance"></a>Rotation invariance</h4><p>给定一个关键点以及它在高斯差分(DoG)中的尺度，我们需要选出最具有代表性的特征，并描述所有与该方向相关的特征：</p>
 <ol>
-<li><p>检测效果好</p>
-<p>必须最小化检测为误报（false positives,由噪音导致的假性边缘）和漏报率（false negatives，漏掉真的边缘）的可能性。</p>
+<li>用与关键点尺度相关的光滑（模糊）过的图像</li>
+<li>在关键点邻居上得到图像梯度</li>
+<li>通过负关键点方向，旋转梯度方向和位置。换句话说，描述与方向相关的所有特征。</li>
+</ol>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.7.png"></p>
+<h4 id="SIFT-descriptor-formation"><a href="#SIFT-descriptor-formation" class="headerlink" title="SIFT descriptor formation"></a>SIFT descriptor formation</h4><p>用精确的梯度位置是很脆弱的，所以我们需要一个一般化的相似描述子。我们将创造一个方向直方图矩阵，并将梯度放入8个方向柱（”米”字形）的局部方向直方图中</p>
+<p>具体：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.8.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.9.png"></p>
+<ol>
+<li><p>创建方向直方图矩阵(4x4)</p>
 </li>
-<li><p>定位好</p>
-<p>检测的边缘位置必须与原图实际边缘吻合。检测器还必须在检测哪些像素位于边缘上保持一致。</p>
+<li><p>将旋转过的梯度放入局部方向直方图。</p>
+<ul>
+<li>一个梯度根据距离给附近的直方图贡献值。例如，如果它在两个直方图位置的中间，它给两个直方图一半的贡献。</li>
+<li>远离中心的梯度，贡献值将被缩小。</li>
+<li>SIFT作者发现8个方向盒子每直方图和一个4x4直方图矩阵将得到最好的结果（见下图）</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.5.png"></p>
 </li>
-<li><p>Silent response</p>
-<p>检测器必须最小化真正边缘附近的局部极大值，即每个真正的边缘点只返回一个点。它应该要告知这里有一个特定的边缘，而不是将一个边缘分散为数个边缘。换句话说，只有真正的边缘会被捕捉到。</p>
-<p>下图是正确的边缘；1稳健性差；2定位差；3过多响应</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/5.5.png"></p>
+<li><p>对比两张图的每个向量，找到匹配的关键点。一共有8x4x4&#x3D;128个向量（8方向，4x4直方图矩阵）</p>
+</li>
+<li><p>为了在高对比度的照片中加入对光照改变的鲁棒性，需要在对比前归一化向量。不可靠的3D光照效果（如炫光）会导致图像有很大的梯度，为了减少大梯度带来的影响，我们将向量中的值压缩至0.2以下，然后再次归一化。</p>
+</li>
+<li><p>个人总结：将图像分割为4x4，每个格子产生一个局部直方图，得到8个方向各自的向量。</p>
 </li>
 </ol>
+<h2 id="HoG-Another-image-region-descriptor"><a href="#HoG-Another-image-region-descriptor" class="headerlink" title="HoG: Another image region descriptor"></a>HoG: Another image region descriptor</h2><h3 id="Histogram-of-Oriented-Gradient-HoG"><a href="#Histogram-of-Oriented-Gradient-HoG" class="headerlink" title="Histogram of Oriented Gradient (HoG)"></a>Histogram of Oriented Gradient (HoG)</h3><p>HoG描述子在图片中找到一个可以被辨别、较为突出的物体。</p>
+<p>过程如下：</p>
+<ol>
+<li><p>将图像窗分割为小空间区域或单元格(cell)，cell可以是圆形或者矩形的。</p>
+</li>
+<li><p>对每个单元格，积累一个局部直方图。直方图柱（横坐标）是关于梯度方向的均匀间隔，把单元格内每个像素的梯度方向累积至直方图柱。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.10.png"></p>
+</li>
+<li><p>在一个更大的区域上将直方图归一化，称之为由一些单元格组成的一个块(block)。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.12.png"></p>
+</li>
+<li><p>为了更好的消除光照和阴影的遮挡，可以在使用局部响应之前，对局部相应进行对比标准化。并将标准化整个块内的所有单元格。</p>
+</li>
+</ol>
+<p>HoG有一些缺点：</p>
+<ol>
+<li>在检测时有大的变化和范围</li>
+<li>很慢</li>
+<li>当背景有不同光照时，不是很有条理。</li>
+</ol>
+<p>除去这些缺点，HoG是很有效的。下图是使用HoG后的效果。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.11.png"></p>
+<h3 id="Difference-between-HoG-and-SIFT"><a href="#Difference-between-HoG-and-SIFT" class="headerlink" title="Difference between HoG and SIFT"></a>Difference between HoG and SIFT</h3><ul>
+<li>HoG用于在整个图像上找到梯度，而SIFT用于关键点匹配。</li>
+<li>SIFT直方图方向朝向自然正梯度方向，而HoG不是。</li>
+<li>HoG梯度用邻柱标准化</li>
+<li>SIFT用不同的尺度计算多个描述子</li>
+</ul>
 ]]></content>
       <categories>
         <category>计算机视觉</category>
@@ -1502,183 +1603,6 @@
       </tags>
   </entry>
   <entry>
-    <title>CS131 Lecture 8 Feature Descriptors and Resizing</title>
-    <url>/2018/08/07/Lecture%208%20Feature%20Descriptors%20and%20Resizing/</url>
-    <content><![CDATA[<h1 id="Lecture-8-Feature-Descriptors-and-Resizing"><a href="#Lecture-8-Feature-Descriptors-and-Resizing" class="headerlink" title="Lecture 8 Feature Descriptors and Resizing"></a>Lecture 8 Feature Descriptors and Resizing</h1><h2 id="Scale-invariant-keypoint-detection"><a href="#Scale-invariant-keypoint-detection" class="headerlink" title="Scale invariant keypoint detection"></a>Scale invariant keypoint detection</h2><h3 id="Motivation"><a href="#Motivation" class="headerlink" title="Motivation"></a>Motivation</h3><p>给定有较大尺度差别的两张相同情景下的图片，目标是独立的检测每张图中相同关键点。解决方案是寻找再空间和尺度上合适函数的极大值。</p>
-<h3 id="General-methodology"><a href="#General-methodology" class="headerlink" title="General methodology"></a>General methodology</h3><p>通过合理放缩窗口，我们可以捕捉到相同的内容。如下图，右侧的窗要放大至左侧窗才能获得相同信息。  </p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.1.png"></p>
-<p>从尺度不变角度上，我们需要找到一个描述什么是“捕捉相同内容”的方法。这里我们考虑一个以区域内容作为输入，对该区域的所有尺度范围相同值作为输出的函数$f(window)$</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.2.png"></p>
-<p>在每两张图中，我们可以独立的检测区域极值作为关键点。对应区域极值的窗大小（上图$s_1$和$s_2$）反映了两张图片之间的尺度不同。</p>
-<h4 id="Average-intensity"><a href="#Average-intensity" class="headerlink" title="Average intensity"></a>Average intensity</h4><p>第一种方法，用窗内像素的平均强度作为$f(window)$，因为平均强度不随尺度变化而变化。但是，平均强度不能很好的捕捉窗内的对比度改变。要捕捉对比度，我们需要加入导数。</p>
-<h4 id="Difference-of-Gaussians-DoG"><a href="#Difference-of-Gaussians-DoG" class="headerlink" title="Difference of Gaussians (DoG)"></a>Difference of Gaussians (DoG)</h4><p>第二种方法，用高斯差分。</p>
-<p>考虑一个图片$I$。首先，我们将$I$与有不同$\sigma$的高斯滤波器卷积。接下来，我们用尺度收缩的$I$重复第一步的卷积工作。至此我们得到了有不同的$\sigma$和图片尺度的高斯金字塔（如图三左），接着将临近的高斯卷积图像相减得到高斯差分(Difference of Gaussians)，如图三右：<br>$$<br>DOG(\sigma)&#x3D;(G(k\sigma)-G(\sigma))*I<br>$$<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.3.png"></p>
-<p>直观来讲，高斯差分捕捉了$I$在不同尺度下的细节，也即保留了$\sigma_1$和$\sigma_2$之间不同的细节。$\sigma$越大，高斯差分捕捉到的细节越粗糙。如下图</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.6.png"></p>
-<p>有了x-y尺度空间上的高斯差分金字塔， 现在我们可以在3D空间上检测局部极值以检测关键点和相关尺度。为了检测局部极值，我们将一个坐标和它的26个邻居（3D空间上，见下图），若该坐标大于或者小于26个邻居，则为局部极值。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.4.png"></p>
-<h4 id="Harris-Laplacian"><a href="#Harris-Laplacian" class="headerlink" title="Harris-Laplacian"></a>Harris-Laplacian</h4><p>第三种方法用哈里斯-拉普拉斯算子方法。相比于高斯差分，这种方法更高效，但是计算量也更大。</p>
-<p>首先，对不同尺度的$I$运行哈里斯检测器，局部化每个尺度上的关键点。接下来，选择在所有尺度中可以最大化拉普拉斯算子的关键点。</p>
-<p><strong>转变为尺度不变检测器：</strong>现在我们有多种方法检测不同尺度上的固定关键点，我们可以继续研究在一个尺度不变方式上描述这些关键点的方法，以便匹配关键点。</p>
-<h2 id="SIFT-an-image-region-descriptor"><a href="#SIFT-an-image-region-descriptor" class="headerlink" title="SIFT: an image region descriptor"></a>SIFT: an image region descriptor</h2><p>尺度不变特征转换 (Scale-invariant feature transform, SIFT)  </p>
-<h3 id="Invariant-Local-Features"><a href="#Invariant-Local-Features" class="headerlink" title="Invariant Local Features"></a>Invariant Local Features</h3><p> 点描述子需要有不变性和特殊性。我们将图片内容转换为局部特征坐标，这些坐标具有移动、旋转、放缩以及其他成像因素不变性，以达到点描述子的鲁棒性。</p>
-<p>局部不变特征有以下优点：</p>
-<ul>
-<li>局部性：特征描述部分，且对混乱和遮挡有鲁棒性。</li>
-<li>特殊性：特征可以从一个大型的物体数据库中识别出来。</li>
-<li>数量：即使物体很小，也能得到许多特征。</li>
-<li>效率：接近实时性能</li>
-<li>延展性：可以轻松地拓展至大量不同的特征类型，且每个拓展都提高了对改变的鲁棒性。</li>
-</ul>
-<h4 id="Scale-invariance"><a href="#Scale-invariance" class="headerlink" title="Scale invariance"></a>Scale invariance</h4><p>要求有一个可以重复的在空间和尺度上选择点的方法：</p>
-<ul>
-<li>唯一合理的尺度空间核是高斯核(Koenderink, 1984; Lindeberg, 1994)</li>
-<li>一个有效的方法是检测高斯差分金字塔的高峰(Burt &amp; Adelson,1983; Crowley &amp; Parker, 1984 - but examining more scales)</li>
-<li>有固定比例尺度缩小的高斯差分近似于Lindeberg的尺度归一化拉普拉斯算子（从热扩散方程中得到）</li>
-</ul>
-<h4 id="Rotation-invariance"><a href="#Rotation-invariance" class="headerlink" title="Rotation invariance"></a>Rotation invariance</h4><p>给定一个关键点以及它在高斯差分(DoG)中的尺度，我们需要选出最具有代表性的特征，并描述所有与该方向相关的特征：</p>
-<ol>
-<li>用与关键点尺度相关的光滑（模糊）过的图像</li>
-<li>在关键点邻居上得到图像梯度</li>
-<li>通过负关键点方向，旋转梯度方向和位置。换句话说，描述与方向相关的所有特征。</li>
-</ol>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.7.png"></p>
-<h4 id="SIFT-descriptor-formation"><a href="#SIFT-descriptor-formation" class="headerlink" title="SIFT descriptor formation"></a>SIFT descriptor formation</h4><p>用精确的梯度位置是很脆弱的，所以我们需要一个一般化的相似描述子。我们将创造一个方向直方图矩阵，并将梯度放入8个方向柱（”米”字形）的局部方向直方图中</p>
-<p>具体：</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.8.png"></p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.9.png"></p>
-<ol>
-<li><p>创建方向直方图矩阵(4x4)</p>
-</li>
-<li><p>将旋转过的梯度放入局部方向直方图。</p>
-<ul>
-<li>一个梯度根据距离给附近的直方图贡献值。例如，如果它在两个直方图位置的中间，它给两个直方图一半的贡献。</li>
-<li>远离中心的梯度，贡献值将被缩小。</li>
-<li>SIFT作者发现8个方向盒子每直方图和一个4x4直方图矩阵将得到最好的结果（见下图）</li>
-</ul>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.5.png"></p>
-</li>
-<li><p>对比两张图的每个向量，找到匹配的关键点。一共有8x4x4&#x3D;128个向量（8方向，4x4直方图矩阵）</p>
-</li>
-<li><p>为了在高对比度的照片中加入对光照改变的鲁棒性，需要在对比前归一化向量。不可靠的3D光照效果（如炫光）会导致图像有很大的梯度，为了减少大梯度带来的影响，我们将向量中的值压缩至0.2以下，然后再次归一化。</p>
-</li>
-<li><p>个人总结：将图像分割为4x4，每个格子产生一个局部直方图，得到8个方向各自的向量。</p>
-</li>
-</ol>
-<h2 id="HoG-Another-image-region-descriptor"><a href="#HoG-Another-image-region-descriptor" class="headerlink" title="HoG: Another image region descriptor"></a>HoG: Another image region descriptor</h2><h3 id="Histogram-of-Oriented-Gradient-HoG"><a href="#Histogram-of-Oriented-Gradient-HoG" class="headerlink" title="Histogram of Oriented Gradient (HoG)"></a>Histogram of Oriented Gradient (HoG)</h3><p>HoG描述子在图片中找到一个可以被辨别、较为突出的物体。</p>
-<p>过程如下：</p>
-<ol>
-<li><p>将图像窗分割为小空间区域或单元格(cell)，cell可以是圆形或者矩形的。</p>
-</li>
-<li><p>对每个单元格，积累一个局部直方图。直方图柱（横坐标）是关于梯度方向的均匀间隔，把单元格内每个像素的梯度方向累积至直方图柱。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.10.png"></p>
-</li>
-<li><p>在一个更大的区域上将直方图归一化，称之为由一些单元格组成的一个块(block)。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.12.png"></p>
-</li>
-<li><p>为了更好的消除光照和阴影的遮挡，可以在使用局部响应之前，对局部相应进行对比标准化。并将标准化整个块内的所有单元格。</p>
-</li>
-</ol>
-<p>HoG有一些缺点：</p>
-<ol>
-<li>在检测时有大的变化和范围</li>
-<li>很慢</li>
-<li>当背景有不同光照时，不是很有条理。</li>
-</ol>
-<p>除去这些缺点，HoG是很有效的。下图是使用HoG后的效果。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/8.11.png"></p>
-<h3 id="Difference-between-HoG-and-SIFT"><a href="#Difference-between-HoG-and-SIFT" class="headerlink" title="Difference between HoG and SIFT"></a>Difference between HoG and SIFT</h3><ul>
-<li>HoG用于在整个图像上找到梯度，而SIFT用于关键点匹配。</li>
-<li>SIFT直方图方向朝向自然正梯度方向，而HoG不是。</li>
-<li>HoG梯度用邻柱标准化</li>
-<li>SIFT用不同的尺度计算多个描述子</li>
-</ul>
-]]></content>
-      <categories>
-        <category>计算机视觉</category>
-      </categories>
-      <tags>
-        <tag>计算机视觉</tag>
-        <tag>CS131</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Linux 命令</title>
-    <url>/2017/08/06/Linux%E5%91%BD%E4%BB%A4/</url>
-    <content><![CDATA[<h2 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h2><p>concatenate的缩写，用于访问单个或者多个文件。</p>
-<h2 id="cowsay-XXX"><a href="#cowsay-XXX" class="headerlink" title="cowsay XXX"></a>cowsay XXX</h2><p>画一头说XXX的牛</p>
-<h2 id="man-命令"><a href="#man-命令" class="headerlink" title="man 命令"></a>man 命令</h2><p>查看命令使用手册，调用了less程序，使内容整页显示。</p>
-<h3 id="less程序"><a href="#less程序" class="headerlink" title="less程序"></a>less程序</h3><p>U——向上一整页，D——向下一整页，&lt;——回到开头，&gt;——跳到结尾<br>输入行数+ENTER——跳转到指定行数，&#x2F;字符串——搜索指定字符串（区分大小写），其中n跳到下一条，N上一条</p>
-<h2 id="history-x2F-win-R-x2F-上箭头"><a href="#history-x2F-win-R-x2F-上箭头" class="headerlink" title="history&#x2F;win+R&#x2F;上箭头"></a>history&#x2F;win+R&#x2F;上箭头</h2><p>查看所有历史&#x2F;搜索历史&#x2F;调用上一条命令</p>
-<h2 id="unzip"><a href="#unzip" class="headerlink" title="unzip"></a>unzip</h2><p>解压文件</p>
-<h2 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h2><p>查看当前目录下所有文件,默认不输出以.开头的文件。<br>PS：以.开头的文件通常是系统文件<br>-a 不忽略.开头文件<br>-l 文件类型（目录 or 文件）&#x2F;？&#x2F;字节大小&#x2F;创建时间&#x2F;文件名.后缀</p>
-<h2 id="rm"><a href="#rm" class="headerlink" title="rm"></a>rm</h2><p>remove移除文件<br>-rf r——recursive递归，f——force强制。 以递归的方式强制将目录下所有文件删除。</p>
-<h2 id="ctrl-c"><a href="#ctrl-c" class="headerlink" title="ctrl+c"></a>ctrl+c</h2><p>停止当前操作</p>
-<h2 id="ctrl-D"><a href="#ctrl-D" class="headerlink" title="ctrl+D"></a>ctrl+D</h2><p>表示文件结尾，用于结束输入或者退出程序</p>
-<h2 id="nano"><a href="#nano" class="headerlink" title="nano"></a>nano</h2><p>调用Ubuntu自带文本编辑器nano</p>
-<h2 id="pwd"><a href="#pwd" class="headerlink" title="pwd"></a>pwd</h2><p>查看当前所在目录</p>
-<h2 id="cd"><a href="#cd" class="headerlink" title="cd"></a>cd</h2><p>进入某目录或文件夹，cd ..——返回父目录    .表示当前目录。<br>单独的cd表示返回主目录</p>
-<h2 id="echo"><a href="#echo" class="headerlink" title="echo"></a>echo</h2><p>打印信息</p>
-<h2 id="mv-x2F-cp"><a href="#mv-x2F-cp" class="headerlink" title="mv&#x2F;cp"></a>mv&#x2F;cp</h2><p>移动文件&#x2F;复制文件</p>
-<h2 id="mkdir-目录"><a href="#mkdir-目录" class="headerlink" title="mkdir 目录"></a>mkdir 目录</h2><p>创建新目录</p>
-<h2 id="rmdir"><a href="#rmdir" class="headerlink" title="rmdir"></a>rmdir</h2><p>删除目录，但仅用于删除空目录。<br>要删除有内容的目录，需要用到 ** rm -r **命令进行递归删除。</p>
-<h1 id="Linux文件系统"><a href="#Linux文件系统" class="headerlink" title="Linux文件系统"></a>Linux文件系统</h1><h2 id="文件名"><a href="#文件名" class="headerlink" title="文件名"></a>文件名</h2><p>可以使用除了\以外的各种符号，但是如果使用了符号，在调用文件的时候就要用’文件名’来调用。</p>
-<h2 id="根（root）"><a href="#根（root）" class="headerlink" title="根（root）"></a>根（root）</h2><p>Linux系统不像Windows系统每个分盘有独立的根，Linux所有文件属于一个根。要参考文件只能给出完整路径，用&#x2F;分割目录。</p>
-<h2 id="glob（globbing通配符模式）"><a href="#glob（globbing通配符模式）" class="headerlink" title="glob（globbing通配符模式）"></a>glob（globbing通配符模式）</h2><p><em>XX</em> ，其中<em>代表匹配任意字符，可以放在字符串的任意位置，也可使用多个</em>。<br>XXX{A,B} 匹配包含花括号中任一字符串的文件，例如XXXA和XXXB。<br>？匹配一个字符，？？匹配两个字符····<br>[]匹配包含其中字母，注意只能匹配包含其中单个字母的文件，多个字母无需隔开。<br>** 以上匹配均区分大小写，且可跟在各种命令后 **</p>
-]]></content>
-      <categories>
-        <category>Linux</category>
-      </categories>
-      <tags>
-        <tag>Linux</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Matlab Week3</title>
-    <url>/2017/10/17/Matlab-Week3/</url>
-    <content><![CDATA[<h2 id="Matrices-and-Operators"><a href="#Matrices-and-Operators" class="headerlink" title="Matrices and Operators"></a>Matrices and Operators</h2><h3 id="The-colon-Operator"><a href="#The-colon-Operator" class="headerlink" title="The colon Operator"></a>The colon Operator</h3><p>a:b:c表示行向量a,a+b,…,a+nb(a+nb&lt;c)，若仅输入a:b则默认c&#x3D;1，若输入的a&gt;b则返回空矩阵</p>
-<h3 id="Accessing-Parts-of-a-Matrix"><a href="#Accessing-Parts-of-a-Matrix" class="headerlink" title="Accessing Parts of a Matrix"></a>Accessing Parts of a Matrix</h3><ul>
-<li>x(a,b)返回x矩阵中a行b列的元素</li>
-<li>X(a,b)&#x3D;c，若X矩阵不存在或者(a,b)超出其行列数，则matlab会拓展出一个最小满足该要求的矩阵，除了(a,b)位置为c其他新增位置为0。X存在则c替换(a,b)原有数字</li>
-<li>X([a,b],c)，返回第c列中的a、b行的元素，有各种变式</li>
-<li>end是matlab中的一个关键字，不能作为变量名，矩阵索引中可以当作一个表示最后的数字</li>
-</ul>
-<h3 id="Combining-and-Transforming-Matrices"><a href="#Combining-and-Transforming-Matrices" class="headerlink" title="Combining and Transforming Matrices"></a>Combining and Transforming Matrices</h3><ul>
-<li>可以将矩阵作为一个整体进行拼合，例如C&#x3D;[A,B]，注意行拼合行数相同，列拼合列数相同</li>
-<li>‘表示矩阵转置</li>
-</ul>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>Matlab</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Hello World</title>
-    <url>/2022/03/05/hello-world/</url>
-    <content><![CDATA[<p>Welcome to <a href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-]]></content>
-  </entry>
-  <entry>
-    <title>test</title>
-    <url>/2022/03/05/test/</url>
-    <content><![CDATA[]]></content>
-  </entry>
-  <entry>
     <title>CS131 Lecture 9 Image Resizing and Segmentation</title>
     <url>/2018/08/09/Lecture%209%20Image%20Resizing%20and%20Segmentation/</url>
     <content><![CDATA[<h1 id="Lecture-9-Image-Resizing-and-Segmentation"><a href="#Lecture-9-Image-Resizing-and-Segmentation" class="headerlink" title="Lecture 9 Image Resizing and Segmentation"></a>Lecture 9 Image Resizing and Segmentation</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>为了适应不同尺寸和形状的播放器，图片或影片需要调整大小，本章介绍如何在调整大小的同时保存重要内容并减少瑕疵。</p>
@@ -1772,6 +1696,59 @@
       <tags>
         <tag>计算机视觉</tag>
         <tag>CS131</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Linux 命令</title>
+    <url>/2017/08/06/Linux%E5%91%BD%E4%BB%A4/</url>
+    <content><![CDATA[<h2 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h2><p>concatenate的缩写，用于访问单个或者多个文件。</p>
+<h2 id="cowsay-XXX"><a href="#cowsay-XXX" class="headerlink" title="cowsay XXX"></a>cowsay XXX</h2><p>画一头说XXX的牛</p>
+<h2 id="man-命令"><a href="#man-命令" class="headerlink" title="man 命令"></a>man 命令</h2><p>查看命令使用手册，调用了less程序，使内容整页显示。</p>
+<h3 id="less程序"><a href="#less程序" class="headerlink" title="less程序"></a>less程序</h3><p>U——向上一整页，D——向下一整页，&lt;——回到开头，&gt;——跳到结尾<br>输入行数+ENTER——跳转到指定行数，&#x2F;字符串——搜索指定字符串（区分大小写），其中n跳到下一条，N上一条</p>
+<h2 id="history-x2F-win-R-x2F-上箭头"><a href="#history-x2F-win-R-x2F-上箭头" class="headerlink" title="history&#x2F;win+R&#x2F;上箭头"></a>history&#x2F;win+R&#x2F;上箭头</h2><p>查看所有历史&#x2F;搜索历史&#x2F;调用上一条命令</p>
+<h2 id="unzip"><a href="#unzip" class="headerlink" title="unzip"></a>unzip</h2><p>解压文件</p>
+<h2 id="ls"><a href="#ls" class="headerlink" title="ls"></a>ls</h2><p>查看当前目录下所有文件,默认不输出以.开头的文件。<br>PS：以.开头的文件通常是系统文件<br>-a 不忽略.开头文件<br>-l 文件类型（目录 or 文件）&#x2F;？&#x2F;字节大小&#x2F;创建时间&#x2F;文件名.后缀</p>
+<h2 id="rm"><a href="#rm" class="headerlink" title="rm"></a>rm</h2><p>remove移除文件<br>-rf r——recursive递归，f——force强制。 以递归的方式强制将目录下所有文件删除。</p>
+<h2 id="ctrl-c"><a href="#ctrl-c" class="headerlink" title="ctrl+c"></a>ctrl+c</h2><p>停止当前操作</p>
+<h2 id="ctrl-D"><a href="#ctrl-D" class="headerlink" title="ctrl+D"></a>ctrl+D</h2><p>表示文件结尾，用于结束输入或者退出程序</p>
+<h2 id="nano"><a href="#nano" class="headerlink" title="nano"></a>nano</h2><p>调用Ubuntu自带文本编辑器nano</p>
+<h2 id="pwd"><a href="#pwd" class="headerlink" title="pwd"></a>pwd</h2><p>查看当前所在目录</p>
+<h2 id="cd"><a href="#cd" class="headerlink" title="cd"></a>cd</h2><p>进入某目录或文件夹，cd ..——返回父目录    .表示当前目录。<br>单独的cd表示返回主目录</p>
+<h2 id="echo"><a href="#echo" class="headerlink" title="echo"></a>echo</h2><p>打印信息</p>
+<h2 id="mv-x2F-cp"><a href="#mv-x2F-cp" class="headerlink" title="mv&#x2F;cp"></a>mv&#x2F;cp</h2><p>移动文件&#x2F;复制文件</p>
+<h2 id="mkdir-目录"><a href="#mkdir-目录" class="headerlink" title="mkdir 目录"></a>mkdir 目录</h2><p>创建新目录</p>
+<h2 id="rmdir"><a href="#rmdir" class="headerlink" title="rmdir"></a>rmdir</h2><p>删除目录，但仅用于删除空目录。<br>要删除有内容的目录，需要用到 ** rm -r **命令进行递归删除。</p>
+<h1 id="Linux文件系统"><a href="#Linux文件系统" class="headerlink" title="Linux文件系统"></a>Linux文件系统</h1><h2 id="文件名"><a href="#文件名" class="headerlink" title="文件名"></a>文件名</h2><p>可以使用除了\以外的各种符号，但是如果使用了符号，在调用文件的时候就要用’文件名’来调用。</p>
+<h2 id="根（root）"><a href="#根（root）" class="headerlink" title="根（root）"></a>根（root）</h2><p>Linux系统不像Windows系统每个分盘有独立的根，Linux所有文件属于一个根。要参考文件只能给出完整路径，用&#x2F;分割目录。</p>
+<h2 id="glob（globbing通配符模式）"><a href="#glob（globbing通配符模式）" class="headerlink" title="glob（globbing通配符模式）"></a>glob（globbing通配符模式）</h2><p><em>XX</em> ，其中<em>代表匹配任意字符，可以放在字符串的任意位置，也可使用多个</em>。<br>XXX{A,B} 匹配包含花括号中任一字符串的文件，例如XXXA和XXXB。<br>？匹配一个字符，？？匹配两个字符····<br>[]匹配包含其中字母，注意只能匹配包含其中单个字母的文件，多个字母无需隔开。<br>** 以上匹配均区分大小写，且可跟在各种命令后 **</p>
+]]></content>
+      <categories>
+        <category>Linux</category>
+      </categories>
+      <tags>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Matlab Week3</title>
+    <url>/2017/10/17/Matlab-Week3/</url>
+    <content><![CDATA[<h2 id="Matrices-and-Operators"><a href="#Matrices-and-Operators" class="headerlink" title="Matrices and Operators"></a>Matrices and Operators</h2><h3 id="The-colon-Operator"><a href="#The-colon-Operator" class="headerlink" title="The colon Operator"></a>The colon Operator</h3><p>a:b:c表示行向量a,a+b,…,a+nb(a+nb&lt;c)，若仅输入a:b则默认c&#x3D;1，若输入的a&gt;b则返回空矩阵</p>
+<h3 id="Accessing-Parts-of-a-Matrix"><a href="#Accessing-Parts-of-a-Matrix" class="headerlink" title="Accessing Parts of a Matrix"></a>Accessing Parts of a Matrix</h3><ul>
+<li>x(a,b)返回x矩阵中a行b列的元素</li>
+<li>X(a,b)&#x3D;c，若X矩阵不存在或者(a,b)超出其行列数，则matlab会拓展出一个最小满足该要求的矩阵，除了(a,b)位置为c其他新增位置为0。X存在则c替换(a,b)原有数字</li>
+<li>X([a,b],c)，返回第c列中的a、b行的元素，有各种变式</li>
+<li>end是matlab中的一个关键字，不能作为变量名，矩阵索引中可以当作一个表示最后的数字</li>
+</ul>
+<h3 id="Combining-and-Transforming-Matrices"><a href="#Combining-and-Transforming-Matrices" class="headerlink" title="Combining and Transforming Matrices"></a>Combining and Transforming Matrices</h3><ul>
+<li>可以将矩阵作为一个整体进行拼合，例如C&#x3D;[A,B]，注意行拼合行数相同，列拼合列数相同</li>
+<li>‘表示矩阵转置</li>
+</ul>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>Matlab</tag>
       </tags>
   </entry>
   <entry>
@@ -1922,6 +1899,44 @@
       </tags>
   </entry>
   <entry>
+    <title>机器学习 Week7</title>
+    <url>/2017/09/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week7/</url>
+    <content><![CDATA[<h2 id="Large-Margin-Classification"><a href="#Large-Margin-Classification" class="headerlink" title="Large Margin Classification"></a>Large Margin Classification</h2><h3 id="Optimization-Objective"><a href="#Optimization-Objective" class="headerlink" title="Optimization Objective"></a>Optimization Objective</h3><p>支持向量机(Support Vector Machine,SVM)：用于学习复杂的非线性方程的算法</p>
+<p>可以从线性的代价函数中推导而出，如下：</p>
+<p><img src="https://i.imgur.com/CwCUWST.png"></p>
+<p>相比线性函数去掉1&#x2F;m：习惯问题，不影响</p>
+<p>将A+λB的形式换为CA+B的形式：控制权重的不同方式</p>
+<h3 id="Large-Margin-Intuition"><a href="#Large-Margin-Intuition" class="headerlink" title="Large Margin Intuition"></a>Large Margin Intuition</h3><p>SVM在分类时会以一个最大间距来分类数据，C越大，过拟合的可能性越大，即高方差低偏差小λ。</p>
+<h2 id="Kernels-核函数"><a href="#Kernels-核函数" class="headerlink" title="Kernels(核函数)"></a>Kernels(核函数)</h2><p>(高斯)核函数 ：</p>
+<p><img src="https://i.imgur.com/grPDbkL.png"></p>
+<p>其中f1代替了Θ1+Θ2*x1·····中的x1，而σ越大，特征变量值减小越慢。θ的大小决定了标记点的权重，当x靠近标记点时预测值就会为1，否则为0.</p>
+<h3 id="如何选择标记点"><a href="#如何选择标记点" class="headerlink" title="如何选择标记点"></a>如何选择标记点</h3><p>选择每一个训练样本作为标记点</p>
+<h3 id="各个参数的影响"><a href="#各个参数的影响" class="headerlink" title="各个参数的影响"></a>各个参数的影响</h3><p>C:越大，过拟合的可能性越大，即高方差低偏差小λ。</p>
+<p>σ²:越大则特征变量值f减小越慢且变化平缓，同时高偏差低方差</p>
+<h2 id="如何使用SVM"><a href="#如何使用SVM" class="headerlink" title="如何使用SVM"></a>如何使用SVM</h2><p>使用好的软件库，而不是自己编写SVM软件（比如：liblinear,libsvm）</p>
+<p>需要设置：</p>
+<ul>
+<li>参数C</li>
+<li>选择核函数（相似度函数），例如：</li>
+</ul>
+<p><img src="https://i.imgur.com/oheT8ce.png"></p>
+<ul>
+<li>核函数需要满足的条件：Mercer’s Theorem</li>
+</ul>
+<h3 id="高斯函数"><a href="#高斯函数" class="headerlink" title="高斯函数"></a>高斯函数</h3><p>什么时候选择高斯核函数：特征变量x的维数n比较小，如果取值范围较大，需要进行归一化。</p>
+<p>Matlab需要做的：</p>
+<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>=<span class="title">kernel</span><span class="params">(x1,x2)</span></span></span><br><span class="line">	f=<span class="built_in">exp</span>(-delta_x^<span class="number">2</span>/(<span class="number">2</span>*sigma^<span class="number">2</span>)); <span class="comment">%delta_x为x1到x2的距离</span></span><br><span class="line"><span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="逻辑函数与SVM的选择"><a href="#逻辑函数与SVM的选择" class="headerlink" title="逻辑函数与SVM的选择"></a>逻辑函数与SVM的选择</h3><p>特征数n比较多（n&gt;1000）：逻辑函数或者不是高斯核函数的SVM</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>机器学习 Week8</title>
     <url>/2017/09/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week8/</url>
     <content><![CDATA[<h2 id="聚类-clustering"><a href="#聚类-clustering" class="headerlink" title="聚类(clustering)"></a>聚类(clustering)</h2><h3 id="无监督学习-unsupervised-learning"><a href="#无监督学习-unsupervised-learning" class="headerlink" title="无监督学习(unsupervised learning)"></a>无监督学习(unsupervised learning)</h3><p>输入没有标记的数据，通过算法找出结构。</p>
@@ -1965,44 +1980,6 @@
 <li>不要用PCA减少特征数来避免过拟合</li>
 <li>使用PCA之前，先考虑没有PCA数据是否可以训练（PCA的帮助有多大?）</li>
 </ul>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>机器学习 Week7</title>
-    <url>/2017/09/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week7/</url>
-    <content><![CDATA[<h2 id="Large-Margin-Classification"><a href="#Large-Margin-Classification" class="headerlink" title="Large Margin Classification"></a>Large Margin Classification</h2><h3 id="Optimization-Objective"><a href="#Optimization-Objective" class="headerlink" title="Optimization Objective"></a>Optimization Objective</h3><p>支持向量机(Support Vector Machine,SVM)：用于学习复杂的非线性方程的算法</p>
-<p>可以从线性的代价函数中推导而出，如下：</p>
-<p><img src="https://i.imgur.com/CwCUWST.png"></p>
-<p>相比线性函数去掉1&#x2F;m：习惯问题，不影响</p>
-<p>将A+λB的形式换为CA+B的形式：控制权重的不同方式</p>
-<h3 id="Large-Margin-Intuition"><a href="#Large-Margin-Intuition" class="headerlink" title="Large Margin Intuition"></a>Large Margin Intuition</h3><p>SVM在分类时会以一个最大间距来分类数据，C越大，过拟合的可能性越大，即高方差低偏差小λ。</p>
-<h2 id="Kernels-核函数"><a href="#Kernels-核函数" class="headerlink" title="Kernels(核函数)"></a>Kernels(核函数)</h2><p>(高斯)核函数 ：</p>
-<p><img src="https://i.imgur.com/grPDbkL.png"></p>
-<p>其中f1代替了Θ1+Θ2*x1·····中的x1，而σ越大，特征变量值减小越慢。θ的大小决定了标记点的权重，当x靠近标记点时预测值就会为1，否则为0.</p>
-<h3 id="如何选择标记点"><a href="#如何选择标记点" class="headerlink" title="如何选择标记点"></a>如何选择标记点</h3><p>选择每一个训练样本作为标记点</p>
-<h3 id="各个参数的影响"><a href="#各个参数的影响" class="headerlink" title="各个参数的影响"></a>各个参数的影响</h3><p>C:越大，过拟合的可能性越大，即高方差低偏差小λ。</p>
-<p>σ²:越大则特征变量值f减小越慢且变化平缓，同时高偏差低方差</p>
-<h2 id="如何使用SVM"><a href="#如何使用SVM" class="headerlink" title="如何使用SVM"></a>如何使用SVM</h2><p>使用好的软件库，而不是自己编写SVM软件（比如：liblinear,libsvm）</p>
-<p>需要设置：</p>
-<ul>
-<li>参数C</li>
-<li>选择核函数（相似度函数），例如：</li>
-</ul>
-<p><img src="https://i.imgur.com/oheT8ce.png"></p>
-<ul>
-<li>核函数需要满足的条件：Mercer’s Theorem</li>
-</ul>
-<h3 id="高斯函数"><a href="#高斯函数" class="headerlink" title="高斯函数"></a>高斯函数</h3><p>什么时候选择高斯核函数：特征变量x的维数n比较小，如果取值范围较大，需要进行归一化。</p>
-<p>Matlab需要做的：</p>
-<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>=<span class="title">kernel</span><span class="params">(x1,x2)</span></span></span><br><span class="line">	f=<span class="built_in">exp</span>(-delta_x^<span class="number">2</span>/(<span class="number">2</span>*sigma^<span class="number">2</span>)); <span class="comment">%delta_x为x1到x2的距离</span></span><br><span class="line"><span class="keyword">return</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="逻辑函数与SVM的选择"><a href="#逻辑函数与SVM的选择" class="headerlink" title="逻辑函数与SVM的选择"></a>逻辑函数与SVM的选择</h3><p>特征数n比较多（n&gt;1000）：逻辑函数或者不是高斯核函数的SVM</p>
 ]]></content>
       <categories>
         <category>机器学习</category>
@@ -2222,13 +2199,47 @@
       </tags>
   </entry>
   <entry>
-    <title>机器学习Week4</title>
-    <url>/2017/08/31/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week4/</url>
-    <content><![CDATA[<h2 id="神经网络"><a href="#神经网络" class="headerlink" title="神经网络"></a>神经网络</h2><p> 模拟大脑，用于解决样本量大的非线性分类问题。θ&#x3D;模型参数&#x3D;权重，表示一个波矩阵，起到控制层与层之间的作用。矩阵大小：下一层特征量数X（本层特征量数+1）</p>
-<p>layer1输入层（输入特征项x0,x1，…,xn）——&gt;layer2,3,…,n-1隐藏层（激励函数a0,a1,…,an）——&gt;layern输出层(最终的一个神经元)。</p>
-<p>其中，x0&#x3D;1,a0&#x3D;1被称为bios unit（偏置单元），可以选择性画出。</p>
-<p><img src="https://i.imgur.com/FKg3QPA.png"></p>
-<h3 id="实现方法"><a href="#实现方法" class="headerlink" title="实现方法"></a>实现方法</h3><p>依据cost公式通过向前传播的方法依层计算</p>
+    <title>机器学习Week5</title>
+    <url>/2017/09/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week5/</url>
+    <content><![CDATA[<h2 id="代价函数-Cost-Function-和-反向传播-Backpropagation"><a href="#代价函数-Cost-Function-和-反向传播-Backpropagation" class="headerlink" title="代价函数(Cost Function) 和 反向传播(Backpropagation)"></a>代价函数(Cost Function) 和 反向传播(Backpropagation)</h2><h3 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h3><h4 id="一些缩写"><a href="#一些缩写" class="headerlink" title="一些缩写"></a>一些缩写</h4><ul>
+<li>L &#x3D; 总层数</li>
+<li>sl &#x3D; l层的单元数（不包括偏置单元）</li>
+<li>K &#x3D; 输出单元数</li>
+</ul>
+<h4 id="代价函数-1"><a href="#代价函数-1" class="headerlink" title="代价函数"></a>代价函数</h4><p><img src="https://i.imgur.com/MPK5FaW.png"></p>
+<p>由逻辑回归的代价函数推广得到神经网络的代价函数。其中，前半部分∑k&#x3D;1 K表示h(x)的所有维（输出单元数）相加，后半部分两个∑表示所有单元的θ之和。</p>
+<h3 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h3><p>最小化代价函数的一种方式，也是通过计算J(θ)的导数来实现。具体方式如下：</p>
+<p><img src="https://i.imgur.com/mdbVRtz.png"></p>
+<p>深入理解：<br>$$<br>J(\Theta) &#x3D; - \frac{1}{m} \sum_{t&#x3D;1}^m\sum_{k&#x3D;1}^K \left[ y^{(t)}<em>k \ \log (h_\Theta (x^{(t)}))<em>k + (1 - y^{(t)}<em>k)\ \log (1 - h_\Theta(x^{(t)})<em>k)\right] + \frac{\lambda}{2m}\sum</em>{l&#x3D;1}^{L-1} \sum</em>{i&#x3D;1}^{s_l} \sum</em>{j&#x3D;1}^{s_l+1} ( \Theta</em>{j,i}^{(l)})^2 \<br>cost(t) &#x3D;y^{(t)} \ \log (h_\Theta (x^{(t)})) + (1 - y^{(t)})\ \log (1 - h_\Theta(x^{(t)})) \<br>delta_j^{(l)} &#x3D; \dfrac{\partial}{\partial z_j^{(l)}} cost(t)<br>$$</p>
+<h2 id="反向传播算法的实现"><a href="#反向传播算法的实现" class="headerlink" title="反向传播算法的实现"></a>反向传播算法的实现</h2><h3 id="将θ从矩阵展开为向量"><a href="#将θ从矩阵展开为向量" class="headerlink" title="将θ从矩阵展开为向量"></a>将θ从矩阵展开为向量</h3><figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line">thetaVec=[theta1(:);theta2(:)]; <span class="comment">%矩阵(:)表示将矩阵中元素取出并排列成向量</span></span><br><span class="line">theta1=<span class="built_in">reshape</span>(thetaVec(<span class="number">1</span>:<span class="number">110</span>),<span class="number">10</span>,<span class="number">11</span>); <span class="comment">%将向量thetaVec中1——110元素取出并排列成10*11矩阵</span></span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.imgur.com/c7Dly86.png"></p>
+<h3 id="梯度检验-gradient-checking"><a href="#梯度检验-gradient-checking" class="headerlink" title="梯度检验(gradient checking)"></a>梯度检验(gradient checking)</h3><p>有时候反向传播算法表面上可以计算，实际上存在一些bug，这时候就要哟用到梯度检验来检测以减少错误。</p>
+<p><img src="https://i.imgur.com/WsaeBGQ.png"></p>
+<p>matlab代码如下：</p>
+<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line">epsilon = <span class="number">1e-4</span>;</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:n,</span><br><span class="line">  thetaPlus = theta;</span><br><span class="line">  thetaPlus(<span class="built_in">i</span>) += epsilon;</span><br><span class="line">  thetaMinus = theta;</span><br><span class="line">  thetaMinus(<span class="built_in">i</span>) -= epsilon;</span><br><span class="line">  gradApprox(<span class="built_in">i</span>) = (J(thetaPlus) - J(thetaMinus))/(<span class="number">2</span>*epsilon)</span><br><span class="line"><span class="keyword">end</span>;</span><br></pre></td></tr></table></figure>
+
+<p>若与反向传播算法计算出的导数结果相似，则正确。</p>
+<h4 id="要点"><a href="#要点" class="headerlink" title="要点"></a>要点</h4><ul>
+<li>一旦用梯度检验检测算法没有错误后，就要把梯度检验关掉，再正式进行分类器的迭代训练。否则，整个算法会变得很慢。</li>
+</ul>
+<h3 id="随机初始化"><a href="#随机初始化" class="headerlink" title="随机初始化"></a>随机初始化</h3><p>讨论了θ的初始值(initialtheta)，由于将θ全部初始化为0的时候，θ的值会无法更新且始终为0，同样其他值也永远不会改变，所以要进行θ的随机初始化（也称为打破对称）。</p>
+<p><img src="https://i.imgur.com/Wopi5p0.png"></p>
+<p>matlab实现：</p>
+<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="comment">%If the dimensions of Theta1 is 10x11, Theta2 is 10x11 and Theta3 is 1x11.</span></span><br><span class="line"></span><br><span class="line">Theta1 = <span class="built_in">rand</span>(<span class="number">10</span>,<span class="number">11</span>) * (<span class="number">2</span> * INIT_EPSILON) - INIT_EPSILON;</span><br><span class="line">Theta2 = <span class="built_in">rand</span>(<span class="number">10</span>,<span class="number">11</span>) * (<span class="number">2</span> * INIT_EPSILON) - INIT_EPSILON;</span><br><span class="line">Theta3 = <span class="built_in">rand</span>(<span class="number">1</span>,<span class="number">11</span>) * (<span class="number">2</span> * INIT_EPSILON) - INIT_EPSILON;</span><br></pre></td></tr></table></figure>
+
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="单元以及层数的选择"><a href="#单元以及层数的选择" class="headerlink" title="单元以及层数的选择"></a>单元以及层数的选择</h3><p>输入单元：x的个数</p>
+<p>输出单元：分类器y的个数，同时需要将y写成向量形式</p>
+<p>隐藏层数：默认选择只有一个隐藏层，如果一定要有多个隐藏层，则每个隐藏层的单元数要求相同</p>
+<p>隐藏层的单元数：一般来说略大于输入单元的个数</p>
+<h3 id="神经网络训练过程"><a href="#神经网络训练过程" class="headerlink" title="神经网络训练过程"></a>神经网络训练过程</h3><ol>
+<li>随机初始化权值(weight)，一般初始化为很小接近于的数</li>
+<li>执行向前传播算法，计算h(x)</li>
+<li>计算代价函数J(θ)</li>
+<li>使用向后传播算法计算J(θ)的偏微分</li>
+<li>利用梯度检查检测反向传播算法，并在检测后删除梯度检查代码</li>
+<li>用梯度下降法或者其他高级优化算法最小化J(θ)并得到θ值</li>
+</ol>
 ]]></content>
       <categories>
         <category>机器学习</category>
@@ -2360,47 +2371,13 @@
       </tags>
   </entry>
   <entry>
-    <title>机器学习Week5</title>
-    <url>/2017/09/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week5/</url>
-    <content><![CDATA[<h2 id="代价函数-Cost-Function-和-反向传播-Backpropagation"><a href="#代价函数-Cost-Function-和-反向传播-Backpropagation" class="headerlink" title="代价函数(Cost Function) 和 反向传播(Backpropagation)"></a>代价函数(Cost Function) 和 反向传播(Backpropagation)</h2><h3 id="代价函数"><a href="#代价函数" class="headerlink" title="代价函数"></a>代价函数</h3><h4 id="一些缩写"><a href="#一些缩写" class="headerlink" title="一些缩写"></a>一些缩写</h4><ul>
-<li>L &#x3D; 总层数</li>
-<li>sl &#x3D; l层的单元数（不包括偏置单元）</li>
-<li>K &#x3D; 输出单元数</li>
-</ul>
-<h4 id="代价函数-1"><a href="#代价函数-1" class="headerlink" title="代价函数"></a>代价函数</h4><p><img src="https://i.imgur.com/MPK5FaW.png"></p>
-<p>由逻辑回归的代价函数推广得到神经网络的代价函数。其中，前半部分∑k&#x3D;1 K表示h(x)的所有维（输出单元数）相加，后半部分两个∑表示所有单元的θ之和。</p>
-<h3 id="反向传播"><a href="#反向传播" class="headerlink" title="反向传播"></a>反向传播</h3><p>最小化代价函数的一种方式，也是通过计算J(θ)的导数来实现。具体方式如下：</p>
-<p><img src="https://i.imgur.com/mdbVRtz.png"></p>
-<p>深入理解：<br>$$<br>J(\Theta) &#x3D; - \frac{1}{m} \sum_{t&#x3D;1}^m\sum_{k&#x3D;1}^K \left[ y^{(t)}<em>k \ \log (h_\Theta (x^{(t)}))<em>k + (1 - y^{(t)}<em>k)\ \log (1 - h_\Theta(x^{(t)})<em>k)\right] + \frac{\lambda}{2m}\sum</em>{l&#x3D;1}^{L-1} \sum</em>{i&#x3D;1}^{s_l} \sum</em>{j&#x3D;1}^{s_l+1} ( \Theta</em>{j,i}^{(l)})^2 \<br>cost(t) &#x3D;y^{(t)} \ \log (h_\Theta (x^{(t)})) + (1 - y^{(t)})\ \log (1 - h_\Theta(x^{(t)})) \<br>delta_j^{(l)} &#x3D; \dfrac{\partial}{\partial z_j^{(l)}} cost(t)<br>$$</p>
-<h2 id="反向传播算法的实现"><a href="#反向传播算法的实现" class="headerlink" title="反向传播算法的实现"></a>反向传播算法的实现</h2><h3 id="将θ从矩阵展开为向量"><a href="#将θ从矩阵展开为向量" class="headerlink" title="将θ从矩阵展开为向量"></a>将θ从矩阵展开为向量</h3><figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line">thetaVec=[theta1(:);theta2(:)]; <span class="comment">%矩阵(:)表示将矩阵中元素取出并排列成向量</span></span><br><span class="line">theta1=<span class="built_in">reshape</span>(thetaVec(<span class="number">1</span>:<span class="number">110</span>),<span class="number">10</span>,<span class="number">11</span>); <span class="comment">%将向量thetaVec中1——110元素取出并排列成10*11矩阵</span></span><br></pre></td></tr></table></figure>
-
-<p><img src="https://i.imgur.com/c7Dly86.png"></p>
-<h3 id="梯度检验-gradient-checking"><a href="#梯度检验-gradient-checking" class="headerlink" title="梯度检验(gradient checking)"></a>梯度检验(gradient checking)</h3><p>有时候反向传播算法表面上可以计算，实际上存在一些bug，这时候就要哟用到梯度检验来检测以减少错误。</p>
-<p><img src="https://i.imgur.com/WsaeBGQ.png"></p>
-<p>matlab代码如下：</p>
-<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line">epsilon = <span class="number">1e-4</span>;</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:n,</span><br><span class="line">  thetaPlus = theta;</span><br><span class="line">  thetaPlus(<span class="built_in">i</span>) += epsilon;</span><br><span class="line">  thetaMinus = theta;</span><br><span class="line">  thetaMinus(<span class="built_in">i</span>) -= epsilon;</span><br><span class="line">  gradApprox(<span class="built_in">i</span>) = (J(thetaPlus) - J(thetaMinus))/(<span class="number">2</span>*epsilon)</span><br><span class="line"><span class="keyword">end</span>;</span><br></pre></td></tr></table></figure>
-
-<p>若与反向传播算法计算出的导数结果相似，则正确。</p>
-<h4 id="要点"><a href="#要点" class="headerlink" title="要点"></a>要点</h4><ul>
-<li>一旦用梯度检验检测算法没有错误后，就要把梯度检验关掉，再正式进行分类器的迭代训练。否则，整个算法会变得很慢。</li>
-</ul>
-<h3 id="随机初始化"><a href="#随机初始化" class="headerlink" title="随机初始化"></a>随机初始化</h3><p>讨论了θ的初始值(initialtheta)，由于将θ全部初始化为0的时候，θ的值会无法更新且始终为0，同样其他值也永远不会改变，所以要进行θ的随机初始化（也称为打破对称）。</p>
-<p><img src="https://i.imgur.com/Wopi5p0.png"></p>
-<p>matlab实现：</p>
-<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="comment">%If the dimensions of Theta1 is 10x11, Theta2 is 10x11 and Theta3 is 1x11.</span></span><br><span class="line"></span><br><span class="line">Theta1 = <span class="built_in">rand</span>(<span class="number">10</span>,<span class="number">11</span>) * (<span class="number">2</span> * INIT_EPSILON) - INIT_EPSILON;</span><br><span class="line">Theta2 = <span class="built_in">rand</span>(<span class="number">10</span>,<span class="number">11</span>) * (<span class="number">2</span> * INIT_EPSILON) - INIT_EPSILON;</span><br><span class="line">Theta3 = <span class="built_in">rand</span>(<span class="number">1</span>,<span class="number">11</span>) * (<span class="number">2</span> * INIT_EPSILON) - INIT_EPSILON;</span><br></pre></td></tr></table></figure>
-
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><h3 id="单元以及层数的选择"><a href="#单元以及层数的选择" class="headerlink" title="单元以及层数的选择"></a>单元以及层数的选择</h3><p>输入单元：x的个数</p>
-<p>输出单元：分类器y的个数，同时需要将y写成向量形式</p>
-<p>隐藏层数：默认选择只有一个隐藏层，如果一定要有多个隐藏层，则每个隐藏层的单元数要求相同</p>
-<p>隐藏层的单元数：一般来说略大于输入单元的个数</p>
-<h3 id="神经网络训练过程"><a href="#神经网络训练过程" class="headerlink" title="神经网络训练过程"></a>神经网络训练过程</h3><ol>
-<li>随机初始化权值(weight)，一般初始化为很小接近于的数</li>
-<li>执行向前传播算法，计算h(x)</li>
-<li>计算代价函数J(θ)</li>
-<li>使用向后传播算法计算J(θ)的偏微分</li>
-<li>利用梯度检查检测反向传播算法，并在检测后删除梯度检查代码</li>
-<li>用梯度下降法或者其他高级优化算法最小化J(θ)并得到θ值</li>
-</ol>
+    <title>机器学习Week4</title>
+    <url>/2017/08/31/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week4/</url>
+    <content><![CDATA[<h2 id="神经网络"><a href="#神经网络" class="headerlink" title="神经网络"></a>神经网络</h2><p> 模拟大脑，用于解决样本量大的非线性分类问题。θ&#x3D;模型参数&#x3D;权重，表示一个波矩阵，起到控制层与层之间的作用。矩阵大小：下一层特征量数X（本层特征量数+1）</p>
+<p>layer1输入层（输入特征项x0,x1，…,xn）——&gt;layer2,3,…,n-1隐藏层（激励函数a0,a1,…,an）——&gt;layern输出层(最终的一个神经元)。</p>
+<p>其中，x0&#x3D;1,a0&#x3D;1被称为bios unit（偏置单元），可以选择性画出。</p>
+<p><img src="https://i.imgur.com/FKg3QPA.png"></p>
+<h3 id="实现方法"><a href="#实现方法" class="headerlink" title="实现方法"></a>实现方法</h3><p>依据cost公式通过向前传播的方法依层计算</p>
 ]]></content>
       <categories>
         <category>机器学习</category>
