@@ -774,6 +774,49 @@
       </tags>
   </entry>
   <entry>
+    <title>CS131 Lecture 16 Recognizing Objects by Parts</title>
+    <url>/2018/08/22/Lecture%2016%20Recognizing%20Objects%20by%20Parts/</url>
+    <content><![CDATA[<h1 id="Lecture-16-Recognizing-Objects-by-Parts"><a href="#Lecture-16-Recognizing-Objects-by-Parts" class="headerlink" title="Lecture 16 Recognizing Objects by Parts"></a>Lecture 16 Recognizing Objects by Parts</h1><h2 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h2><p>计算机视觉不止检测物体的分类，还要检测物体的相关信息。例如：</p>
+<ul>
+<li>淘宝以图搜购买链接</li>
+<li>某种蘑菇能不能吃</li>
+<li>…</li>
+</ul>
+<p>通常，计算机视觉需要能够提供物体基本特征之外的信息。</p>
+<h2 id="What-can-computer-recognize-today"><a href="#What-can-computer-recognize-today" class="headerlink" title="What can computer recognize today?"></a>What can computer recognize today?</h2><p>找到特定类别的物体（品牌、地标、书本…），不过只能精确匹配。对于当今的系统来说，找到一个通用的对象要困难得多。</p>
+<h2 id="What’s-next-to-work-on"><a href="#What’s-next-to-work-on" class="headerlink" title="What’s next to work on?"></a>What’s next to work on?</h2><p>计算机视觉尚未达到的主要目标是通用类别识别。即能识别图中所有物体类别。例如：对于一个橘色杯子，我们想要找到咖啡杯，但图像搜索只能找到有橘色物体在同一位置的图片。</p>
+<p>现在的系统无法识别训练集之外的任意物体，而现在有太多的物体类别，很难决定专注于哪个物体。</p>
+<h2 id="Big-Data-from-the-Internet"><a href="#Big-Data-from-the-Internet" class="headerlink" title="Big Data from the Internet"></a>Big Data from the Internet</h2><p>现在互联网上86%的数据都是可视数据，而可视数据不能被自动分析。很多识别问题对机器来说较难，但对于人类来说很简单。当人类找不到答案时也可以简单的求助于他人寻找答案，而机器无法做到，所以当今互联网提供了一个将人类帮助和机器识别结合的环境。</p>
+<h2 id="ImageNet-and-Confusion-Matrices"><a href="#ImageNet-and-Confusion-Matrices" class="headerlink" title="ImageNet and Confusion Matrices"></a>ImageNet and Confusion Matrices</h2><p>既然模型受限于训练集中类的数目，一个可行的方法是拓展训练集中的类的数目。比较有名的数据集有：ImageNet(13M images, 22000 categories), Caltech101(9K images, 101 categories), LabelMe (30k images), SUN (131K images)。</p>
+<p>Deng从PASCAL VOC到ImageNet应用了四种分类模型，发现随着类别数目的提升，精度也随之大幅下降。他将结果画成以下的混淆矩阵(confusion matrix)：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.1.png"></p>
+<p>混淆矩阵在xy轴上画出类别，并衡量类中物体正确分类与否的程度。主要看对角线上格子颜色，颜色越浅，分类器效果越好。</p>
+<p>从图中我们可以看出，分类器需要区分的类越“细”（或越相似），分类错误就越多。例如：区分狗与鸟的错误率比区分鸟的种类要低。</p>
+<h2 id="Challenges-and-Solutions"><a href="#Challenges-and-Solutions" class="headerlink" title="Challenges and Solutions"></a>Challenges and Solutions</h2><h2 id="Semantic-Hierarchy"><a href="#Semantic-Hierarchy" class="headerlink" title="Semantic Hierarchy"></a>Semantic Hierarchy</h2><p>一个解决正确区分相似类的方法是语义层次(semantic hierarchy)。下图即为一个例子。我们创建了一个树结构，它的每个孩子都是父亲的子类。系统将尝试尽量识别到树的深处，即更精确的类。当类更精确时，不确定度也会增加。这个概念称作”hedging”——系统试图识别不确定树中的位置，根据位置做出猜测以得到足够信息，减少错误。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.2.png"></p>
+<p>为了正式定义这个问题，我们假设训练和测试集有同样的数据分布。另外，我们假设我们可以得到一个给出层次结构的后验概率的基本类$g$。接下来，定义一个奖励函数$R(f)$，它给在树更深处的类（更精确的类）更高的分数。再定义一个预计精度函数$A(f)$，它随着我们沿书向下移动（不确定性增加）而降低。我们的问题定义为<br>$$<br>\max_{A(f)\geq 1-\epsilon} R(f)<br>$$<br>其中$\epsilon$是预先设置的常数，表示对所有例子而言，分类器所允许误差。</p>
+<p>为了保证最后方案是最优方案，我们定义一个全局的，固定的，标量参数$\lambda\geq 0$。对每个节点，我们将$\lambda$加入奖励值，然后正规化后验分布。流程如下：</p>
+<ol>
+<li>选择一个$\lambda$</li>
+<li>找到与$\lambda$相关的决策规则$f$</li>
+<li>在验证集上衡量表现</li>
+<li>检查是否$A\approx 1-\epsilon$。不是则重复</li>
+</ol>
+<p>我们可以用二分搜索快速找到$\lambda $</p>
+<h3 id="Fine-grained-Classes"><a href="#Fine-grained-Classes" class="headerlink" title="Fine-grained Classes"></a>Fine-grained Classes</h3><p>现有的方法从图中所有可能的位置选择特征，但是它可能找不到正确的特征。例如：两种相似的鸟区别在于尾巴，但是计算机可能无法找到这是个辨别特征。解决方案是众包(crowd-sourcing)。</p>
+<p>那么，什么是最好的方法来询问一个人群：哪些特征可以区分图像的类别？</p>
+<p><strong>Crowd-sourced bubble games</strong>： 用泡沫来代表特征，利用游戏特性来吸引大量人群为图像标记出主要特征，因为有奖惩系统，所以标记质量也较高。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.3.png"></p>
+]]></content>
+      <categories>
+        <category>计算机视觉</category>
+      </categories>
+      <tags>
+        <tag>计算机视觉</tag>
+        <tag>CS131</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>CS131 Lecture 17 Motion</title>
     <url>/2018/08/25/Lecture%2017%20Motion/</url>
     <content><![CDATA[<h1 id="Lecture-17-Motion"><a href="#Lecture-17-Motion" class="headerlink" title="Lecture 17 Motion"></a>Lecture 17 Motion</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>本节课我们会将之前的技术与新方法结合，追踪多张图片下像素的移动，应用方面有自动驾驶汽车、机器人、安全系统等</p>
@@ -946,49 +989,6 @@
       </tags>
   </entry>
   <entry>
-    <title>CS131 Lecture 16 Recognizing Objects by Parts</title>
-    <url>/2018/08/22/Lecture%2016%20Recognizing%20Objects%20by%20Parts/</url>
-    <content><![CDATA[<h1 id="Lecture-16-Recognizing-Objects-by-Parts"><a href="#Lecture-16-Recognizing-Objects-by-Parts" class="headerlink" title="Lecture 16 Recognizing Objects by Parts"></a>Lecture 16 Recognizing Objects by Parts</h1><h2 id="1-Introduction"><a href="#1-Introduction" class="headerlink" title="1 Introduction"></a>1 Introduction</h2><p>计算机视觉不止检测物体的分类，还要检测物体的相关信息。例如：</p>
-<ul>
-<li>淘宝以图搜购买链接</li>
-<li>某种蘑菇能不能吃</li>
-<li>…</li>
-</ul>
-<p>通常，计算机视觉需要能够提供物体基本特征之外的信息。</p>
-<h2 id="What-can-computer-recognize-today"><a href="#What-can-computer-recognize-today" class="headerlink" title="What can computer recognize today?"></a>What can computer recognize today?</h2><p>找到特定类别的物体（品牌、地标、书本…），不过只能精确匹配。对于当今的系统来说，找到一个通用的对象要困难得多。</p>
-<h2 id="What’s-next-to-work-on"><a href="#What’s-next-to-work-on" class="headerlink" title="What’s next to work on?"></a>What’s next to work on?</h2><p>计算机视觉尚未达到的主要目标是通用类别识别。即能识别图中所有物体类别。例如：对于一个橘色杯子，我们想要找到咖啡杯，但图像搜索只能找到有橘色物体在同一位置的图片。</p>
-<p>现在的系统无法识别训练集之外的任意物体，而现在有太多的物体类别，很难决定专注于哪个物体。</p>
-<h2 id="Big-Data-from-the-Internet"><a href="#Big-Data-from-the-Internet" class="headerlink" title="Big Data from the Internet"></a>Big Data from the Internet</h2><p>现在互联网上86%的数据都是可视数据，而可视数据不能被自动分析。很多识别问题对机器来说较难，但对于人类来说很简单。当人类找不到答案时也可以简单的求助于他人寻找答案，而机器无法做到，所以当今互联网提供了一个将人类帮助和机器识别结合的环境。</p>
-<h2 id="ImageNet-and-Confusion-Matrices"><a href="#ImageNet-and-Confusion-Matrices" class="headerlink" title="ImageNet and Confusion Matrices"></a>ImageNet and Confusion Matrices</h2><p>既然模型受限于训练集中类的数目，一个可行的方法是拓展训练集中的类的数目。比较有名的数据集有：ImageNet(13M images, 22000 categories), Caltech101(9K images, 101 categories), LabelMe (30k images), SUN (131K images)。</p>
-<p>Deng从PASCAL VOC到ImageNet应用了四种分类模型，发现随着类别数目的提升，精度也随之大幅下降。他将结果画成以下的混淆矩阵(confusion matrix)：</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.1.png"></p>
-<p>混淆矩阵在xy轴上画出类别，并衡量类中物体正确分类与否的程度。主要看对角线上格子颜色，颜色越浅，分类器效果越好。</p>
-<p>从图中我们可以看出，分类器需要区分的类越“细”（或越相似），分类错误就越多。例如：区分狗与鸟的错误率比区分鸟的种类要低。</p>
-<h2 id="Challenges-and-Solutions"><a href="#Challenges-and-Solutions" class="headerlink" title="Challenges and Solutions"></a>Challenges and Solutions</h2><h2 id="Semantic-Hierarchy"><a href="#Semantic-Hierarchy" class="headerlink" title="Semantic Hierarchy"></a>Semantic Hierarchy</h2><p>一个解决正确区分相似类的方法是语义层次(semantic hierarchy)。下图即为一个例子。我们创建了一个树结构，它的每个孩子都是父亲的子类。系统将尝试尽量识别到树的深处，即更精确的类。当类更精确时，不确定度也会增加。这个概念称作”hedging”——系统试图识别不确定树中的位置，根据位置做出猜测以得到足够信息，减少错误。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.2.png"></p>
-<p>为了正式定义这个问题，我们假设训练和测试集有同样的数据分布。另外，我们假设我们可以得到一个给出层次结构的后验概率的基本类$g$。接下来，定义一个奖励函数$R(f)$，它给在树更深处的类（更精确的类）更高的分数。再定义一个预计精度函数$A(f)$，它随着我们沿书向下移动（不确定性增加）而降低。我们的问题定义为<br>$$<br>\max_{A(f)\geq 1-\epsilon} R(f)<br>$$<br>其中$\epsilon$是预先设置的常数，表示对所有例子而言，分类器所允许误差。</p>
-<p>为了保证最后方案是最优方案，我们定义一个全局的，固定的，标量参数$\lambda\geq 0$。对每个节点，我们将$\lambda$加入奖励值，然后正规化后验分布。流程如下：</p>
-<ol>
-<li>选择一个$\lambda$</li>
-<li>找到与$\lambda$相关的决策规则$f$</li>
-<li>在验证集上衡量表现</li>
-<li>检查是否$A\approx 1-\epsilon$。不是则重复</li>
-</ol>
-<p>我们可以用二分搜索快速找到$\lambda $</p>
-<h3 id="Fine-grained-Classes"><a href="#Fine-grained-Classes" class="headerlink" title="Fine-grained Classes"></a>Fine-grained Classes</h3><p>现有的方法从图中所有可能的位置选择特征，但是它可能找不到正确的特征。例如：两种相似的鸟区别在于尾巴，但是计算机可能无法找到这是个辨别特征。解决方案是众包(crowd-sourcing)。</p>
-<p>那么，什么是最好的方法来询问一个人群：哪些特征可以区分图像的类别？</p>
-<p><strong>Crowd-sourced bubble games</strong>： 用泡沫来代表特征，利用游戏特性来吸引大量人群为图像标记出主要特征，因为有奖惩系统，所以标记质量也较高。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/16.3.png"></p>
-]]></content>
-      <categories>
-        <category>计算机视觉</category>
-      </categories>
-      <tags>
-        <tag>计算机视觉</tag>
-        <tag>CS131</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>CS131 Lecture 19 Introduction to Deep Learning</title>
     <url>/2018/09/03/Lecture%2019%20Introduction%20to%20Deep%20Learning/</url>
     <content><![CDATA[<h1 id="Lecture-19-Introduction-to-Deep-Learning"><a href="#Lecture-19-Introduction-to-Deep-Learning" class="headerlink" title="Lecture 19 Introduction to Deep Learning"></a>Lecture 19 Introduction to Deep Learning</h1><h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>目前为止，本课程已经包含了一系列经典的计算机视觉技术，包括边缘检测(edge detection)、聚类(clustering)方法、分类器(classifiers)、特征检测器&#x2F;描述子(feature detectors&#x2F;descriptors)。然而这些方法都有一个主要缺点：它们依赖于人类手动设计特征并选择表现良好的分类器。结果是，用于解决一个问题的计算机视觉方法往往无法很好的解决另一个问题，构建一个合理且精确的视觉流程需要大量人力和实验。甚至最佳的流程也受限于它能取得的最高精度，因为他们是由人类设计的，所以只能选取人类首先选取的模式。</p>
@@ -1039,6 +1039,184 @@
 <p>关于GoogLeNet的研究通过”开始模块”(Inception modules)——一个接下来会被连接的层的特殊模式，推动了这个方法的发展。为了训练这个深度网络，Szegedy et al.使用“成长分类器”(auxillary classifiers)仅基于一些GoogLeNet的层，有效的尝试预测图像的类别。在训练中，损失函数是所有输出权重之和。</p>
 <p>![1535974121293](D:&#x2F;Machine Learning&#x2F;cs131&#x2F;Lecture18_19&#x2F;19.11.png)</p>
 <h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>深度学习是一个在计算机视觉和机器学习领域较新的方法，它同时训练特征提取器和分类器，而不是依赖于人类去检测有效的特征。深度学习方法在大多数计算机视觉问题中都有极佳的表现。但是，在训练样本庞大或者过小的时候，本课程介绍的其他方法可能会更有效，因为人类的直觉在一些领域可以选出良好的特征集。</p>
+]]></content>
+      <categories>
+        <category>计算机视觉</category>
+      </categories>
+      <tags>
+        <tag>计算机视觉</tag>
+        <tag>CS131</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS131 Lecture 3 Linear Algebra Primer Part 2</title>
+    <url>/2018/07/08/Lecture%203%20Linear%20Algebra%20Primer%20Part%202/</url>
+    <content><![CDATA[<h1 id="Lecture-3-Linear-Algebra-Primer-Part-2"><a href="#Lecture-3-Linear-Algebra-Primer-Part-2" class="headerlink" title="Lecture 3 Linear Algebra Primer Part 2"></a>Lecture 3 Linear Algebra Primer Part 2</h1><h2 id="Transformation-Matrices"><a href="#Transformation-Matrices" class="headerlink" title="Transformation Matrices"></a>Transformation Matrices</h2><p>矩阵可以用多种方式将向量转换，最简单的例子是缩放：</p>
+<p>$\left [ \begin{matrix} s_{x} &amp; 0 \ 0 &amp; s_{y} \end{matrix} \right ]  $ x $\left [ \begin{matrix} x \ y \end{matrix} \right ]$ &#x3D; $\left [ \begin{matrix} s_{x} x \  s_{y}y \end{matrix} \right ]$</p>
+<h3 id="Rotate-旋转"><a href="#Rotate-旋转" class="headerlink" title="Rotate 旋转"></a>Rotate 旋转</h3><p>也可以用矩阵来逆时针旋转向量$\theta$角：</p>
+<p>$x’&#x3D;cos\theta x-sin\theta y\ y’&#x3D;cos\theta y+sin\theta x\ R&#x3D;\left [ \begin{matrix} cos\theta &amp; -sin\theta \ sin\theta &amp; cos\theta \end{matrix} \right ]  $</p>
+<h3 id="Scaling-缩放"><a href="#Scaling-缩放" class="headerlink" title="Scaling 缩放"></a>Scaling 缩放</h3><p><strong>Homogeneous Coordinates</strong> 齐次坐标，简而言之，用$N+1$维向量表示$N$维向量。</p>
+<p><strong>Cartesian</strong> 笛卡尔坐标，也就是常说的xy坐标系</p>
+<p>笛卡尔坐标于齐次坐标的转换：$(x,y,w)&#x3D;(x&#x2F;w,y&#x2F;w)$</p>
+<p>所以，为了向原有向量添加常数，以下运用到齐次坐标的原理</p>
+<p>$P&#x3D;\left [ \begin{matrix} x \ y \1 \end{matrix} \right ],S&#x3D; \left [ \begin{matrix} s_{x}&amp;0&amp;0 \ 0&amp; s_{y} &amp;0 \0&amp;0&amp;1 \end{matrix} \right ] \ P’&#x3D;S·P$</p>
+<h3 id="Translating-移动"><a href="#Translating-移动" class="headerlink" title="Translating 移动"></a>Translating 移动</h3><p>$P&#x3D;\left [ \begin{matrix} x \ y \1 \end{matrix} \right ],T&#x3D; \left [ \begin{matrix} 1&amp;0&amp;t_{x} \ 0&amp; 1 &amp;t_{y} \0&amp;0&amp;1 \end{matrix} \right ] \ P’&#x3D;T·P$</p>
+<p>以上旋转、缩放、移动可以同时应用，即$P’&#x3D;T·R·S·P$。作用顺序从右往左（可以交换），前式表示先移动后旋转再缩放。</p>
+<h2 id="Matrix-Inverse-逆"><a href="#Matrix-Inverse-逆" class="headerlink" title="Matrix Inverse(逆)"></a>Matrix Inverse(逆)</h2><ul>
+<li>$AA^{-1}&#x3D;I$</li>
+<li>$(AB)^{-1}&#x3D;B^{-1}A^{-1}$</li>
+<li>$A^{-T}&#x3D;(A^{T})^{-1}&#x3D;(A^{-1})^{T}$</li>
+<li>非方矩阵的逆矩阵不存在</li>
+</ul>
+<h2 id="Pseudoinverse-伪逆矩阵"><a href="#Pseudoinverse-伪逆矩阵" class="headerlink" title="Pseudoinverse(伪逆矩阵)"></a>Pseudoinverse(伪逆矩阵)</h2><p>通常为了解方程$AX&#x3D;B$，会使用$X&#x3D;A^{-1}B$，在python上命令为<code>np.linalg.inv(A)*B</code>。但是有时候计算$A^{-1}$十分耗时，甚至$A^{-1}$可能不存在。</p>
+<p>所以这时我们需要伪逆矩阵，具体原理暂时不了解，使用python命令<code>np.linalg.solve(A,B)</code>会返回方程$AX&#x3D;B$的最优解。</p>
+<h2 id="Matrix-Rank-秩"><a href="#Matrix-Rank-秩" class="headerlink" title="Matrix Rank(秩)"></a>Matrix Rank(秩)</h2><ul>
+<li>一个变换矩阵A的秩告诉你它会将矩阵转换到几个维度上，例如，$r(A)&#x3D;1$，则$p’&#x3D;Ap$返回一条线</li>
+<li>col-rank：最大线性无关列数目</li>
+<li>row-rank：最大线性无关行数目</li>
+<li>满秩矩阵：$mxm\space &amp; \space r(A)&#x3D;m$</li>
+</ul>
+<h2 id="Eigenvalues-特征值-and-Eigenvectors-特征向量"><a href="#Eigenvalues-特征值-and-Eigenvectors-特征向量" class="headerlink" title="Eigenvalues(特征值) and Eigenvectors(特征向量)"></a>Eigenvalues(特征值) and Eigenvectors(特征向量)</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>当A点乘特征向量时，不会改变方向，只会放缩。即$Ax&#x3D;\lambda x,x\not &#x3D; 0$，$x$为特征向量，$\lambda$为特征值。</p>
+<h3 id="求解"><a href="#求解" class="headerlink" title="求解"></a>求解</h3><ol>
+<li>解$|\lambda I-A|&#x3D;0$得到特征值$\lambda$</li>
+<li>带入原式得特征向量</li>
+</ol>
+<h3 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h3><ul>
+<li>矩阵的迹&#x3D;特征值之和</li>
+<li>行列式(determinant)A&#x3D;特征值之积</li>
+<li>矩阵的秩&#x3D;非零特征值的个数</li>
+<li>对角矩阵的特征值&#x3D;对角线上的值</li>
+</ul>
+<h3 id="Spectral-谱-Theory"><a href="#Spectral-谱-Theory" class="headerlink" title="Spectral(谱) Theory"></a>Spectral(谱) Theory</h3><p><strong>特征对(eigenpair)</strong> 特征值和其对应的特征向量</p>
+<p><strong>谱(spectrum)</strong> 包含所有特征值的集合</p>
+<p><strong>谱半径(spectrum radius)</strong> 绝对值最大的特征值，它的上界为该矩阵的无限范数</p>
+<h3 id="Diagonalization-对角化"><a href="#Diagonalization-对角化" class="headerlink" title="Diagonalization 对角化"></a>Diagonalization 对角化</h3><p>若$nxn$矩阵A有n个线性无关特征值，则A可以对角化</p>
+<ul>
+<li>满足$A^{<em>}A&#x3D;AA^{</em>}$的矩阵可以对角化，其中$A^{*}$是A的复共轭矩阵</li>
+<li>有n个相异(distinct)特征值的矩阵可对角化</li>
+</ul>
+<p>计算：对角化矩阵$A&#x3D;VDV^{T}$，其中V为特征向量组合成的矩阵，D为对角值为特征值的对角矩阵，DV相对应</p>
+<h3 id="Symmetric-对称-Matrix"><a href="#Symmetric-对称-Matrix" class="headerlink" title="Symmetric(对称) Matrix"></a>Symmetric(对称) Matrix</h3><p>如果A是对称的，则其特征值为真，且特征向量标准正交(orthonormal)。</p>
+<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><ul>
+<li>PageRank</li>
+<li>薛定谔方程</li>
+<li>PCA</li>
+</ul>
+<h2 id="矩阵计算"><a href="#矩阵计算" class="headerlink" title="矩阵计算"></a>矩阵计算</h2><h3 id="Gradient"><a href="#Gradient" class="headerlink" title="Gradient"></a>Gradient</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.2.png"></p>
+<h3 id="Gradient-性质"><a href="#Gradient-性质" class="headerlink" title="Gradient 性质"></a>Gradient 性质</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.3.png"></p>
+<h3 id="Hessian"><a href="#Hessian" class="headerlink" title="Hessian"></a>Hessian</h3><p>即梯度的梯度</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.4.png"></p>
+<h3 id="Hessian-性质"><a href="#Hessian-性质" class="headerlink" title="Hessian 性质"></a>Hessian 性质</h3><ul>
+<li>Hessian是对称的</li>
+</ul>
+<h3 id="矩阵计算例子"><a href="#矩阵计算例子" class="headerlink" title="矩阵计算例子"></a>矩阵计算例子</h3><h4 id="梯度例子"><a href="#梯度例子" class="headerlink" title="梯度例子"></a>梯度例子</h4><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.5.png"></p>
+<h4 id="Hessian例子"><a href="#Hessian例子" class="headerlink" title="Hessian例子"></a>Hessian例子</h4><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.6.png"></p>
+]]></content>
+      <categories>
+        <category>计算机视觉</category>
+      </categories>
+      <tags>
+        <tag>计算机视觉</tag>
+        <tag>CS131</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>CS131 Lecture 4 Pixels and Filters</title>
+    <url>/2018/07/09/Lecture%204%20Pixels%20and%20Filters/</url>
+    <content><![CDATA[<h1 id="Lecture-4-Pixels-and-Filters"><a href="#Lecture-4-Pixels-and-Filters" class="headerlink" title="Lecture 4 Pixels and Filters"></a>Lecture 4 Pixels and Filters</h1><h2 id="Image-Sampling-and-Quantization"><a href="#Image-Sampling-and-Quantization" class="headerlink" title="Image Sampling and Quantization"></a>Image Sampling and Quantization</h2><h3 id="Image-Type"><a href="#Image-Type" class="headerlink" title="Image Type"></a>Image Type</h3><ul>
+<li><p>Binary Type 每个像素不是黑(0)就是白(1)</p>
+</li>
+<li><p>Grayscale Images 比起Binary Type，每个像素在黑白之间有更大的范围(0-255)，即多了中间的灰色部分</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.5.png"></p>
+</li>
+<li><p>Color Images 有多个颜色通道，每张图片可以在不同的颜色模型(RGB, LAB, HSV)上呈现，每个颜色通道值的范围取决于所选的颜色模型。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.6.png"></p>
+</li>
+</ul>
+<h3 id="Sampling-and-Resolution"><a href="#Sampling-and-Resolution" class="headerlink" title="Sampling and Resolution"></a>Sampling and Resolution</h3><p>图片是采样的，由离散的像素组成，不是连续的，所以可能因为像素密度造成图片有颗粒感。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.1.png"></p>
+<ul>
+<li>Resolution 一个取样参数，由dots per inch(DPI)确定。标准DPI&#x3D;72</li>
+<li>Pixels 像素是可量化的，用一系列(通常为0-255)的值表示。量化和采样会因为有限的精度而丢失信息</li>
+</ul>
+<h2 id="Image-Histograms-直方图"><a href="#Image-Histograms-直方图" class="headerlink" title="Image Histograms(直方图)"></a>Image Histograms(直方图)</h2><p>直方图用于测试灰度图的强度：一个特定的像素值(0-255)在图像中出现了几次。下图为在两个水平方向上的取样</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.2.png"></p>
+<p>直方图可以帮助我们删除图中某些特征，例如：</p>
+<ul>
+<li>天空：光滑的曲线表示图像着色的一致性，和图中的天空一样</li>
+<li>草：锯齿状的曲线表示着色变化范围大，和图中草的阴影部分一样</li>
+</ul>
+<p>直方图提供了一个物品的量化描述，所以可以作为分类器(classifiers)的输入。</p>
+<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">histogram</span>(<span class="params">im</span>):</span><br><span class="line">    h = np.zeros(<span class="number">255</span>)</span><br><span class="line">    <span class="keyword">for</span> row <span class="keyword">in</span> im.shape[<span class="number">0</span>]:</span><br><span class="line">        <span class="keyword">for</span> col <span class="keyword">in</span> im.shape[<span class="number">1</span>]:</span><br><span class="line">            val = im[row, col]</span><br><span class="line">            h[val] += <span class="number">1</span></span><br></pre></td></tr></table></figure>
+
+
+
+<h2 id="Images-as-Functions"><a href="#Images-as-Functions" class="headerlink" title="Images as Functions"></a>Images as Functions</h2><p>计算机视觉处理的图像大部分是数字的，即为一种离散的形式。这种离散化是通过对常规网格上的二维空间采样得到的，最后用一个整数数值的矩阵表示图像。</p>
+<p>处理图片时，我们可以将所有图片视作一个无限宽高的矩阵。但是，放置的图片只是一个有限的子矩阵。因此我们可以将图片写作矩阵的坐标。</p>
+<p>也可以用$f[m,n]$表示坐标(m,n)上的像素的强度，方括号表示$f[m,n]$是离散函数。</p>
+<p>例如：</p>
+<ul>
+<li>灰阶图：$f:[a,b]\times [c,d] \rightarrow [0,255]$ ，表示区域宽在ab之间，区域长在cd之间，值的范围在0-255</li>
+<li>彩图：$g[x,y]&#x3D;\left [ \begin{matrix} r[x,y] \ g[x,y] \b[x,y] \end{matrix} \right ] $ ，其中$r,g,b:[a,b]\times [c,d] \rightarrow 255$</li>
+</ul>
+<h2 id="Linear-Systems-Filters"><a href="#Linear-Systems-Filters" class="headerlink" title="Linear Systems (Filters)"></a>Linear Systems (Filters)</h2><p>$filtering$：转换像素值形成新图片的过程，目的是为了提取有用信息（例：边缘检测）或调整图片的视觉特性（例：降噪）。</p>
+<p>过滤器是系统的一个例子，也是将输入函数$f[m,n]$转换到输出函数$g[m,n]$的单位。</p>
+<p>符号$S$指系统操作员(system operator)，它将一组可能的输出映射到一组可能的输入，可以写作<br>$$<br>f[m,n] \rightarrow System\space S \rightarrow g[m,n]\<br>S[g]&#x3D;f \<br>S{f[m,n]}&#x3D;g[m,n]\<br>f[m,n] \xrightarrow[]{S} g[m,n]<br>$$</p>
+<h3 id="Examples-of-Filters"><a href="#Examples-of-Filters" class="headerlink" title="Examples of Filters"></a>Examples of Filters</h3><h4 id="Moving-Average"><a href="#Moving-Average" class="headerlink" title="Moving Average"></a>Moving Average</h4><p>这种过滤器将一个像素值设置为周围像素的平均值，在2D上即为3x3的9个像素整合为1个，数学表达为<br>$$<br>g[m,n]&#x3D;\frac{1}{9}  \sum\limits_{i&#x3D;-1}^1 \sum\limits_{j&#x3D;-1}^1 f[m-i,n-j]<br>$$<br>这种加权平均(Weighted Average)过滤器可以将尖锐的边缘光滑化，产生模糊或者光滑的效果。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.7.png"></p>
+<h4 id="Image-Segmentation"><a href="#Image-Segmentation" class="headerlink" title="Image Segmentation"></a>Image Segmentation</h4><p>基于简单的阈值(Threshold)系统可以做到基本的图像分割，数学上表示为<br>$$<br>g[m,n]&#x3D; \left{<br>             \begin{array}{lr}<br>            255, &amp;f[m,n]\geq t\<br>            0, &amp;otherwise<br>             \end{array}<br>\right.<br>$$<br>这种基本的图像分割过滤器将像素划分为二元分类器，非黑即白，取决于阈值函数。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.8.png"></p>
+<h3 id="Properties-of-Systems"><a href="#Properties-of-Systems" class="headerlink" title="Properties of Systems"></a>Properties of Systems</h3><p>以下是系统<strong>可能有</strong>的性质</p>
+<h4 id="Amplitude-振幅-Properties"><a href="#Amplitude-振幅-Properties" class="headerlink" title="Amplitude(振幅) Properties"></a>Amplitude(振幅) Properties</h4><p>可加性、同次性、叠加性、稳定性、可逆性</p>
+<p><img src="D:/Machine%20Learning/cs131/Lecture3_4/4.3.png" alt="4.3"></p>
+<h4 id="Spatial-Properties"><a href="#Spatial-Properties" class="headerlink" title="Spatial Properties"></a>Spatial Properties</h4><p>因果性、移位不变性</p>
+<p><img src="D:/Machine%20Learning/cs131/Lecture3_4/4.4.png" alt="4.4"></p>
+<h3 id="Linear-Systems"><a href="#Linear-Systems" class="headerlink" title="Linear Systems"></a>Linear Systems</h3><p>线性系统指满足叠加性的系统。当应用一个线性系统进行过滤，我们对每个原始像素值使用相同的权重集进行加权求和，得到新的像素值。一个线性移位不变系统(Linear shift invariant systems,LSI)是具有移位不变性的线性系统。</p>
+<p>线性系统还具有脉冲响应(impulse response)。函数$\delta_{2}[m,n]$由以下定义：<br>$$<br>\delta_{2}[m,n]&#x3D;\left{<br>             \begin{array}{lr}<br>            1, &amp; m&#x3D;0\space and \space n&#x3D;0\<br>            0, &amp;otherwise<br>             \end{array}<br>\right.<br>$$<br>则脉冲响应$r&#x3D;S[\delta_{2}]$</p>
+<p>而一个简单的线性移位不变系统根据delta函数的移位特性来移动像素。<br>$$<br>f[m,n]&#x3D;\sum\limits_{i&#x3D;- \infty}^\infty \sum\limits_{j&#x3D;-\infty}^\infty f[i,j]\delta_{2}[m-i,n-j]<br>$$<br>接下来，我们可以定义线性移位不变系统的过滤器$h$<br>$$<br>h[m,n]&#x3D;\alpha_{1}\delta_{2,1}[m-i,n-j] +\alpha_{2}\delta_{2,2}[m-i,n-j]+\ldots<br>$$<br>对于所有线性系统，Delta[m,n]函数：在某个特定像素值为1，给予一个回应。h[m,n]函数：一个移动的delta函数，即基于一个移动回应。</p>
+<p>LSI例子：</p>
+<ol>
+<li><p>一个移动平均过滤器即为LSI，它是脉冲响应的总和，并且满足以下条件：</p>
+<ul>
+<li>系统满足叠加性</li>
+<li>有脉冲响应：$S[\delta_{2}[m,n]]&#x3D;\delta_{2}[m,n]$</li>
+<li>离散卷积(convolution)：$f[n,m]*h[n,m]$(原始函数脉冲响应进行移位)</li>
+</ul>
+</li>
+<li><p>阈值系统不是线性系统。因为以下反例<br>$$<br>f_{1}[m,n]+f_{2}[m,n]&gt;T \<br>f_{1}[m,n]&lt;T\<br>f_{2}[m,n]&lt;T<br>$$</p>
+</li>
+</ol>
+<h2 id="Convolution-and-Correlation"><a href="#Convolution-and-Correlation" class="headerlink" title="Convolution and Correlation"></a>Convolution and Correlation</h2><h3 id="Convolution-卷积"><a href="#Convolution-卷积" class="headerlink" title="Convolution 卷积"></a>Convolution 卷积</h3><p>最简单解释卷积的方式是把它当作一个用周围像素的信息来整合成目标像素的系统，如：平均移动系统。</p>
+<p>卷积的符号为$*$，例如：$f[m,n]*h[m,n]$表示函数和移动脉冲响应相乘。</p>
+<p>卷积让我们可以通过考虑系统脉冲响应，简单的计算任何经过系统的输入信号的输出。首先，我们要理解图和将信号化为一系列的脉冲函数。</p>
+<p>前文已经提过，任何信号都可以分解为脉冲函数$\delta[n]$的加权和，即任何信号$x$都可以写作<br>$$<br>x[n]&#x3D;\sum\limits_{k&#x3D;- \infty}^\infty x[k]\delta[n-k]<br>$$<br>系统的脉冲响应为$h[n]$，是将脉冲函数输入系统产生的输出。缩放一个线性系统的脉冲函数将导致脉冲响应以同样的大小缩放。若系统是移动不变的，移动脉冲函数也会同样的移动脉冲响应。下图体现了这些性质。</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.9.png"></p>
+<p>所以，将信号$x[n]&#x3D;\sum_{k&#x3D;- \infty}^\infty x[k]\delta[n-k]$输入一个线性、移动不变的系统，得到输出为$y[n]&#x3D;\sum_{k&#x3D;- \infty}^\infty x[k]h[n-k]$。</p>
+<p>同样，卷积可以在二维上执行，有以下几种计算方法。</p>
+<ul>
+<li>将信号$x[n，m]&#x3D;\sum_{i&#x3D;- \infty}^\infty \sum_{j&#x3D;- \infty}^\infty x[i,j]\delta[n-i,m-j]$输入一个线性、移动不变的系统，得到输出为$y[n，m]&#x3D;\sum_{i&#x3D;- \infty}^\infty \sum_{j&#x3D;- \infty}^\infty x[i,j]h[n-i,m-j]$。</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.10.png"></p>
+<ul>
+<li>将卷积核(Kernel)旋转180°，并将原始图像进行zero-padding（用0在四周添加边缘），最后在pad的图像上滑动卷积核进行加权求和。</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.11.png"></p>
+<ul>
+<li>利用傅里叶变换<br>$$<br>F(f<em>h)&#x3D;F(f)·F(h) \<br>f</em>h&#x3D;F^{-1}(F(f)·F(h))<br>$$</li>
+</ul>
+<p>实例：</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.12.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.13.png"></p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.14.png"></p>
+<h4 id="Sharpening-Filter-锐化过滤器"><a href="#Sharpening-Filter-锐化过滤器" class="headerlink" title="Sharpening Filter 锐化过滤器"></a>Sharpening Filter 锐化过滤器</h4><p>强调和原图平均水平的差异</p>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.15.png"></p>
+<h3 id="Correlation-相关性"><a href="#Correlation-相关性" class="headerlink" title="Correlation 相关性"></a>Correlation 相关性</h3><p>等于卷积计算时内核没有翻转的结果。二维交叉相关为：<br>$$<br>r[k，l]&#x3D;\sum\limits_{i&#x3D;- \infty}^\infty \sum_{j&#x3D;- \infty}^\infty f[m+k,n+l]g[m,n]  \<br>&#x3D;f[n,m]<em>g^{</em>}[-n,-m]<br>$$<br>其中$g^{<em>}$表示$g$的共轭复数，在本节课中，$g(n,m)$为实数，所以$g^{</em>}&#x3D;g$</p>
+<p>和卷积的区别：</p>
+<ul>
+<li>卷积是一个积分，它表示当一个函数在另一个函数上移动的时候的重叠部分。也就是说，卷积是一个过滤操作。</li>
+<li>相关性比较了两个数据集的相似性。相关性计算了两个输入函s数相互移动时的相似性测量值。两个函数匹配都越高，它的结果值越大。也就是说，相关性是两个信号关联性的测量值。</li>
+</ul>
+<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.16.png"></p>
 ]]></content>
       <categories>
         <category>计算机视觉</category>
@@ -1144,78 +1322,6 @@
 <p><strong>Diagonal Matrix</strong> 和单位矩阵区别在于对角线上不一定是1，可以为其他数字</p>
 <p><strong>Symmetric Matrix</strong> 对称矩阵$A^{T}&#x3D;A$</p>
 <p><strong>Skew-symmetric Matrix</strong> $A^{T}&#x3D;-A$</p>
-]]></content>
-      <categories>
-        <category>计算机视觉</category>
-      </categories>
-      <tags>
-        <tag>计算机视觉</tag>
-        <tag>CS131</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CS131 Lecture 3 Linear Algebra Primer Part 2</title>
-    <url>/2018/07/08/Lecture%203%20Linear%20Algebra%20Primer%20Part%202/</url>
-    <content><![CDATA[<h1 id="Lecture-3-Linear-Algebra-Primer-Part-2"><a href="#Lecture-3-Linear-Algebra-Primer-Part-2" class="headerlink" title="Lecture 3 Linear Algebra Primer Part 2"></a>Lecture 3 Linear Algebra Primer Part 2</h1><h2 id="Transformation-Matrices"><a href="#Transformation-Matrices" class="headerlink" title="Transformation Matrices"></a>Transformation Matrices</h2><p>矩阵可以用多种方式将向量转换，最简单的例子是缩放：</p>
-<p>$\left [ \begin{matrix} s_{x} &amp; 0 \ 0 &amp; s_{y} \end{matrix} \right ]  $ x $\left [ \begin{matrix} x \ y \end{matrix} \right ]$ &#x3D; $\left [ \begin{matrix} s_{x} x \  s_{y}y \end{matrix} \right ]$</p>
-<h3 id="Rotate-旋转"><a href="#Rotate-旋转" class="headerlink" title="Rotate 旋转"></a>Rotate 旋转</h3><p>也可以用矩阵来逆时针旋转向量$\theta$角：</p>
-<p>$x’&#x3D;cos\theta x-sin\theta y\ y’&#x3D;cos\theta y+sin\theta x\ R&#x3D;\left [ \begin{matrix} cos\theta &amp; -sin\theta \ sin\theta &amp; cos\theta \end{matrix} \right ]  $</p>
-<h3 id="Scaling-缩放"><a href="#Scaling-缩放" class="headerlink" title="Scaling 缩放"></a>Scaling 缩放</h3><p><strong>Homogeneous Coordinates</strong> 齐次坐标，简而言之，用$N+1$维向量表示$N$维向量。</p>
-<p><strong>Cartesian</strong> 笛卡尔坐标，也就是常说的xy坐标系</p>
-<p>笛卡尔坐标于齐次坐标的转换：$(x,y,w)&#x3D;(x&#x2F;w,y&#x2F;w)$</p>
-<p>所以，为了向原有向量添加常数，以下运用到齐次坐标的原理</p>
-<p>$P&#x3D;\left [ \begin{matrix} x \ y \1 \end{matrix} \right ],S&#x3D; \left [ \begin{matrix} s_{x}&amp;0&amp;0 \ 0&amp; s_{y} &amp;0 \0&amp;0&amp;1 \end{matrix} \right ] \ P’&#x3D;S·P$</p>
-<h3 id="Translating-移动"><a href="#Translating-移动" class="headerlink" title="Translating 移动"></a>Translating 移动</h3><p>$P&#x3D;\left [ \begin{matrix} x \ y \1 \end{matrix} \right ],T&#x3D; \left [ \begin{matrix} 1&amp;0&amp;t_{x} \ 0&amp; 1 &amp;t_{y} \0&amp;0&amp;1 \end{matrix} \right ] \ P’&#x3D;T·P$</p>
-<p>以上旋转、缩放、移动可以同时应用，即$P’&#x3D;T·R·S·P$。作用顺序从右往左（可以交换），前式表示先移动后旋转再缩放。</p>
-<h2 id="Matrix-Inverse-逆"><a href="#Matrix-Inverse-逆" class="headerlink" title="Matrix Inverse(逆)"></a>Matrix Inverse(逆)</h2><ul>
-<li>$AA^{-1}&#x3D;I$</li>
-<li>$(AB)^{-1}&#x3D;B^{-1}A^{-1}$</li>
-<li>$A^{-T}&#x3D;(A^{T})^{-1}&#x3D;(A^{-1})^{T}$</li>
-<li>非方矩阵的逆矩阵不存在</li>
-</ul>
-<h2 id="Pseudoinverse-伪逆矩阵"><a href="#Pseudoinverse-伪逆矩阵" class="headerlink" title="Pseudoinverse(伪逆矩阵)"></a>Pseudoinverse(伪逆矩阵)</h2><p>通常为了解方程$AX&#x3D;B$，会使用$X&#x3D;A^{-1}B$，在python上命令为<code>np.linalg.inv(A)*B</code>。但是有时候计算$A^{-1}$十分耗时，甚至$A^{-1}$可能不存在。</p>
-<p>所以这时我们需要伪逆矩阵，具体原理暂时不了解，使用python命令<code>np.linalg.solve(A,B)</code>会返回方程$AX&#x3D;B$的最优解。</p>
-<h2 id="Matrix-Rank-秩"><a href="#Matrix-Rank-秩" class="headerlink" title="Matrix Rank(秩)"></a>Matrix Rank(秩)</h2><ul>
-<li>一个变换矩阵A的秩告诉你它会将矩阵转换到几个维度上，例如，$r(A)&#x3D;1$，则$p’&#x3D;Ap$返回一条线</li>
-<li>col-rank：最大线性无关列数目</li>
-<li>row-rank：最大线性无关行数目</li>
-<li>满秩矩阵：$mxm\space &amp; \space r(A)&#x3D;m$</li>
-</ul>
-<h2 id="Eigenvalues-特征值-and-Eigenvectors-特征向量"><a href="#Eigenvalues-特征值-and-Eigenvectors-特征向量" class="headerlink" title="Eigenvalues(特征值) and Eigenvectors(特征向量)"></a>Eigenvalues(特征值) and Eigenvectors(特征向量)</h2><h3 id="定义"><a href="#定义" class="headerlink" title="定义"></a>定义</h3><p>当A点乘特征向量时，不会改变方向，只会放缩。即$Ax&#x3D;\lambda x,x\not &#x3D; 0$，$x$为特征向量，$\lambda$为特征值。</p>
-<h3 id="求解"><a href="#求解" class="headerlink" title="求解"></a>求解</h3><ol>
-<li>解$|\lambda I-A|&#x3D;0$得到特征值$\lambda$</li>
-<li>带入原式得特征向量</li>
-</ol>
-<h3 id="性质"><a href="#性质" class="headerlink" title="性质"></a>性质</h3><ul>
-<li>矩阵的迹&#x3D;特征值之和</li>
-<li>行列式(determinant)A&#x3D;特征值之积</li>
-<li>矩阵的秩&#x3D;非零特征值的个数</li>
-<li>对角矩阵的特征值&#x3D;对角线上的值</li>
-</ul>
-<h3 id="Spectral-谱-Theory"><a href="#Spectral-谱-Theory" class="headerlink" title="Spectral(谱) Theory"></a>Spectral(谱) Theory</h3><p><strong>特征对(eigenpair)</strong> 特征值和其对应的特征向量</p>
-<p><strong>谱(spectrum)</strong> 包含所有特征值的集合</p>
-<p><strong>谱半径(spectrum radius)</strong> 绝对值最大的特征值，它的上界为该矩阵的无限范数</p>
-<h3 id="Diagonalization-对角化"><a href="#Diagonalization-对角化" class="headerlink" title="Diagonalization 对角化"></a>Diagonalization 对角化</h3><p>若$nxn$矩阵A有n个线性无关特征值，则A可以对角化</p>
-<ul>
-<li>满足$A^{<em>}A&#x3D;AA^{</em>}$的矩阵可以对角化，其中$A^{*}$是A的复共轭矩阵</li>
-<li>有n个相异(distinct)特征值的矩阵可对角化</li>
-</ul>
-<p>计算：对角化矩阵$A&#x3D;VDV^{T}$，其中V为特征向量组合成的矩阵，D为对角值为特征值的对角矩阵，DV相对应</p>
-<h3 id="Symmetric-对称-Matrix"><a href="#Symmetric-对称-Matrix" class="headerlink" title="Symmetric(对称) Matrix"></a>Symmetric(对称) Matrix</h3><p>如果A是对称的，则其特征值为真，且特征向量标准正交(orthonormal)。</p>
-<h3 id="应用"><a href="#应用" class="headerlink" title="应用"></a>应用</h3><ul>
-<li>PageRank</li>
-<li>薛定谔方程</li>
-<li>PCA</li>
-</ul>
-<h2 id="矩阵计算"><a href="#矩阵计算" class="headerlink" title="矩阵计算"></a>矩阵计算</h2><h3 id="Gradient"><a href="#Gradient" class="headerlink" title="Gradient"></a>Gradient</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.2.png"></p>
-<h3 id="Gradient-性质"><a href="#Gradient-性质" class="headerlink" title="Gradient 性质"></a>Gradient 性质</h3><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.3.png"></p>
-<h3 id="Hessian"><a href="#Hessian" class="headerlink" title="Hessian"></a>Hessian</h3><p>即梯度的梯度</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.4.png"></p>
-<h3 id="Hessian-性质"><a href="#Hessian-性质" class="headerlink" title="Hessian 性质"></a>Hessian 性质</h3><ul>
-<li>Hessian是对称的</li>
-</ul>
-<h3 id="矩阵计算例子"><a href="#矩阵计算例子" class="headerlink" title="矩阵计算例子"></a>矩阵计算例子</h3><h4 id="梯度例子"><a href="#梯度例子" class="headerlink" title="梯度例子"></a>梯度例子</h4><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.5.png"></p>
-<h4 id="Hessian例子"><a href="#Hessian例子" class="headerlink" title="Hessian例子"></a>Hessian例子</h4><p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/3.6.png"></p>
 ]]></content>
       <categories>
         <category>计算机视觉</category>
@@ -1383,112 +1489,6 @@
 <li>噪音数高；如上文所提及，更多的噪音需要更广泛的抽样方法（即更多的样本数），提高了计算成本。更高的噪音也减少了正确参数估计的机会和异常值分类的精度。</li>
 </ul>
 <p>值得注意的是，RANSAC最大的限制是在高噪下表现较差，而现实世界的问题总是有着较高的异常值。</p>
-]]></content>
-      <categories>
-        <category>计算机视觉</category>
-      </categories>
-      <tags>
-        <tag>计算机视觉</tag>
-        <tag>CS131</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>CS131 Lecture 4 Pixels and Filters</title>
-    <url>/2018/07/09/Lecture%204%20Pixels%20and%20Filters/</url>
-    <content><![CDATA[<h1 id="Lecture-4-Pixels-and-Filters"><a href="#Lecture-4-Pixels-and-Filters" class="headerlink" title="Lecture 4 Pixels and Filters"></a>Lecture 4 Pixels and Filters</h1><h2 id="Image-Sampling-and-Quantization"><a href="#Image-Sampling-and-Quantization" class="headerlink" title="Image Sampling and Quantization"></a>Image Sampling and Quantization</h2><h3 id="Image-Type"><a href="#Image-Type" class="headerlink" title="Image Type"></a>Image Type</h3><ul>
-<li><p>Binary Type 每个像素不是黑(0)就是白(1)</p>
-</li>
-<li><p>Grayscale Images 比起Binary Type，每个像素在黑白之间有更大的范围(0-255)，即多了中间的灰色部分</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.5.png"></p>
-</li>
-<li><p>Color Images 有多个颜色通道，每张图片可以在不同的颜色模型(RGB, LAB, HSV)上呈现，每个颜色通道值的范围取决于所选的颜色模型。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.6.png"></p>
-</li>
-</ul>
-<h3 id="Sampling-and-Resolution"><a href="#Sampling-and-Resolution" class="headerlink" title="Sampling and Resolution"></a>Sampling and Resolution</h3><p>图片是采样的，由离散的像素组成，不是连续的，所以可能因为像素密度造成图片有颗粒感。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.1.png"></p>
-<ul>
-<li>Resolution 一个取样参数，由dots per inch(DPI)确定。标准DPI&#x3D;72</li>
-<li>Pixels 像素是可量化的，用一系列(通常为0-255)的值表示。量化和采样会因为有限的精度而丢失信息</li>
-</ul>
-<h2 id="Image-Histograms-直方图"><a href="#Image-Histograms-直方图" class="headerlink" title="Image Histograms(直方图)"></a>Image Histograms(直方图)</h2><p>直方图用于测试灰度图的强度：一个特定的像素值(0-255)在图像中出现了几次。下图为在两个水平方向上的取样</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.2.png"></p>
-<p>直方图可以帮助我们删除图中某些特征，例如：</p>
-<ul>
-<li>天空：光滑的曲线表示图像着色的一致性，和图中的天空一样</li>
-<li>草：锯齿状的曲线表示着色变化范围大，和图中草的阴影部分一样</li>
-</ul>
-<p>直方图提供了一个物品的量化描述，所以可以作为分类器(classifiers)的输入。</p>
-<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">histogram</span>(<span class="params">im</span>):</span><br><span class="line">    h = np.zeros(<span class="number">255</span>)</span><br><span class="line">    <span class="keyword">for</span> row <span class="keyword">in</span> im.shape[<span class="number">0</span>]:</span><br><span class="line">        <span class="keyword">for</span> col <span class="keyword">in</span> im.shape[<span class="number">1</span>]:</span><br><span class="line">            val = im[row, col]</span><br><span class="line">            h[val] += <span class="number">1</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="Images-as-Functions"><a href="#Images-as-Functions" class="headerlink" title="Images as Functions"></a>Images as Functions</h2><p>计算机视觉处理的图像大部分是数字的，即为一种离散的形式。这种离散化是通过对常规网格上的二维空间采样得到的，最后用一个整数数值的矩阵表示图像。</p>
-<p>处理图片时，我们可以将所有图片视作一个无限宽高的矩阵。但是，放置的图片只是一个有限的子矩阵。因此我们可以将图片写作矩阵的坐标。</p>
-<p>也可以用$f[m,n]$表示坐标(m,n)上的像素的强度，方括号表示$f[m,n]$是离散函数。</p>
-<p>例如：</p>
-<ul>
-<li>灰阶图：$f:[a,b]\times [c,d] \rightarrow [0,255]$ ，表示区域宽在ab之间，区域长在cd之间，值的范围在0-255</li>
-<li>彩图：$g[x,y]&#x3D;\left [ \begin{matrix} r[x,y] \ g[x,y] \b[x,y] \end{matrix} \right ] $ ，其中$r,g,b:[a,b]\times [c,d] \rightarrow 255$</li>
-</ul>
-<h2 id="Linear-Systems-Filters"><a href="#Linear-Systems-Filters" class="headerlink" title="Linear Systems (Filters)"></a>Linear Systems (Filters)</h2><p>$filtering$：转换像素值形成新图片的过程，目的是为了提取有用信息（例：边缘检测）或调整图片的视觉特性（例：降噪）。</p>
-<p>过滤器是系统的一个例子，也是将输入函数$f[m,n]$转换到输出函数$g[m,n]$的单位。</p>
-<p>符号$S$指系统操作员(system operator)，它将一组可能的输出映射到一组可能的输入，可以写作<br>$$<br>f[m,n] \rightarrow System\space S \rightarrow g[m,n]\<br>S[g]&#x3D;f \<br>S{f[m,n]}&#x3D;g[m,n]\<br>f[m,n] \xrightarrow[]{S} g[m,n]<br>$$</p>
-<h3 id="Examples-of-Filters"><a href="#Examples-of-Filters" class="headerlink" title="Examples of Filters"></a>Examples of Filters</h3><h4 id="Moving-Average"><a href="#Moving-Average" class="headerlink" title="Moving Average"></a>Moving Average</h4><p>这种过滤器将一个像素值设置为周围像素的平均值，在2D上即为3x3的9个像素整合为1个，数学表达为<br>$$<br>g[m,n]&#x3D;\frac{1}{9}  \sum\limits_{i&#x3D;-1}^1 \sum\limits_{j&#x3D;-1}^1 f[m-i,n-j]<br>$$<br>这种加权平均(Weighted Average)过滤器可以将尖锐的边缘光滑化，产生模糊或者光滑的效果。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.7.png"></p>
-<h4 id="Image-Segmentation"><a href="#Image-Segmentation" class="headerlink" title="Image Segmentation"></a>Image Segmentation</h4><p>基于简单的阈值(Threshold)系统可以做到基本的图像分割，数学上表示为<br>$$<br>g[m,n]&#x3D; \left{<br>             \begin{array}{lr}<br>            255, &amp;f[m,n]\geq t\<br>            0, &amp;otherwise<br>             \end{array}<br>\right.<br>$$<br>这种基本的图像分割过滤器将像素划分为二元分类器，非黑即白，取决于阈值函数。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.8.png"></p>
-<h3 id="Properties-of-Systems"><a href="#Properties-of-Systems" class="headerlink" title="Properties of Systems"></a>Properties of Systems</h3><p>以下是系统<strong>可能有</strong>的性质</p>
-<h4 id="Amplitude-振幅-Properties"><a href="#Amplitude-振幅-Properties" class="headerlink" title="Amplitude(振幅) Properties"></a>Amplitude(振幅) Properties</h4><p>可加性、同次性、叠加性、稳定性、可逆性</p>
-<p><img src="D:/Machine%20Learning/cs131/Lecture3_4/4.3.png" alt="4.3"></p>
-<h4 id="Spatial-Properties"><a href="#Spatial-Properties" class="headerlink" title="Spatial Properties"></a>Spatial Properties</h4><p>因果性、移位不变性</p>
-<p><img src="D:/Machine%20Learning/cs131/Lecture3_4/4.4.png" alt="4.4"></p>
-<h3 id="Linear-Systems"><a href="#Linear-Systems" class="headerlink" title="Linear Systems"></a>Linear Systems</h3><p>线性系统指满足叠加性的系统。当应用一个线性系统进行过滤，我们对每个原始像素值使用相同的权重集进行加权求和，得到新的像素值。一个线性移位不变系统(Linear shift invariant systems,LSI)是具有移位不变性的线性系统。</p>
-<p>线性系统还具有脉冲响应(impulse response)。函数$\delta_{2}[m,n]$由以下定义：<br>$$<br>\delta_{2}[m,n]&#x3D;\left{<br>             \begin{array}{lr}<br>            1, &amp; m&#x3D;0\space and \space n&#x3D;0\<br>            0, &amp;otherwise<br>             \end{array}<br>\right.<br>$$<br>则脉冲响应$r&#x3D;S[\delta_{2}]$</p>
-<p>而一个简单的线性移位不变系统根据delta函数的移位特性来移动像素。<br>$$<br>f[m,n]&#x3D;\sum\limits_{i&#x3D;- \infty}^\infty \sum\limits_{j&#x3D;-\infty}^\infty f[i,j]\delta_{2}[m-i,n-j]<br>$$<br>接下来，我们可以定义线性移位不变系统的过滤器$h$<br>$$<br>h[m,n]&#x3D;\alpha_{1}\delta_{2,1}[m-i,n-j] +\alpha_{2}\delta_{2,2}[m-i,n-j]+\ldots<br>$$<br>对于所有线性系统，Delta[m,n]函数：在某个特定像素值为1，给予一个回应。h[m,n]函数：一个移动的delta函数，即基于一个移动回应。</p>
-<p>LSI例子：</p>
-<ol>
-<li><p>一个移动平均过滤器即为LSI，它是脉冲响应的总和，并且满足以下条件：</p>
-<ul>
-<li>系统满足叠加性</li>
-<li>有脉冲响应：$S[\delta_{2}[m,n]]&#x3D;\delta_{2}[m,n]$</li>
-<li>离散卷积(convolution)：$f[n,m]*h[n,m]$(原始函数脉冲响应进行移位)</li>
-</ul>
-</li>
-<li><p>阈值系统不是线性系统。因为以下反例<br>$$<br>f_{1}[m,n]+f_{2}[m,n]&gt;T \<br>f_{1}[m,n]&lt;T\<br>f_{2}[m,n]&lt;T<br>$$</p>
-</li>
-</ol>
-<h2 id="Convolution-and-Correlation"><a href="#Convolution-and-Correlation" class="headerlink" title="Convolution and Correlation"></a>Convolution and Correlation</h2><h3 id="Convolution-卷积"><a href="#Convolution-卷积" class="headerlink" title="Convolution 卷积"></a>Convolution 卷积</h3><p>最简单解释卷积的方式是把它当作一个用周围像素的信息来整合成目标像素的系统，如：平均移动系统。</p>
-<p>卷积的符号为$*$，例如：$f[m,n]*h[m,n]$表示函数和移动脉冲响应相乘。</p>
-<p>卷积让我们可以通过考虑系统脉冲响应，简单的计算任何经过系统的输入信号的输出。首先，我们要理解图和将信号化为一系列的脉冲函数。</p>
-<p>前文已经提过，任何信号都可以分解为脉冲函数$\delta[n]$的加权和，即任何信号$x$都可以写作<br>$$<br>x[n]&#x3D;\sum\limits_{k&#x3D;- \infty}^\infty x[k]\delta[n-k]<br>$$<br>系统的脉冲响应为$h[n]$，是将脉冲函数输入系统产生的输出。缩放一个线性系统的脉冲函数将导致脉冲响应以同样的大小缩放。若系统是移动不变的，移动脉冲函数也会同样的移动脉冲响应。下图体现了这些性质。</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.9.png"></p>
-<p>所以，将信号$x[n]&#x3D;\sum_{k&#x3D;- \infty}^\infty x[k]\delta[n-k]$输入一个线性、移动不变的系统，得到输出为$y[n]&#x3D;\sum_{k&#x3D;- \infty}^\infty x[k]h[n-k]$。</p>
-<p>同样，卷积可以在二维上执行，有以下几种计算方法。</p>
-<ul>
-<li>将信号$x[n，m]&#x3D;\sum_{i&#x3D;- \infty}^\infty \sum_{j&#x3D;- \infty}^\infty x[i,j]\delta[n-i,m-j]$输入一个线性、移动不变的系统，得到输出为$y[n，m]&#x3D;\sum_{i&#x3D;- \infty}^\infty \sum_{j&#x3D;- \infty}^\infty x[i,j]h[n-i,m-j]$。</li>
-</ul>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.10.png"></p>
-<ul>
-<li>将卷积核(Kernel)旋转180°，并将原始图像进行zero-padding（用0在四周添加边缘），最后在pad的图像上滑动卷积核进行加权求和。</li>
-</ul>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.11.png"></p>
-<ul>
-<li>利用傅里叶变换<br>$$<br>F(f<em>h)&#x3D;F(f)·F(h) \<br>f</em>h&#x3D;F^{-1}(F(f)·F(h))<br>$$</li>
-</ul>
-<p>实例：</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.12.png"></p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.13.png"></p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.14.png"></p>
-<h4 id="Sharpening-Filter-锐化过滤器"><a href="#Sharpening-Filter-锐化过滤器" class="headerlink" title="Sharpening Filter 锐化过滤器"></a>Sharpening Filter 锐化过滤器</h4><p>强调和原图平均水平的差异</p>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.15.png"></p>
-<h3 id="Correlation-相关性"><a href="#Correlation-相关性" class="headerlink" title="Correlation 相关性"></a>Correlation 相关性</h3><p>等于卷积计算时内核没有翻转的结果。二维交叉相关为：<br>$$<br>r[k，l]&#x3D;\sum\limits_{i&#x3D;- \infty}^\infty \sum_{j&#x3D;- \infty}^\infty f[m+k,n+l]g[m,n]  \<br>&#x3D;f[n,m]<em>g^{</em>}[-n,-m]<br>$$<br>其中$g^{<em>}$表示$g$的共轭复数，在本节课中，$g(n,m)$为实数，所以$g^{</em>}&#x3D;g$</p>
-<p>和卷积的区别：</p>
-<ul>
-<li>卷积是一个积分，它表示当一个函数在另一个函数上移动的时候的重叠部分。也就是说，卷积是一个过滤操作。</li>
-<li>相关性比较了两个数据集的相似性。相关性计算了两个输入函s数相互移动时的相似性测量值。两个函数匹配都越高，它的结果值越大。也就是说，相关性是两个信号关联性的测量值。</li>
-</ul>
-<p><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/CS131/4.16.png"></p>
 ]]></content>
       <categories>
         <category>计算机视觉</category>
@@ -1757,28 +1757,6 @@
       </tags>
   </entry>
   <entry>
-    <title>Matlab Week3</title>
-    <url>/2017/10/17/Matlab-Week3/</url>
-    <content><![CDATA[<h2 id="Matrices-and-Operators"><a href="#Matrices-and-Operators" class="headerlink" title="Matrices and Operators"></a>Matrices and Operators</h2><h3 id="The-colon-Operator"><a href="#The-colon-Operator" class="headerlink" title="The colon Operator"></a>The colon Operator</h3><p>a:b:c表示行向量a,a+b,…,a+nb(a+nb&lt;c)，若仅输入a:b则默认c&#x3D;1，若输入的a&gt;b则返回空矩阵</p>
-<h3 id="Accessing-Parts-of-a-Matrix"><a href="#Accessing-Parts-of-a-Matrix" class="headerlink" title="Accessing Parts of a Matrix"></a>Accessing Parts of a Matrix</h3><ul>
-<li>x(a,b)返回x矩阵中a行b列的元素</li>
-<li>X(a,b)&#x3D;c，若X矩阵不存在或者(a,b)超出其行列数，则matlab会拓展出一个最小满足该要求的矩阵，除了(a,b)位置为c其他新增位置为0。X存在则c替换(a,b)原有数字</li>
-<li>X([a,b],c)，返回第c列中的a、b行的元素，有各种变式</li>
-<li>end是matlab中的一个关键字，不能作为变量名，矩阵索引中可以当作一个表示最后的数字</li>
-</ul>
-<h3 id="Combining-and-Transforming-Matrices"><a href="#Combining-and-Transforming-Matrices" class="headerlink" title="Combining and Transforming Matrices"></a>Combining and Transforming Matrices</h3><ul>
-<li>可以将矩阵作为一个整体进行拼合，例如C&#x3D;[A,B]，注意行拼合行数相同，列拼合列数相同</li>
-<li>‘表示矩阵转置</li>
-</ul>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>Matlab</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>Linux 命令</title>
     <url>/2017/08/06/Linux%E5%91%BD%E4%BB%A4/</url>
     <content><![CDATA[<h2 id="cat"><a href="#cat" class="headerlink" title="cat"></a>cat</h2><p>concatenate的缩写，用于访问单个或者多个文件。</p>
@@ -1807,6 +1785,28 @@
       </categories>
       <tags>
         <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Matlab Week3</title>
+    <url>/2017/10/17/Matlab-Week3/</url>
+    <content><![CDATA[<h2 id="Matrices-and-Operators"><a href="#Matrices-and-Operators" class="headerlink" title="Matrices and Operators"></a>Matrices and Operators</h2><h3 id="The-colon-Operator"><a href="#The-colon-Operator" class="headerlink" title="The colon Operator"></a>The colon Operator</h3><p>a:b:c表示行向量a,a+b,…,a+nb(a+nb&lt;c)，若仅输入a:b则默认c&#x3D;1，若输入的a&gt;b则返回空矩阵</p>
+<h3 id="Accessing-Parts-of-a-Matrix"><a href="#Accessing-Parts-of-a-Matrix" class="headerlink" title="Accessing Parts of a Matrix"></a>Accessing Parts of a Matrix</h3><ul>
+<li>x(a,b)返回x矩阵中a行b列的元素</li>
+<li>X(a,b)&#x3D;c，若X矩阵不存在或者(a,b)超出其行列数，则matlab会拓展出一个最小满足该要求的矩阵，除了(a,b)位置为c其他新增位置为0。X存在则c替换(a,b)原有数字</li>
+<li>X([a,b],c)，返回第c列中的a、b行的元素，有各种变式</li>
+<li>end是matlab中的一个关键字，不能作为变量名，矩阵索引中可以当作一个表示最后的数字</li>
+</ul>
+<h3 id="Combining-and-Transforming-Matrices"><a href="#Combining-and-Transforming-Matrices" class="headerlink" title="Combining and Transforming Matrices"></a>Combining and Transforming Matrices</h3><ul>
+<li>可以将矩阵作为一个整体进行拼合，例如C&#x3D;[A,B]，注意行拼合行数相同，列拼合列数相同</li>
+<li>‘表示矩阵转置</li>
+</ul>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>Matlab</tag>
       </tags>
   </entry>
   <entry>
@@ -1865,44 +1865,6 @@
 <li>需要将已有数据变形才能获得新数据，单纯的复制多个相同的数据是无用的</li>
 </ul>
 <h3 id="Ceiling-Analysis-What-Part-of-the-Pipeline-to-Work-on-Next"><a href="#Ceiling-Analysis-What-Part-of-the-Pipeline-to-Work-on-Next" class="headerlink" title="Ceiling Analysis: What Part of the Pipeline to Work on Next"></a>Ceiling Analysis: What Part of the Pipeline to Work on Next</h3><p>上限分析(Ceiling Analysis)可以帮助你找到最值得花时间去改进的模块。原理：人工将某一模块全部设置为正确y&#x3D;1，查看整个系统的准确率提高多少，比较所花时间后选择改进性价比最高的模块进行改进。</p>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>机器学习 Week7</title>
-    <url>/2017/09/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week7/</url>
-    <content><![CDATA[<h2 id="Large-Margin-Classification"><a href="#Large-Margin-Classification" class="headerlink" title="Large Margin Classification"></a>Large Margin Classification</h2><h3 id="Optimization-Objective"><a href="#Optimization-Objective" class="headerlink" title="Optimization Objective"></a>Optimization Objective</h3><p>支持向量机(Support Vector Machine,SVM)：用于学习复杂的非线性方程的算法</p>
-<p>可以从线性的代价函数中推导而出，如下：</p>
-<p><img src="https://i.imgur.com/CwCUWST.png"></p>
-<p>相比线性函数去掉1&#x2F;m：习惯问题，不影响</p>
-<p>将A+λB的形式换为CA+B的形式：控制权重的不同方式</p>
-<h3 id="Large-Margin-Intuition"><a href="#Large-Margin-Intuition" class="headerlink" title="Large Margin Intuition"></a>Large Margin Intuition</h3><p>SVM在分类时会以一个最大间距来分类数据，C越大，过拟合的可能性越大，即高方差低偏差小λ。</p>
-<h2 id="Kernels-核函数"><a href="#Kernels-核函数" class="headerlink" title="Kernels(核函数)"></a>Kernels(核函数)</h2><p>(高斯)核函数 ：</p>
-<p><img src="https://i.imgur.com/grPDbkL.png"></p>
-<p>其中f1代替了Θ1+Θ2*x1·····中的x1，而σ越大，特征变量值减小越慢。θ的大小决定了标记点的权重，当x靠近标记点时预测值就会为1，否则为0.</p>
-<h3 id="如何选择标记点"><a href="#如何选择标记点" class="headerlink" title="如何选择标记点"></a>如何选择标记点</h3><p>选择每一个训练样本作为标记点</p>
-<h3 id="各个参数的影响"><a href="#各个参数的影响" class="headerlink" title="各个参数的影响"></a>各个参数的影响</h3><p>C:越大，过拟合的可能性越大，即高方差低偏差小λ。</p>
-<p>σ²:越大则特征变量值f减小越慢且变化平缓，同时高偏差低方差</p>
-<h2 id="如何使用SVM"><a href="#如何使用SVM" class="headerlink" title="如何使用SVM"></a>如何使用SVM</h2><p>使用好的软件库，而不是自己编写SVM软件（比如：liblinear,libsvm）</p>
-<p>需要设置：</p>
-<ul>
-<li>参数C</li>
-<li>选择核函数（相似度函数），例如：</li>
-</ul>
-<p><img src="https://i.imgur.com/oheT8ce.png"></p>
-<ul>
-<li>核函数需要满足的条件：Mercer’s Theorem</li>
-</ul>
-<h3 id="高斯函数"><a href="#高斯函数" class="headerlink" title="高斯函数"></a>高斯函数</h3><p>什么时候选择高斯核函数：特征变量x的维数n比较小，如果取值范围较大，需要进行归一化。</p>
-<p>Matlab需要做的：</p>
-<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>=<span class="title">kernel</span><span class="params">(x1,x2)</span></span></span><br><span class="line">	f=<span class="built_in">exp</span>(-delta_x^<span class="number">2</span>/(<span class="number">2</span>*sigma^<span class="number">2</span>)); <span class="comment">%delta_x为x1到x2的距离</span></span><br><span class="line"><span class="keyword">return</span></span><br></pre></td></tr></table></figure>
-
-<h3 id="逻辑函数与SVM的选择"><a href="#逻辑函数与SVM的选择" class="headerlink" title="逻辑函数与SVM的选择"></a>逻辑函数与SVM的选择</h3><p>特征数n比较多（n&gt;1000）：逻辑函数或者不是高斯核函数的SVM</p>
 ]]></content>
       <categories>
         <category>机器学习</category>
@@ -1995,6 +1957,44 @@
       </tags>
   </entry>
   <entry>
+    <title>机器学习 Week7</title>
+    <url>/2017/09/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week7/</url>
+    <content><![CDATA[<h2 id="Large-Margin-Classification"><a href="#Large-Margin-Classification" class="headerlink" title="Large Margin Classification"></a>Large Margin Classification</h2><h3 id="Optimization-Objective"><a href="#Optimization-Objective" class="headerlink" title="Optimization Objective"></a>Optimization Objective</h3><p>支持向量机(Support Vector Machine,SVM)：用于学习复杂的非线性方程的算法</p>
+<p>可以从线性的代价函数中推导而出，如下：</p>
+<p><img src="https://i.imgur.com/CwCUWST.png"></p>
+<p>相比线性函数去掉1&#x2F;m：习惯问题，不影响</p>
+<p>将A+λB的形式换为CA+B的形式：控制权重的不同方式</p>
+<h3 id="Large-Margin-Intuition"><a href="#Large-Margin-Intuition" class="headerlink" title="Large Margin Intuition"></a>Large Margin Intuition</h3><p>SVM在分类时会以一个最大间距来分类数据，C越大，过拟合的可能性越大，即高方差低偏差小λ。</p>
+<h2 id="Kernels-核函数"><a href="#Kernels-核函数" class="headerlink" title="Kernels(核函数)"></a>Kernels(核函数)</h2><p>(高斯)核函数 ：</p>
+<p><img src="https://i.imgur.com/grPDbkL.png"></p>
+<p>其中f1代替了Θ1+Θ2*x1·····中的x1，而σ越大，特征变量值减小越慢。θ的大小决定了标记点的权重，当x靠近标记点时预测值就会为1，否则为0.</p>
+<h3 id="如何选择标记点"><a href="#如何选择标记点" class="headerlink" title="如何选择标记点"></a>如何选择标记点</h3><p>选择每一个训练样本作为标记点</p>
+<h3 id="各个参数的影响"><a href="#各个参数的影响" class="headerlink" title="各个参数的影响"></a>各个参数的影响</h3><p>C:越大，过拟合的可能性越大，即高方差低偏差小λ。</p>
+<p>σ²:越大则特征变量值f减小越慢且变化平缓，同时高偏差低方差</p>
+<h2 id="如何使用SVM"><a href="#如何使用SVM" class="headerlink" title="如何使用SVM"></a>如何使用SVM</h2><p>使用好的软件库，而不是自己编写SVM软件（比如：liblinear,libsvm）</p>
+<p>需要设置：</p>
+<ul>
+<li>参数C</li>
+<li>选择核函数（相似度函数），例如：</li>
+</ul>
+<p><img src="https://i.imgur.com/oheT8ce.png"></p>
+<ul>
+<li>核函数需要满足的条件：Mercer’s Theorem</li>
+</ul>
+<h3 id="高斯函数"><a href="#高斯函数" class="headerlink" title="高斯函数"></a>高斯函数</h3><p>什么时候选择高斯核函数：特征变量x的维数n比较小，如果取值范围较大，需要进行归一化。</p>
+<p>Matlab需要做的：</p>
+<figure class="highlight matlab"><table><tr><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">f</span>=<span class="title">kernel</span><span class="params">(x1,x2)</span></span></span><br><span class="line">	f=<span class="built_in">exp</span>(-delta_x^<span class="number">2</span>/(<span class="number">2</span>*sigma^<span class="number">2</span>)); <span class="comment">%delta_x为x1到x2的距离</span></span><br><span class="line"><span class="keyword">return</span></span><br></pre></td></tr></table></figure>
+
+<h3 id="逻辑函数与SVM的选择"><a href="#逻辑函数与SVM的选择" class="headerlink" title="逻辑函数与SVM的选择"></a>逻辑函数与SVM的选择</h3><p>特征数n比较多（n&gt;1000）：逻辑函数或者不是高斯核函数的SVM</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>机器学习 Week8</title>
     <url>/2017/09/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week8/</url>
     <content><![CDATA[<h2 id="聚类-clustering"><a href="#聚类-clustering" class="headerlink" title="聚类(clustering)"></a>聚类(clustering)</h2><h3 id="无监督学习-unsupervised-learning"><a href="#无监督学习-unsupervised-learning" class="headerlink" title="无监督学习(unsupervised learning)"></a>无监督学习(unsupervised learning)</h3><p>输入没有标记的数据，通过算法找出结构。</p>
@@ -2047,16 +2047,58 @@
       </tags>
   </entry>
   <entry>
-    <title>机器学习Week1</title>
-    <url>/2017/08/16/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week1/</url>
-    <content><![CDATA[<h2 id="课程中的一些缩写："><a href="#课程中的一些缩写：" class="headerlink" title="课程中的一些缩写："></a>课程中的一些缩写：</h2><p>m：训练集中样本的数目<br>x’s：输入变量&#x2F;特称变量<br>y’s：输出变量&#x2F;目标变量<br>（x(i),y(i)）:第i个变量<br>h:hypothesis（假设），表示算法输出的函数。一个特有名词，没有为什么，没有。</p>
-<h2 id="机器学习的定义"><a href="#机器学习的定义" class="headerlink" title="机器学习的定义"></a>机器学习的定义</h2><p>A computer program is said to learn from experience E with respect to some task T and some performance measure P if its performance on T, as measured by P, improves with experience E.<br>Suppose we feed a learning algorithm a lot of historical weather<br>data, and have it learn to predict weather.</p>
-<p>T–需要解决的任务，E–大量的数据（经验），P–性能度量值（评判标准）</p>
-<h2 id="监督学习（Supervised-Learning）"><a href="#监督学习（Supervised-Learning）" class="headerlink" title="监督学习（Supervised Learning）"></a>监督学习（Supervised Learning）</h2><p>对于数据集中的每个数据， 都有相应的正确答案，（训练集） 算法就是基于这些来做出预测。分为** 回归问题（Regression） <strong>和</strong> 分类问题（Classification） **<br>回归问题：根据大量数据推测其他具体数据的情况<br>分类问题：是与否，例如：predict whether or not it will be raining at 5pm<br>tomorrow. </p>
-<h2 id="无监督学习（Unsupervised-Learning）"><a href="#无监督学习（Unsupervised-Learning）" class="headerlink" title="无监督学习（Unsupervised Learning）"></a>无监督学习（Unsupervised Learning）</h2><p>只有一个一样数据集，没有属性或者标签，通过无监督学习可以判定该数据集所属的聚类（cluster）</p>
-<h2 id="代价函数（Cost-Function）与梯度下降算法（Gradient-Descent）"><a href="#代价函数（Cost-Function）与梯度下降算法（Gradient-Descent）" class="headerlink" title="代价函数（Cost Function）与梯度下降算法（Gradient Descent）"></a>代价函数（Cost Function）与梯度下降算法（Gradient Descent）</h2><h3 id="代价函数（Cost-Function）"><a href="#代价函数（Cost-Function）" class="headerlink" title="代价函数（Cost Function）"></a>代价函数（Cost Function）</h3><p><img src="http://i.imgur.com/PMEpNDb.png"><br>目标即为求出最小参数值</p>
-<h3 id="梯度下降算法（Gradient-Descent）"><a href="#梯度下降算法（Gradient-Descent）" class="headerlink" title="梯度下降算法（Gradient Descent）"></a>梯度下降算法（Gradient Descent）</h3><p><img src="http://i.imgur.com/0xJmq2X.png"><br>符号:&#x3D;表示将右值赋给左值，符号&#x3D;表示判断左右值是否相同<br>正确的更新方法为同步更新，而不是先更新一个参数再更新另一个参数。<br>α：学习速率（learning rate）表示算法的下降速率，过小导致算法速度太慢，太大容易略过最低点导致无法收敛甚至发散。<br>导数部分：由于斜率越接近谷底越小，所以不用改变alpha也可以下降到谷底。</p>
-<h3 id="算法实例：用梯度下降的方法来最小化平方误差代价函数"><a href="#算法实例：用梯度下降的方法来最小化平方误差代价函数" class="headerlink" title="算法实例：用梯度下降的方法来最小化平方误差代价函数"></a>算法实例：用梯度下降的方法来最小化平方误差代价函数</h3><p><img src="http://i.imgur.com/A26A0MK.png"><br>梯度下降通常得到的是局部最优值，但由于用于** 线性回归的代价函数 <strong>总是一个</strong> 凸函数 **，所以使用梯度下降时只有一个全局最优解。</p>
+    <title>机器学习 Week9</title>
+    <url>/2017/10/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week9/</url>
+    <content><![CDATA[<h2 id="异常检测-Anomaly-detection"><a href="#异常检测-Anomaly-detection" class="headerlink" title="异常检测(Anomaly detection)"></a>异常检测(Anomaly detection)</h2><p>简介：通过一系列特征变量X建造一个模型p(x)，若p(x)&lt;ε，则可以认为该数据异常，进行进一步检测。</p>
+<p>应用：制造业、用户行为检测、数据中心</p>
+<h3 id="高斯分布-正态分布"><a href="#高斯分布-正态分布" class="headerlink" title="高斯分布(正态分布)"></a>高斯分布(正态分布)</h3><p>x~N(μ,σ²)</p>
+<p>~表示服从····分布，N表示Normal(正态)，μ表示均值，σ²表示方差（σ为标准差）</p>
+<p>μ决定中心位置，σ越小曲线越窄高，但曲线所围面积总为1</p>
+<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><p>Π：累乘标志</p>
+<p>步骤：</p>
+<ol>
+<li>找出可以用于检测错误的特征x，或者可以描述相关属性的特征x</li>
+<li>找出m个无标签数据构成的训练集，拟合出期望与方差值</li>
+<li>计算p(x)，如果p(X)&lt;ε，则异常</li>
+</ol>
+<p>公式如下：</p>
+<p><img src="https://i.imgur.com/8q7PaN4.png"></p>
+<h2 id="如何开发异常检测系统"><a href="#如何开发异常检测系统" class="headerlink" title="如何开发异常检测系统"></a>如何开发异常检测系统</h2><h3 id="如何评价一个异常检测算法"><a href="#如何评价一个异常检测算法" class="headerlink" title="如何评价一个异常检测算法"></a>如何评价一个异常检测算法</h3><p>以6:2:2的比例将好的样本分配给训练集&#x2F;CV&#x2F;测试集，将坏的样本以1:1的比例分配给CV&#x2F;测试集（有时候训练集会参杂一些坏样本，不影响结果）</p>
+<p>方法：</p>
+<ol>
+<li>用训练集拟合p(x)</li>
+<li>用CV&#x2F;测试集的x来预测y，p(x)&gt;&#x3D;ε，y&#x3D;0，正常</li>
+</ol>
+<p>评估(在CV中)：因为y大量偏向于0，所以分类准确度不是一个好的评估方法。</p>
+<p>应该使用召回率&#x2F;查准率、F1-score之类的方法评估</p>
+<h3 id="与监督学习对比"><a href="#与监督学习对比" class="headerlink" title="与监督学习对比"></a>与监督学习对比</h3><p>异常检测：</p>
+<ul>
+<li>大量的负样本（正常）与极少数的正样本（异常）</li>
+<li>有很多不同类型的正样本（异常）</li>
+<li>可能会出现新的异常种类，所以需要对负样本建模，而不是正样本</li>
+</ul>
+<p>监督学习：</p>
+<ul>
+<li>大量的正、负样本</li>
+<li>正样本特征均类似，不会出现新的类型</li>
+</ul>
+<h3 id="特征变量的选择"><a href="#特征变量的选择" class="headerlink" title="特征变量的选择"></a>特征变量的选择</h3><p>如果数据不遵循高斯分布，则要通过取指数、对数的方法转换为高斯分布（通过hist指令画出直方图观察）</p>
+<p>常见问题：异常样本的p(x)也很大。</p>
+<p>解决：观察被错误判断异常样本，找出新的特征变量。同时可以通过整合两个特征变量形成新的特征变量，例如x3&#x3D;(x1)²&#x2F;x2</p>
+<h2 id="推荐系统"><a href="#推荐系统" class="headerlink" title="推荐系统"></a>推荐系统</h2><h3 id="基于内容的推荐"><a href="#基于内容的推荐" class="headerlink" title="基于内容的推荐"></a>基于内容的推荐</h3><p>nu&#x3D;用户数量，nm&#x3D;电影数量。</p>
+<p>给予内容的不同特征以不同比重值，加上x0&#x3D;1构成特征矩阵x(x∈n+1阶)。对每个用户j构造参数θ(j)(θ∈n+1阶)，其中Θ(0)&#x3D;0，θ中其他值表示用户对该类型的喜爱程度。则可以预测用户j对电影i有θ(j)‘.*x(i)星。</p>
+<p><img src="https://i.imgur.com/gTHyOrL.png"></p>
+<p><img src="https://i.imgur.com/7IBt0jX.png"></p>
+<h3 id="协同过滤-Collaborative-Filtering"><a href="#协同过滤-Collaborative-Filtering" class="headerlink" title="协同过滤(Collaborative Filtering)"></a>协同过滤(Collaborative Filtering)</h3><p>特点：自动学习需要的特征，即一直θ值，用于学习x的值</p>
+<p><img src="https://i.imgur.com/c480rkA.png"></p>
+<p>结合内容推荐：先计算θ，再计算x-&gt;θ-&gt;x·······，反复迭代</p>
+<h3 id="协同过滤算法"><a href="#协同过滤算法" class="headerlink" title="协同过滤算法"></a>协同过滤算法</h3><p>将x与θ的迭代式结合，一步完成，同时<em>不需要x0和θ0</em>：</p>
+<p><img src="https://i.imgur.com/CmX3n0P.png"></p>
+<h2 id="协同过滤向量法实现"><a href="#协同过滤向量法实现" class="headerlink" title="协同过滤向量法实现"></a>协同过滤向量法实现</h2><p>Y–用户对每部电影的评分矩阵；X–用户向量；Θ–每行是每个用户的θ；预测矩阵：Θ‘*X</p>
+<p><em>协同过滤向量法也被称为 低zhi矩阵分解</em></p>
+<h3 id="如何衡量两个电影间相似性？"><a href="#如何衡量两个电影间相似性？" class="headerlink" title="如何衡量两个电影间相似性？"></a>如何衡量两个电影间相似性？</h3><p>计算两部电影间的距离||x(i)-x(j)||</p>
+<h3 id="细节：均值归一化"><a href="#细节：均值归一化" class="headerlink" title="细节：均值归一化"></a>细节：均值归一化</h3><p>如果出现未评分的新用户，则先根据先前评分计算出平均评分μ，再将每个用户评分都减去平均评分，最后形成新的评分矩阵Y替代先前的Y。而新用户的评分则在新Y中设置为0。</p>
+<p>所以预测矩阵也随之更改为Θ‘*X+μ(平均值)</p>
 ]]></content>
       <categories>
         <category>机器学习</category>
@@ -2147,67 +2189,6 @@
       </tags>
   </entry>
   <entry>
-    <title>机器学习 Week9</title>
-    <url>/2017/10/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week9/</url>
-    <content><![CDATA[<h2 id="异常检测-Anomaly-detection"><a href="#异常检测-Anomaly-detection" class="headerlink" title="异常检测(Anomaly detection)"></a>异常检测(Anomaly detection)</h2><p>简介：通过一系列特征变量X建造一个模型p(x)，若p(x)&lt;ε，则可以认为该数据异常，进行进一步检测。</p>
-<p>应用：制造业、用户行为检测、数据中心</p>
-<h3 id="高斯分布-正态分布"><a href="#高斯分布-正态分布" class="headerlink" title="高斯分布(正态分布)"></a>高斯分布(正态分布)</h3><p>x~N(μ,σ²)</p>
-<p>~表示服从····分布，N表示Normal(正态)，μ表示均值，σ²表示方差（σ为标准差）</p>
-<p>μ决定中心位置，σ越小曲线越窄高，但曲线所围面积总为1</p>
-<h2 id="算法"><a href="#算法" class="headerlink" title="算法"></a>算法</h2><p>Π：累乘标志</p>
-<p>步骤：</p>
-<ol>
-<li>找出可以用于检测错误的特征x，或者可以描述相关属性的特征x</li>
-<li>找出m个无标签数据构成的训练集，拟合出期望与方差值</li>
-<li>计算p(x)，如果p(X)&lt;ε，则异常</li>
-</ol>
-<p>公式如下：</p>
-<p><img src="https://i.imgur.com/8q7PaN4.png"></p>
-<h2 id="如何开发异常检测系统"><a href="#如何开发异常检测系统" class="headerlink" title="如何开发异常检测系统"></a>如何开发异常检测系统</h2><h3 id="如何评价一个异常检测算法"><a href="#如何评价一个异常检测算法" class="headerlink" title="如何评价一个异常检测算法"></a>如何评价一个异常检测算法</h3><p>以6:2:2的比例将好的样本分配给训练集&#x2F;CV&#x2F;测试集，将坏的样本以1:1的比例分配给CV&#x2F;测试集（有时候训练集会参杂一些坏样本，不影响结果）</p>
-<p>方法：</p>
-<ol>
-<li>用训练集拟合p(x)</li>
-<li>用CV&#x2F;测试集的x来预测y，p(x)&gt;&#x3D;ε，y&#x3D;0，正常</li>
-</ol>
-<p>评估(在CV中)：因为y大量偏向于0，所以分类准确度不是一个好的评估方法。</p>
-<p>应该使用召回率&#x2F;查准率、F1-score之类的方法评估</p>
-<h3 id="与监督学习对比"><a href="#与监督学习对比" class="headerlink" title="与监督学习对比"></a>与监督学习对比</h3><p>异常检测：</p>
-<ul>
-<li>大量的负样本（正常）与极少数的正样本（异常）</li>
-<li>有很多不同类型的正样本（异常）</li>
-<li>可能会出现新的异常种类，所以需要对负样本建模，而不是正样本</li>
-</ul>
-<p>监督学习：</p>
-<ul>
-<li>大量的正、负样本</li>
-<li>正样本特征均类似，不会出现新的类型</li>
-</ul>
-<h3 id="特征变量的选择"><a href="#特征变量的选择" class="headerlink" title="特征变量的选择"></a>特征变量的选择</h3><p>如果数据不遵循高斯分布，则要通过取指数、对数的方法转换为高斯分布（通过hist指令画出直方图观察）</p>
-<p>常见问题：异常样本的p(x)也很大。</p>
-<p>解决：观察被错误判断异常样本，找出新的特征变量。同时可以通过整合两个特征变量形成新的特征变量，例如x3&#x3D;(x1)²&#x2F;x2</p>
-<h2 id="推荐系统"><a href="#推荐系统" class="headerlink" title="推荐系统"></a>推荐系统</h2><h3 id="基于内容的推荐"><a href="#基于内容的推荐" class="headerlink" title="基于内容的推荐"></a>基于内容的推荐</h3><p>nu&#x3D;用户数量，nm&#x3D;电影数量。</p>
-<p>给予内容的不同特征以不同比重值，加上x0&#x3D;1构成特征矩阵x(x∈n+1阶)。对每个用户j构造参数θ(j)(θ∈n+1阶)，其中Θ(0)&#x3D;0，θ中其他值表示用户对该类型的喜爱程度。则可以预测用户j对电影i有θ(j)‘.*x(i)星。</p>
-<p><img src="https://i.imgur.com/gTHyOrL.png"></p>
-<p><img src="https://i.imgur.com/7IBt0jX.png"></p>
-<h3 id="协同过滤-Collaborative-Filtering"><a href="#协同过滤-Collaborative-Filtering" class="headerlink" title="协同过滤(Collaborative Filtering)"></a>协同过滤(Collaborative Filtering)</h3><p>特点：自动学习需要的特征，即一直θ值，用于学习x的值</p>
-<p><img src="https://i.imgur.com/c480rkA.png"></p>
-<p>结合内容推荐：先计算θ，再计算x-&gt;θ-&gt;x·······，反复迭代</p>
-<h3 id="协同过滤算法"><a href="#协同过滤算法" class="headerlink" title="协同过滤算法"></a>协同过滤算法</h3><p>将x与θ的迭代式结合，一步完成，同时<em>不需要x0和θ0</em>：</p>
-<p><img src="https://i.imgur.com/CmX3n0P.png"></p>
-<h2 id="协同过滤向量法实现"><a href="#协同过滤向量法实现" class="headerlink" title="协同过滤向量法实现"></a>协同过滤向量法实现</h2><p>Y–用户对每部电影的评分矩阵；X–用户向量；Θ–每行是每个用户的θ；预测矩阵：Θ‘*X</p>
-<p><em>协同过滤向量法也被称为 低zhi矩阵分解</em></p>
-<h3 id="如何衡量两个电影间相似性？"><a href="#如何衡量两个电影间相似性？" class="headerlink" title="如何衡量两个电影间相似性？"></a>如何衡量两个电影间相似性？</h3><p>计算两部电影间的距离||x(i)-x(j)||</p>
-<h3 id="细节：均值归一化"><a href="#细节：均值归一化" class="headerlink" title="细节：均值归一化"></a>细节：均值归一化</h3><p>如果出现未评分的新用户，则先根据先前评分计算出平均评分μ，再将每个用户评分都减去平均评分，最后形成新的评分矩阵Y替代先前的Y。而新用户的评分则在新Y中设置为0。</p>
-<p>所以预测矩阵也随之更改为Θ‘*X+μ(平均值)</p>
-]]></content>
-      <categories>
-        <category>机器学习</category>
-      </categories>
-      <tags>
-        <tag>机器学习</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>机器学习Week3</title>
     <url>/2017/08/22/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week3/</url>
     <content><![CDATA[<h2 id="分类问题（classification-problems）"><a href="#分类问题（classification-problems）" class="headerlink" title="分类问题（classification problems）"></a>分类问题（classification problems）</h2><p>y&#x3D;0 or 1</p>
@@ -2253,6 +2234,25 @@
       </categories>
       <tags>
         <tag>Matlab</tag>
+        <tag>机器学习</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>机器学习Week1</title>
+    <url>/2017/08/16/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week1/</url>
+    <content><![CDATA[<h2 id="课程中的一些缩写："><a href="#课程中的一些缩写：" class="headerlink" title="课程中的一些缩写："></a>课程中的一些缩写：</h2><p>m：训练集中样本的数目<br>x’s：输入变量&#x2F;特称变量<br>y’s：输出变量&#x2F;目标变量<br>（x(i),y(i)）:第i个变量<br>h:hypothesis（假设），表示算法输出的函数。一个特有名词，没有为什么，没有。</p>
+<h2 id="机器学习的定义"><a href="#机器学习的定义" class="headerlink" title="机器学习的定义"></a>机器学习的定义</h2><p>A computer program is said to learn from experience E with respect to some task T and some performance measure P if its performance on T, as measured by P, improves with experience E.<br>Suppose we feed a learning algorithm a lot of historical weather<br>data, and have it learn to predict weather.</p>
+<p>T–需要解决的任务，E–大量的数据（经验），P–性能度量值（评判标准）</p>
+<h2 id="监督学习（Supervised-Learning）"><a href="#监督学习（Supervised-Learning）" class="headerlink" title="监督学习（Supervised Learning）"></a>监督学习（Supervised Learning）</h2><p>对于数据集中的每个数据， 都有相应的正确答案，（训练集） 算法就是基于这些来做出预测。分为** 回归问题（Regression） <strong>和</strong> 分类问题（Classification） **<br>回归问题：根据大量数据推测其他具体数据的情况<br>分类问题：是与否，例如：predict whether or not it will be raining at 5pm<br>tomorrow. </p>
+<h2 id="无监督学习（Unsupervised-Learning）"><a href="#无监督学习（Unsupervised-Learning）" class="headerlink" title="无监督学习（Unsupervised Learning）"></a>无监督学习（Unsupervised Learning）</h2><p>只有一个一样数据集，没有属性或者标签，通过无监督学习可以判定该数据集所属的聚类（cluster）</p>
+<h2 id="代价函数（Cost-Function）与梯度下降算法（Gradient-Descent）"><a href="#代价函数（Cost-Function）与梯度下降算法（Gradient-Descent）" class="headerlink" title="代价函数（Cost Function）与梯度下降算法（Gradient Descent）"></a>代价函数（Cost Function）与梯度下降算法（Gradient Descent）</h2><h3 id="代价函数（Cost-Function）"><a href="#代价函数（Cost-Function）" class="headerlink" title="代价函数（Cost Function）"></a>代价函数（Cost Function）</h3><p><img src="http://i.imgur.com/PMEpNDb.png"><br>目标即为求出最小参数值</p>
+<h3 id="梯度下降算法（Gradient-Descent）"><a href="#梯度下降算法（Gradient-Descent）" class="headerlink" title="梯度下降算法（Gradient Descent）"></a>梯度下降算法（Gradient Descent）</h3><p><img src="http://i.imgur.com/0xJmq2X.png"><br>符号:&#x3D;表示将右值赋给左值，符号&#x3D;表示判断左右值是否相同<br>正确的更新方法为同步更新，而不是先更新一个参数再更新另一个参数。<br>α：学习速率（learning rate）表示算法的下降速率，过小导致算法速度太慢，太大容易略过最低点导致无法收敛甚至发散。<br>导数部分：由于斜率越接近谷底越小，所以不用改变alpha也可以下降到谷底。</p>
+<h3 id="算法实例：用梯度下降的方法来最小化平方误差代价函数"><a href="#算法实例：用梯度下降的方法来最小化平方误差代价函数" class="headerlink" title="算法实例：用梯度下降的方法来最小化平方误差代价函数"></a>算法实例：用梯度下降的方法来最小化平方误差代价函数</h3><p><img src="http://i.imgur.com/A26A0MK.png"><br>梯度下降通常得到的是局部最优值，但由于用于** 线性回归的代价函数 <strong>总是一个</strong> 凸函数 **，所以使用梯度下降时只有一个全局最优解。</p>
+]]></content>
+      <categories>
+        <category>机器学习</category>
+      </categories>
+      <tags>
         <tag>机器学习</tag>
       </tags>
   </entry>
