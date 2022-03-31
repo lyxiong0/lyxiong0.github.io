@@ -2386,4 +2386,62 @@
         <tag>机器学习</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Hadoop 3.3 + Spark 3.2 + M1 MacOS伪分布式配置</title>
+    <url>/2022/03/31/Hadoop-3-3-Spark-3-2-M1-MacOS%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E9%85%8D%E7%BD%AE/</url>
+    <content><![CDATA[<h1 id="Hadoop-3-3-Spark-3-2-M1-MacOS伪分布式配置"><a href="#Hadoop-3-3-Spark-3-2-M1-MacOS伪分布式配置" class="headerlink" title="Hadoop 3.3 + Spark 3.2 + M1 MacOS伪分布式配置"></a>Hadoop 3.3 + Spark 3.2 + M1 MacOS伪分布式配置</h1><h2 id="安装Java-8"><a href="#安装Java-8" class="headerlink" title="安装Java 8"></a>安装Java 8</h2><p>一开始装了Java 17发现Hadoop没法开启yarn，只好降低版本，适用于M1的Java 8下载：<a href="https://www.azul.com/downloads/?version=java-8-lts&os=macos&architecture=arm-64-bit&package=jdk">Java Download | Java 8, Java 11, Java 13 - Linux, Windows &amp; macOS (azul.com)</a></p>
+<h3 id="Java多版本管理"><a href="#Java多版本管理" class="headerlink" title="Java多版本管理"></a>Java多版本管理</h3><p>打开<code>~/.zshrc</code>输入</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_17_HOME=<span class="string">&quot;/Library/Java/JavaVirtualMachines/jdk-17.0.2.jdk/Contents/Home&quot;</span></span><br><span class="line"><span class="built_in">alias</span> java17=<span class="string">&#x27;export JAVA_HOME=$JAVA_17_HOME&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> JAVA_11_HOME=<span class="string">&quot;/Library/Java/JavaVirtualMachines/zulu-11.jdk/Contents/Home&quot;</span></span><br><span class="line"><span class="built_in">alias</span> java11=<span class="string">&#x27;export JAVA_HOME=$JAVA_11_HOME&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">export</span> JAVA_8_HOME=<span class="string">&quot;/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home&quot;</span></span><br><span class="line"><span class="built_in">alias</span> java8=<span class="string">&#x27;export JAVA_HOME=$JAVA_8_HOME&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 默认使用java17</span></span><br><span class="line"><span class="built_in">export</span> JAVA_HOME=<span class="variable">$JAVA_17_HOME</span></span><br></pre></td></tr></table></figure>
+
+<p>执行命令<code>source ~/.zshrc</code>，日常使用</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">java8 <span class="comment"># 切换到java8</span></span><br><span class="line">java -version <span class="comment"># 查看当前java版本</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="Hadoop-3伪分布式"><a href="#Hadoop-3伪分布式" class="headerlink" title="Hadoop 3伪分布式"></a>Hadoop 3伪分布式</h2><p>下载<a href="https://hadoop.apache.org/release/3.3.2.html">Apache Hadoop</a>中aarch64版本，解压到<code>~/opt</code>（或者<code>/usr/local</code>），修改<code>hadoop-3.3.2/etc/hadoop/hadoop-env.sh</code>为</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home</span><br></pre></td></tr></table></figure>
+
+<p>接下来参考官网给出的伪分布式配置流程<a href="https://hadoop.apache.org/docs/r3.3.2/hadoop-project-dist/hadoop-common/SingleCluster.html#Pseudo-Distributed_Operation">Apache Hadoop 3.3.2 – Hadoop: Setting up a Single Node Cluster.</a></p>
+<ol>
+<li><p>设置免密登录ssh，在Mac的系统偏好设置-&gt;共享中打开远程登录选项<br><img src="https://bearly.oss-cn-hangzhou.aliyuncs.com/Hadoop/setting.png"></p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -P <span class="string">&#x27;&#x27;</span> -f ~/.ssh/id_rsa</span><br><span class="line"><span class="built_in">cat</span> ~/.ssh/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"><span class="built_in">chmod</span> 0600 ~/.ssh/authorized_keys</span><br><span class="line">ssh localhost <span class="comment"># 检查现在是否需要密码</span></span><br></pre></td></tr></table></figure>
+
+
+</li>
+<li><p>配置<code>hadoop-3.3.2/etc/hadoop/core-site.xml</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>fs.defaultFS<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>hdfs://localhost:9000<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置<code>hadoop-3.3.2/etc/hadoop/hdfs-site.xml</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">name</span>&gt;</span>dfs.replication<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">value</span>&gt;</span>1<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">  <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置<code>hadoop-3.3.2/etc/hadoop/mapred-site.xml</code></p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.framework.name<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>yarn<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>mapreduce.application.classpath<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/*:$HADOOP_MAPRED_HOME/share/hadoop/mapreduce/lib/*<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置<code>hadoop-3.3.2/etc/hadoop/yarn-site.xml</code>:</p>
+<figure class="highlight xml"><table><tr><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">configuration</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.aux-services<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>mapreduce_shuffle<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">property</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">name</span>&gt;</span>yarn.nodemanager.env-whitelist<span class="tag">&lt;/<span class="name">name</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">value</span>&gt;</span>JAVA_HOME,HADOOP_COMMON_HOME,HADOOP_HDFS_HOME,HADOOP_CONF_DIR,CLASSPATH_PREPEND_DISTCACHE,HADOOP_YARN_HOME,HADOOP_HOME,PATH,LANG,TZ,HADOOP_MAPRED_HOME<span class="tag">&lt;/<span class="name">value</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">property</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;/<span class="name">configuration</span>&gt;</span></span><br></pre></td></tr></table></figure>
+</li>
+<li><p>命令行启动</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">bin/hdfs namenode -format <span class="comment"># 初始化</span></span><br><span class="line"><span class="comment"># 启动NameNode和DataNode</span></span><br><span class="line"><span class="comment"># 启动后可以通过 http://localhost:9870/访问NameNode</span></span><br><span class="line">sbin/start-dfs.sh </span><br><span class="line"><span class="comment"># 生成默认目录</span></span><br><span class="line">bin/hdfs dfs -<span class="built_in">mkdir</span> /user/&lt;username&gt;</span><br><span class="line"><span class="comment"># 启动ResourceManager和NodeManager</span></span><br><span class="line"><span class="comment"># 启动后可以通过 http://localhost:8088/访问ResourceManager</span></span><br><span class="line">sbin/start-yarn.sh</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>检查是否全部启动：命令行输入<code>jps</code>查看是否有NameNode、DataNode、ResourceManager和NodeManager<br>如果启动失败，查看目录<code>hadoop-3.3.2/logs</code>下的对应日志。</p>
+</li>
+</ol>
+<h2 id="Spark-3"><a href="#Spark-3" class="headerlink" title="Spark 3"></a>Spark 3</h2><ol>
+<li><p>安装Scala 2.12，命令行输入</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -fL https://github.com/coursier/launchers/raw/master/cs-x86_64-apple-darwin.gz | gzip -d &gt; cs &amp;&amp; <span class="built_in">chmod</span> +x cs &amp;&amp; (xattr -d com.apple.quarantine cs || <span class="literal">true</span>) </span><br><span class="line">./cs install scala:2.12.15 scalac:2.12.15</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>下载地址<a href="https://spark.apache.org/downloads.html">Downloads | Apache Spark</a>，注意spark不同版本对hadoop和scala版本有不同要求，这里安装3.2.1。同样解压到<code>~/opt</code>（或者<code>/usr/local</code>），<code>spark-3.2.1/conf/spark-env.sh.template</code>重命名为<code>spark-3.2.1/conf/spark-env.sh</code>，修改<code>spark-3.2.1/conf/spark-env.sh</code>为</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> JAVA_HOME=/Library/Java/JavaVirtualMachines/zulu-8.jdk/Contents/Home</span><br><span class="line"><span class="built_in">export</span> SCALA_HOME=/Users/&lt;username&gt;/opt/spark-3.2.1</span><br><span class="line"><span class="built_in">export</span> HADOOP_HOME=/Users/&lt;username&gt;/opt/hadoop-3.3.2</span><br><span class="line"><span class="built_in">export</span> HADOOP_CONF_DIR=<span class="variable">$HADOOP_HOME</span>/etc/hadoop</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>命令行输入<code>./spark-3.2.1/sbin/start-all.sh</code>启动，启动有问题同样查看logs目录下的日志。</p>
+</li>
+</ol>
+]]></content>
+      <categories>
+        <category>分布式</category>
+      </categories>
+      <tags>
+        <tag>Hadoop</tag>
+        <tag>Spark</tag>
+        <tag>分布式</tag>
+      </tags>
+  </entry>
 </search>

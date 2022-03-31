@@ -194,6 +194,90 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2017/10/17/Matlab-Week3/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2017/10/17/Matlab-Week3/" class="post-title-link" itemprop="url">Matlab Week3</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2017-10-17 00:00:00" itemprop="dateCreated datePublished" datetime="2017-10-17T00:00:00+08:00">2017-10-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2017-10-24 10:59:30" itemprop="dateModified" datetime="2017-10-24T10:59:30+08:00">2017-10-24</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="Matrices-and-Operators"><a href="#Matrices-and-Operators" class="headerlink" title="Matrices and Operators"></a>Matrices and Operators</h2><h3 id="The-colon-Operator"><a href="#The-colon-Operator" class="headerlink" title="The colon Operator"></a>The colon Operator</h3><p>a:b:c表示行向量a,a+b,…,a+nb(a+nb&lt;c)，若仅输入a:b则默认c&#x3D;1，若输入的a&gt;b则返回空矩阵</p>
+<h3 id="Accessing-Parts-of-a-Matrix"><a href="#Accessing-Parts-of-a-Matrix" class="headerlink" title="Accessing Parts of a Matrix"></a>Accessing Parts of a Matrix</h3><ul>
+<li>x(a,b)返回x矩阵中a行b列的元素</li>
+<li>X(a,b)&#x3D;c，若X矩阵不存在或者(a,b)超出其行列数，则matlab会拓展出一个最小满足该要求的矩阵，除了(a,b)位置为c其他新增位置为0。X存在则c替换(a,b)原有数字</li>
+<li>X([a,b],c)，返回第c列中的a、b行的元素，有各种变式</li>
+<li>end是matlab中的一个关键字，不能作为变量名，矩阵索引中可以当作一个表示最后的数字</li>
+</ul>
+<h3 id="Combining-and-Transforming-Matrices"><a href="#Combining-and-Transforming-Matrices" class="headerlink" title="Combining and Transforming Matrices"></a>Combining and Transforming Matrices</h3><ul>
+<li>可以将矩阵作为一个整体进行拼合，例如C&#x3D;[A,B]，注意行拼合行数相同，列拼合列数相同</li>
+<li>‘表示矩阵转置</li>
+</ul>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://example.com/2017/10/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week11/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -1160,190 +1244,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2017/08/22/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E9%94%99%E9%A2%98/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.png">
-      <meta itemprop="name" content="Liyao Xiong">
-      <meta itemprop="description" content="普普通通">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Xiong's Blog">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2017/08/22/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0%E9%94%99%E9%A2%98/" class="post-title-link" itemprop="url">机器学习错题</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2017-08-22 00:00:00" itemprop="dateCreated datePublished" datetime="2017-08-22T00:00:00+08:00">2017-08-22</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2017-09-26 11:21:47" itemprop="dateModified" datetime="2017-09-26T11:21:47+08:00">2017-09-26</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0/" itemprop="url" rel="index"><span itemprop="name">机器学习</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <ol>
-<li>Suppose you have the following training set, and fit a logistic regression classifier hθ(x)&#x3D;g(θ0+θ1x1+θ2x2).</li>
-</ol>
-<p><img src="http://i.imgur.com/hIkTIJ8.png"></p>
-<p><img src="http://i.imgur.com/jDYmKyf.png"></p>
-<p>Which of the following are true? Check all that apply.</p>
-<ul>
-<li><p>J(θ) will be a convex function, so gradient descent should converge to the global minimum.</p>
-</li>
-<li><p>**Adding polynomial features (e.g., instead using hθ(x)&#x3D;g(θ0+θ1x1+θ2x2+θ3x21+θ4x1x2+θ5x22) ) could increase how well we can fit the training data. **</p>
-</li>
-<li><p>**The positive and negative examples cannot be separated using a straight line. So, gradient descent will fail to converge. **</p>
-</li>
-<li><p>Because the positive and negative examples cannot be separated using a straight line, linear regression will perform as well as logistic regression on this data.</p>
-</li>
-<li><p>**Adding polynomial features (e.g., instead using hθ(x)&#x3D;g(θ0+θ1x1+θ2x2+θ3x21+θ4x1x2+θ5x22) ) could increase how well we can fit the training data. **</p>
-</li>
-<li><p><strong>At the optimal value of θ (e.g., found by fminunc), we will have J(θ)≥0.</strong></p>
-</li>
-<li><p>Adding polynomial features (e.g., instead using hθ(x)&#x3D;g(θ0+θ1x1+θ2x2+θ3x21+θ4x1x2+θ5x22) ) would increase J(θ)because we are now summing over more terms.</p>
-</li>
-<li><p>If we train gradient descent for enough iterations, for some examples x(i) in the training set it is possible to obtain hθ(x(i))&gt;1.</p>
-<p>​</p>
-</li>
-</ul>
-<ol start="2">
-<li>Which of the following statements are true? Check all that apply.</li>
-</ol>
-<ul>
-<li><strong>The cost function J(θ) for logistic regression trained with m≥1 examples is always greater than or equal to zero.</strong></li>
-<li>For logistic regression, sometimes gradient descent will converge to a local minimum (and fail to find the global minimum). This is the reason we prefer more advanced optimization algorithms such as fminunc (conjugate gradient&#x2F;BFGS&#x2F;L-BFGS&#x2F;etc).</li>
-</ul>
-<p><em>【解析】not for this reason, those three ads faster than gradient descent and you don’t need to manully pick alpha.</em></p>
-<ul>
-<li><strong>The one-vs-all technique allows you to use logistic regression for problems in which each y(i) comes from a fixed, discrete set of values.</strong></li>
-<li>Since we train one classifier when there are two classes, we train two classifiers when there are three classes (and we do one-vs-all classification).</li>
-</ul>
-<p><em>【解析】we train one classifier for each class</em></p>
-<ul>
-<li><p>Linear regression always works well for classification if you classify by using a threshold on the prediction made by linear regression.</p>
-</li>
-<li><p><strong>The cost function J(θ) for logistic regression trained with m≥1 examples is always greater than or equal to zero.</strong></p>
-</li>
-<li><p><strong>The sigmoid function g(z)&#x3D;1&#x2F;(1+e^(−z)) is never greater than one (&gt;1).</strong></p>
-<p>​</p>
-</li>
-</ul>
-<ol start="3">
-<li><p>Which of the following are reasons for using feature scaling?<br>It speeds up gradient descent by making it require fewer iterations to get to a good solution.<br><em>【解析】Feature scaling speeds up gradient descent by avoiding many extra iterations that are required when one or more features take on much larger values than the rest. The cost function J(θ) for linear regression has no local optima.The magnitude of the feature values are insignificant in terms of computational cost.</em> </p>
-<p>​</p>
-</li>
-<li><p>You are training a classification model with logistic regression. Which of the following statements are true? Check all that apply.【D】</p>
-<p>A. Introducing regularization to the model always results in equal or better performance on the training set.</p>
-<p><em>【解析】If we introduce too much regularization, we can underfit the training set and have worse performance on the training set.</em></p>
-<p>​           B.Adding many new features to the model helps prevent overfitting on the training set.</p>
-<p><em>【解析】Adding many new features gives us more expressive models which are able to better fit our training set. If too many new features are added, this can lead to overfitting of the training set.</em></p>
-<p>C. Adding a new feature to the model always results in equal or better performance on examples not in<br>the training set.</p>
-<p><em>【解析】Adding  more features might result in a model that overfits the training set, and thus can lead to worse performs for examples which are not in the training set.</em></p>
-<p><strong>D.Adding a new feature to the model always results in equal or better performance on the training set.</strong></p>
-<p><em>【解析】By adding a new feature, our model must be more (or just as) expressive, thus allowing it learn more complex hypotheses to fit the training set.</em></p>
-</li>
-<li><p>Which of the following statements are true? Check all that apply.【ABD】</p>
-<p>A. If a learning algorithm is suffering from high bias, only adding more training examples may <strong>not</strong> improve the test error significantly.</p>
-<p>B. If a learning algorithm is suffering from high variance, adding more training examples is likely to improve the test error.</p>
-<p>C. We always prefer models with high variance (over those with high bias) as they will able to better fit the training set.</p>
-<p>D. When debugging learning algorithms, it is useful to plot a learning curve to understand if there is a high bias or high variance problem.</p>
-</li>
-<li><p>Which of the following statements are true? Check all that apply.【AC】</p>
-<p>The “error analysis” process of manually examining the examples which your algorithm got wrong can help suggest what are good steps to take (e.g.,developing new features) to improve your algorithm’s performance.</p>
-<p>It is a good idea to spend a lot of timecollecting a <strong>large</strong> amount of data before buildingyour first version of a learning algorithm.</p>
-<p>Using a <strong>very large</strong> training setmakes it unlikely for model to overfit the trainingdata.</p>
-<p>After training a logistic regressionclassifier, you <strong>must</strong> use 0.5 as your thresholdfor predicting whether an example is positive ornegative.</p>
-<p>If your model is under fitting the training set, then obtaining more data is likely to help.</p>
-</li>
-<li><p>Suppose you have a dataset with n &#x3D; 10 features and m &#x3D; 5000 examples. After training your logistic regression classifier with gradient descent, you find that it has underfit the training set and does not achieve the desired performance on the training or cross validation sets. Which of the following might be promising steps to take? Check all that apply.</p>
-<table>
-<thead>
-<tr>
-<th>Your Answer</th>
-<th align="center"></th>
-<th align="center">Score</th>
-<th align="left">Explanation</th>
-</tr>
-</thead>
-<tbody><tr>
-<td>Use a different optimization method since using gradient descent to train logistic regression might result in a local minimum.</td>
-<td align="center">Not Correct</td>
-<td align="center">0</td>
-<td align="left">The logistic regression cost function is convex, so gradient descent will always find the global minimum.</td>
-</tr>
-<tr>
-<td>Try using a neural network with a large number of hidden units.</td>
-<td align="center">Correct</td>
-<td align="center">0.5</td>
-<td align="left">A neural network with many hidden units is a more complex (higher variance) model than logistic regression, so it is less likely to underfit the data.</td>
-</tr>
-<tr>
-<td>Reduce the number of examples in the training set.</td>
-<td align="center">Not Correct</td>
-<td align="center">0</td>
-<td align="left">While you can improve accuracy on the training set by removing examples, doing so results in a worse model that will not generalize as well.</td>
-</tr>
-<tr>
-<td>Use an SVM with a Gaussian Kernel.</td>
-<td align="center">Correct</td>
-<td align="center">0.5</td>
-<td align="left">By using a Gaussian kernel, your model will have greater complexity and can avoid underfitting the data.</td>
-</tr>
-</tbody></table>
-</li>
-</ol>
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -1415,20 +1315,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">33</span>
+          <span class="site-state-item-count">34</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-count">4</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-count">8</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
