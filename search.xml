@@ -2444,4 +2444,21 @@
         <tag>机器学习</tag>
       </tags>
   </entry>
+  <entry>
+    <title>C++问题记录</title>
+    <url>/2022/04/04/C-%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/</url>
+    <content><![CDATA[<h1 id="C-问题记录"><a href="#C-问题记录" class="headerlink" title="C++问题记录"></a>C++问题记录</h1><h2 id="两个文件中的类互相调用"><a href="#两个文件中的类互相调用" class="headerlink" title="两个文件中的类互相调用"></a>两个文件中的类互相调用</h2><p>设类A为<code>class A</code>，写于文件<code>ca.cpp;ca.h</code>。类B为<code>class B</code>，写于文件<code>cb.cpp;cb.h</code>。</p>
+<ol>
+<li><code>ca.h</code>中包含头文件<code>#include &quot;cb.h&quot;</code></li>
+<li><code>cb.h</code>中前向声明<code>class ca</code></li>
+<li><code>cb.cpp</code>中包含头文件<code>#include &quot;ca.h&quot;</code></li>
+</ol>
+]]></content>
+      <categories>
+        <category>C++</category>
+      </categories>
+      <tags>
+        <tag>C++</tag>
+      </tags>
+  </entry>
 </search>

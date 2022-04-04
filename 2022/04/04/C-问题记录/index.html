@@ -20,17 +20,20 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Pisces","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":false,"show_result":false,"style":null},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":true,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},"path":"search.xml"};
   </script>
 
-  <meta name="description" content="普普通通">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Xiong&#39;s Blog">
-<meta property="og:url" content="http://example.com/archives/page/3/index.html">
+  <meta name="description" content="C++问题记录两个文件中的类互相调用设类A为class A，写于文件ca.cpp;ca.h。类B为class B，写于文件cb.cpp;cb.h。  ca.h中包含头文件#include &quot;cb.h&quot; cb.h中前向声明class ca cb.cpp中包含头文件#include &quot;ca.h&quot;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++问题记录">
+<meta property="og:url" content="http://example.com/2022/04/04/C-%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/index.html">
 <meta property="og:site_name" content="Xiong&#39;s Blog">
-<meta property="og:description" content="普普通通">
+<meta property="og:description" content="C++问题记录两个文件中的类互相调用设类A为class A，写于文件ca.cpp;ca.h。类B为class B，写于文件cb.cpp;cb.h。  ca.h中包含头文件#include &quot;cb.h&quot; cb.h中前向声明class ca cb.cpp中包含头文件#include &quot;ca.h&quot;">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-04-04T09:11:24.000Z">
+<meta property="article:modified_time" content="2022-04-04T09:15:49.049Z">
 <meta property="article:author" content="Liyao Xiong">
+<meta property="article:tag" content="C++">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://example.com/archives/page/3/">
+<link rel="canonical" href="http://example.com/2022/04/04/C-%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">
 
 
 <script id="page-configurations">
@@ -38,12 +41,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | Xiong's Blog</title>
+  <title>C++问题记录 | Xiong's Blog</title>
   
 
 
@@ -188,238 +191,102 @@
         <div class="content-wrap">
           
 
-          <div class="content archive">
+          <div class="content post posts-expand">
             
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        
-        <span class="collection-header">还行! 目前共计 35 篇日志。 继续努力。</span>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2022/04/04/C-%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.png">
+      <meta itemprop="name" content="Liyao Xiong">
+      <meta itemprop="description" content="普普通通">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Xiong's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++问题记录
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2022-04-04 17:11:24 / 修改时间：17:15:49" itemprop="dateCreated datePublished" datetime="2022-04-04T17:11:24+08:00">2022-04-04</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/C/" itemprop="url" rel="index"><span itemprop="name">C++</span></a>
+                </span>
+            </span>
+
+          
+            <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv" style="display: none;">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-eye"></i>
+              </span>
+              <span class="post-meta-item-text">阅读次数：</span>
+              <span id="busuanzi_value_page_pv"></span>
+            </span>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2018</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2018-07-05T13:12:34+08:00"
-              content="2018-07-05">
-          07-05
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2018/07/05/Lecture%201%20Course%20Introduction/" itemprop="url">
-            <span itemprop="name">CS131 Lecture 1 Course Introduction</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-    <div class="collection-year">
-      <span class="collection-header">2017</span>
-    </div>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2017-10-17T00:00:00+08:00"
-              content="2017-10-17">
-          10-17
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2017/10/17/Matlab-Week3/" itemprop="url">
-            <span itemprop="name">Matlab Week3</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2017-10-17T00:00:00+08:00"
-              content="2017-10-17">
-          10-17
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2017/10/17/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week11/" itemprop="url">
-            <span itemprop="name">机器学习 Week11</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2017-10-11T00:00:00+08:00"
-              content="2017-10-11">
-          10-11
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2017/10/11/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week10/" itemprop="url">
-            <span itemprop="name">机器学习 Week10</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2017-10-03T00:00:00+08:00"
-              content="2017-10-03">
-          10-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2017/10/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week9/" itemprop="url">
-            <span itemprop="name">机器学习 Week9</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2017-09-26T00:00:00+08:00"
-              content="2017-09-26">
-          09-26
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2017/09/26/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week8/" itemprop="url">
-            <span itemprop="name">机器学习 Week8</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2017-09-20T00:00:00+08:00"
-              content="2017-09-20">
-          09-20
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2017/09/20/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week7/" itemprop="url">
-            <span itemprop="name">机器学习 Week7</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2017-09-08T00:00:00+08:00"
-              content="2017-09-08">
-          09-08
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2017/09/08/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0-Week6/" itemprop="url">
-            <span itemprop="name">机器学习 Week6</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2017-09-03T00:00:00+08:00"
-              content="2017-09-03">
-          09-03
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2017/09/03/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week5/" itemprop="url">
-            <span itemprop="name">机器学习Week5</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2017-08-31T00:00:00+08:00"
-              content="2017-08-31">
-          08-31
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/2017/08/31/%E6%9C%BA%E5%99%A8%E5%AD%A6%E4%B9%A0Week4/" itemprop="url">
-            <span itemprop="name">机器学习Week4</span>
-          </a>
-      </div>
-
-    </header>
-  </article>
-
+        <h1 id="C-问题记录"><a href="#C-问题记录" class="headerlink" title="C++问题记录"></a>C++问题记录</h1><h2 id="两个文件中的类互相调用"><a href="#两个文件中的类互相调用" class="headerlink" title="两个文件中的类互相调用"></a>两个文件中的类互相调用</h2><p>设类A为<code>class A</code>，写于文件<code>ca.cpp;ca.h</code>。类B为<code>class B</code>，写于文件<code>cb.cpp;cb.h</code>。</p>
+<ol>
+<li><code>ca.h</code>中包含头文件<code>#include &quot;cb.h&quot;</code></li>
+<li><code>cb.h</code>中前向声明<code>class ca</code></li>
+<li><code>cb.cpp</code>中包含头文件<code>#include &quot;ca.h&quot;</code></li>
+</ol>
 
     </div>
-  </div>
-  
-  
-  
 
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C/" rel="tag"># C++</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2022/03/31/Hadoop-3-3-Spark-3-2-M1-MacOS%E4%BC%AA%E5%88%86%E5%B8%83%E5%BC%8F%E9%85%8D%E7%BD%AE/" rel="prev" title="Hadoop 3.3 + Spark 3.2 + M1 MacOS伪分布式配置">
+      <i class="fa fa-chevron-left"></i> Hadoop 3.3 + Spark 3.2 + M1 MacOS伪分布式配置
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
   
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/archives/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/archives/">1</a><a class="page-number" href="/archives/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/archives/page/4/">4</a><a class="extend next" rel="next" href="/archives/page/4/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
-  </nav>
+  
+  
 
 
 
@@ -471,6 +338,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#C-%E9%97%AE%E9%A2%98%E8%AE%B0%E5%BD%95"><span class="nav-number">1.</span> <span class="nav-text">C++问题记录</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%A4%E4%B8%AA%E6%96%87%E4%BB%B6%E4%B8%AD%E7%9A%84%E7%B1%BB%E4%BA%92%E7%9B%B8%E8%B0%83%E7%94%A8"><span class="nav-number">1.1.</span> <span class="nav-text">两个文件中的类互相调用</span></a></li></ol></li></ol></div>
       </div>
       <!--/noindex-->
 
